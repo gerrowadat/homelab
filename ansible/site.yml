@@ -23,4 +23,4 @@
   become: true
   become_user: root
   roles:
-    - nfs_server
+    - role: ansible-nfs-server
