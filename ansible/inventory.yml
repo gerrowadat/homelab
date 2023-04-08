@@ -36,5 +36,8 @@ nomadconsul:
                 ansible_user: pi
                 consul_gossip_key: "{{ lookup('env', 'CONSUL_GOSSIP_KEY') }}"
                 existing_consul_server: 192.168.100.250 # hedwig
+                # nfs_primary and nfs_share define where /things is (it's at nfs_primary:nfs_share)
+                # If you update this, remember to set nfs_primary to localhost for that host only, above.
                 nfs_primary: duckseason
                 nfs_share: "/export/things"
+                docker_registry_proxy: https://docker-registry.home.andvari.net:5001

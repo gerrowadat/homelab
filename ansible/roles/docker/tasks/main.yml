@@ -37,3 +37,20 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
+
+- name: Configure docker proxy at {{ docker_registry_proxy }}
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: '/etc/docker/daemon.json'
+    owner: root
+    group: root
+  register: docker_daemon_conf
+
+- name: Reload docker if we've updated the config.
+  ansible.builtin.systemd:
+    name: docker.service
+    state: reloaded
+  when: docker_daemon_conf.changed
+
+
+
