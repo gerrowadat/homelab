@@ -1,0 +1,64 @@
+- name: Make dir to tidy up downloads for install
+  become: true
+  become_user: '{{ ansible_user }}'
+  ansible.builtin.file:
+    path: '/home/{{ ansible_user }}/download'
+    state: directory
+
+- name: Grab the latest nomad binary.
+  become: true
+  become_user : '{{ ansible_user }}'
+  ansible.builtin.get_url:
+    url: 'https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_{{ download_arch }}.zip'
+    dest: '/home/{{ ansible_user }}/download/'
+
+- name: Unzip nomad binary.
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: '/home/{{ ansible_user }}/download/nomad_{{ nomad_version }}_linux_{{ download_arch }}.zip'
+    dest: '/usr/local/bin/'
+
+- name: Create /opt/nomad
+  ansible.builtin.file:
+    path: '/opt/nomad'
+    state: directory
+
+- name: Create /local
+  ansible.builtin.file:
+    path: '/local'
+    state: directory
+
+
+- name: Create nomad rc file
+  ansible.builtin.copy:
+    src: nomad.service
+    dest: '/etc/systemd/system/nomad.service'
+
+- name: Create /etc/nomad.d
+  ansible.builtin.file:
+    path: '/etc/nomad.d'
+    mode: '700'
+    state: directory
+
+- name: Copy nomad.hcl
+  ansible.builtin.copy:
+    src: nomad.hcl
+    dest: '/etc/nomad.d/'
+
+- name: Copy server.hcl
+  ansible.builtin.copy:
+    src: server.hcl
+    dest: '/etc/nomad.d/'
+
+- name: Copy client.hcl
+  ansible.builtin.copy:
+    src: client.hcl
+    dest: '/etc/nomad.d/'
+
+- name: Enable nomad on boot.
+  ansible.builtin.systemd:
+    name: nomad
+    enabled: yes
+    state: started
+
+

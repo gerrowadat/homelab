@@ -1,0 +1,18 @@
+- name: Install NFS server package.
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - nfs-kernel-server
+      - rpcbind
+
+- name: Create export point
+  ansible.builtin.file:
+    path: "{{ export_dir }}"
+    state: directory
+    owner: nobody
+    group: nogroup
+
+
+
+
+

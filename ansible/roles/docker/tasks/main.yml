@@ -1,0 +1,39 @@
+- name: Remove incompatible business.
+  ansible.builtin.apt:
+    update-cache: yes
+    state: absent
+    pkg:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+
+- name: Install pre-requisites.
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+- name: Add Docker apt key
+  shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+  args:
+    warn: no
+
+- name: Add Docker stable repository.
+  apt_repository:
+    repo: "deb [arch={{ download_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: Install Docker.
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io

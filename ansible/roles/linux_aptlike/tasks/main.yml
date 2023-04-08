@@ -1,0 +1,20 @@
+- name: Install things that make life tolerable
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - vim
+      - git
+      - screen
+      - rsync
+      - python3-pip
+      - nfs-common
+      - unzip
+
+- name: Check default editor in /etc/alternatives is vim
+  ansible.builtin.stat:
+    path: /etc/alternatives/editor
+  register: editor_link
+
+- name: set default editor on the system
+  command: /usr/bin/update-alternatives --set editor /usr/bin/vim.basic
+  when: editor_link.stat.lnk_target != "/usr/bin/vim.basic"

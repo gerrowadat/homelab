@@ -1,0 +1,40 @@
+linux_aptlike:
+        hosts:
+                picluster1:
+                picluster2:
+                picluster3:
+                picluster4:
+                picluster5:
+                duckseason:
+                        ansible_user: doc
+                hedwig:
+                        ansible_user: doc
+                rabbitseason:
+                        ansible_user: doc
+        vars:
+                ansible_user: pi
+
+nomadconsul:
+        hosts:
+                picluster1:
+                picluster2:
+                picluster3:
+                picluster4:
+                picluster5:
+                duckseason:
+                        download_arch: amd64
+                        ansible_user: doc
+                        nfs_primary: localhost
+                rabbitseason:
+                        download_arch: amd64
+                        ansible_user: doc
+                hedwig:
+                        download_arch: amd64
+                        ansible_user: doc
+        vars:
+                download_arch: arm64
+                ansible_user: pi
+                consul_gossip_key: "{{ lookup('env', 'CONSUL_GOSSIP_KEY') }}"
+                existing_consul_server: 192.168.100.250 # hedwig
+                nfs_primary: duckseason
+                nfs_share: "/export/things"

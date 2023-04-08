@@ -1,0 +1,26 @@
+- name: all Debian/Ubuntu/Raspbian/etc. hosts
+  hosts: linux_aptlike
+  any_errors_fatal: true
+  become: true
+  become_user: root
+  roles:
+    - linux_aptlike
+    - login
+
+- name: nomad/consul nodes
+  hosts: nomadconsul
+  any_errors_fatal: true
+  become: true
+  become_user: root
+  roles:
+    - nfs_client
+    - nomad
+    - consul
+
+
+- name: nfs servers
+  hosts: nfs_server
+  become: true
+  become_user: root
+  roles:
+    - nfs_server

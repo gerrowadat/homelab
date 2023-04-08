@@ -1,0 +1,66 @@
+- name: Make dir to tidy up downloads for install
+  become: true
+  become_user: '{{ ansible_user }}'
+  ansible.builtin.file:
+    path: '/home/{{ ansible_user }}/download'
+    state: directory
+
+- name: Grab the latest consul binary.
+  become: true
+  become_user : '{{ ansible_user }}'
+  ansible.builtin.get_url:
+    url: 'https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_{{ download_arch }}.zip'
+    dest: '/home/{{ ansible_user }}/download/'
+
+- name: Unzip consul binary.
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: '/home/{{ ansible_user }}/download/consul_{{ consul_version }}_linux_{{ download_arch }}.zip'
+    dest: '/usr/local/bin/'
+
+- name: Create consul user
+  ansible.builtin.user:
+    name: consul
+    create_home: no
+    home: /etc/consul.d
+    shell: /bin/false
+
+- name: Create /opt/consul
+  ansible.builtin.file:
+    path: '/opt/consul'
+    state: directory
+    owner: consul
+    group: consul
+
+- name: Create /etc/consul.d
+  ansible.builtin.file:
+    path: '/etc/consul.d'
+    mode: '700'
+    state: directory
+    owner: consul
+    group: consul
+
+- name: Generate consul.hcl
+  ansible.builtin.template:
+    src: consul.hcl.j2
+    dest: '/etc/consul.d/consul.hcl'
+    owner: consul
+    group: consul
+
+- name: Generate server.hcl
+  ansible.builtin.template:
+    src: server.hcl.j2
+    dest: '/etc/consul.d/server.hcl'
+    owner: consul
+    group: consul
+
+- name: Create consul rc file
+  ansible.builtin.copy:
+    src: consul.service
+    dest: '/etc/systemd/system/consul.service'
+
+- name: Enable consul on boot.
+  ansible.builtin.systemd:
+    name: consul
+    enabled: yes
+    state: started
