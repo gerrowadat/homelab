@@ -24,7 +24,7 @@ job "docker-registry" {
       config {
         image = "registry:2"
         volumes = [
-          "/things/docker/registry:/var/lib/registry",
+          "/things/docker/docker-registry:/var/lib/registry",
         ]
         labels {
           group = "registry"
