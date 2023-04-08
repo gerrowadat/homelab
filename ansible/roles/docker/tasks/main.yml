@@ -20,9 +20,9 @@
       - lsb-release
 
 - name: Add Docker apt key
-  shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
-  args:
-    warn: no
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
 
 - name: Add Docker stable repository.
   apt_repository:
