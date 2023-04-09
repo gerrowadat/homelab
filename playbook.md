@@ -10,11 +10,19 @@ Make a DNS change
 git commit -a
 git push origin main
 
-# wait 5 minutes, or run 'git pull' in /things/homelab
+# wait 5 minutes, or run 'sudo -u nobody git pull' in /things/homelab
 
 ansible-playbook -i ansible/inventory.yml ansible/site-dns.yml
 ```
 
+Change Prometheus Configs
+-------------------------
 
-
-
+```
+# Edit files in 'monitoring/'
+git commit -a
+git push origin main
+sudo -s
+cd /things/homelab
+scripts/reload_prometheus.sh
+```
