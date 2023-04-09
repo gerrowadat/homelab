@@ -20,7 +20,7 @@ echo "Applying Nomad ACLs"
 # Create a variable-admin policy we can generate tokens from.
 nomad acl policy apply -description "Variable reader/writer" variable-admin acl/variable-admin-policy.hcl
 
-VARIABLE_TOKEN=`nomad acl token create -name="variable reader/writer" -policy=variable-admin | grep "Secret ID" | cut -f3 -d' '`
+VARIABLE_TOKEN=`nomad acl token create -name="variable reader/writer" -policy=variable-admin | grep "Secret ID" | cut -f4 -d' '`
 
 # Store our new token where letsencrypt-to-nomad-vars can get it.
 nomad var put nomad-tokens/variable-admin tok=${VARIABLE_TOKEN}
