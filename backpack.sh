@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # This script takes a recently-bootstrapped Nomad cluster and rebuilds it to a usable state.
+# I mean, I say it does, but you're probably not going to get good results for just running it.
+# Think of it as a readable playbook moreseo than a real rebuild. It's never been used, for a start.
 
 # Assumptions:
 #  - All hosts have been ansiblised and are running nomad.
@@ -9,8 +11,18 @@
 
 # Things to do first
 #
+# - Mae sure you're happy with ansible/inventory.yml and that the hosts are up and etc.
 # - Edit infra/certbot/certbot.hcl and make sure it's constrained to run on your nfs server.
 # - Same with infra/letsencrypt-to-nomad-vars/letsencrypt-to-nomad-vars.hcl
+
+
+echo "Installing host-level services."
+
+# Get configurations, including our zone files, from github.
+git clone https://github.com/gerrowadat/homelab.git /things/homelab
+
+# Install DNS servers.
+ansible-playbook -i ansible/inventory.yml ansible/site-dns.yml
 
 
 ######### Nomad ACLs #########################
@@ -47,3 +59,6 @@ nomad job run infra/letsencrypt-to-nomad-vars/letsencrypt-to-nomad-vars.hcl
 
 nomad job run infra/docker-registry/docker-registry.hcl
 
+echo "Starting periodic tasks..."
+
+nomad job run cron/git-pull-homelab.hcl
