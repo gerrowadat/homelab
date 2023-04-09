@@ -1,0 +1,21 @@
+"groups":
+- "name": "backbox"
+  "rules":
+  - "alert": "HostNotPinging"
+    "annotations":
+      "description": "{{ $labels.instance }} icmp unreachable"
+      "summary": "{{ $labels.instance }} icmp unreachable"
+    "expr": |
+      probe_success{job="blackbox-ping"} < 1
+    "for": "5m"
+    "labels":
+      "severity": "critical"
+  - "alert": "HTTPStatus"
+    "annotations":
+      "description": "{{ $labels.instance }} returned non-200 HTTP status"
+      "summary": "{{ $labels.instance }} returned non-200 HTTP status"
+    "expr": |
+      probe_success{job="blackbox-http-base"} < 1
+    "for": "5m"
+    "labels":
+      "severity": "critical"
