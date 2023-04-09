@@ -24,3 +24,11 @@
   become_user: root
   roles:
     - role: ansible-nfs-server
+
+- name: dns servers
+  hosts: dns_server
+  become: true
+  become_user: root
+  roles:
+    - role: dns_server
+

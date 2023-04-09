@@ -1,0 +1,21 @@
+- name: Install bind9
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - bind9
+      - rsync
+
+- name: Install /etc/bind
+  ansible.posix.synchronize:
+    src: /things/dns/bind/
+    dest: /etc/bind/
+    checksum: true
+    recursive: true
+    delete: true
+  register: bind_conf_update
+
+- name: Reload bind if we've updated the config.
+  ansible.builtin.systemd:
+    name: bind9.service
+    state: restarted
+  when: bind_conf_update.changed

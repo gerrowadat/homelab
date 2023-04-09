@@ -16,7 +16,7 @@ linux_aptlike:
 
 nfs_server:
         hosts:
-                duckseason:
+                rabbitseason:
         vars:
                 nfs_server_exports:
                         - export:
@@ -47,6 +47,13 @@ nfs_server:
                                         - 'sync'
                                         - 'no_subtree_check'
                           path: /export/things
+
+
+dns_server:
+        hosts:
+                rabbitseason:
+                duckseason:
+                hedwig:
 
 
 nomadconsul:
