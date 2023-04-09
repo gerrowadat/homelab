@@ -49,4 +49,8 @@ NFS or fuse (home assistant occasionally corrupts its database for this reason).
 This Repo
 =========
 
-Right now, it's just ansible, I'll be moving more things in as things happen. Please note that I'm likely holding ansible wrong.
+I'll try to keep stuff commented and documented, but a lot of this stuff should be self-explanatory.
+
+[playbook.md](playbook.md) is a simple playbook for doing various things.
+
+[backpack.sh](backpack.sh) is a script/playbook for restoring from scratch.
