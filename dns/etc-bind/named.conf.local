@@ -1,0 +1,44 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+zone "home.andvari.net" {
+  type master;
+  file "/etc/bind/db.home.andvari.net";
+  allow-transfer { 192.168.100.1; };
+};
+
+zone "100.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.100.168.192"; 
+    allow-transfer { 192.168.100.1; };  # ns2 private IP address - secondary
+};
+zone "110.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.110.168.192"; 
+    allow-transfer { 192.168.100.1; };  # ns2 private IP address - secondary
+};
+
+// Talk to local consul for .consul.
+zone "consul" {
+    type forward;
+    forward only;
+   // dnssec-enable no;
+    //dnssec-validation no;
+    forwarders { 127.0.0.1 port 8600; };
+};
+
+// Talk to nomad-dns-exporter for .nomad.
+zone "nomad" {
+    type forward;
+    forward only;
+   // dnssec-enable no;
+    //dnssec-validation no;
+    forwarders { 192.168.100.250 port 5333;
+                 192.168.100.251 port 5333;
+                 192.168.100.253 port 5333;};
+};

@@ -1,0 +1,29 @@
+acl goodclients {
+  localhost;
+  localnets;
+  192.168.0.0/16;
+};
+
+options {
+	directory "/var/cache/bind";
+
+	// If there is a firewall between you and nameservers you want
+	// to talk to, you may need to fix the firewall to allow multiple
+	// ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+	// If your ISP provided one or more IP addresses for stable 
+	// nameservers, you probably want to use them as forwarders.  
+	// Uncomment the following block, and insert the addresses replacing 
+	// the all-0's placeholder.
+
+        allow-query { goodclients; };
+
+	forwarders {
+	 	8.8.8.8;
+		8.8.4.4;
+	};
+
+	dnssec-validation no;
+
+	listen-on-v6 { any; };
+};

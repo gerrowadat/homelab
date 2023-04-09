@@ -1,0 +1,25 @@
+$TTL    604800
+@       IN      SOA     home.andvari.net. admin.home.andvari.net. (
+                             17         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+; name servers
+      IN      NS      ns1.home.andvari.net.
+
+5     IN      PTR     ns-vip.home.andvari.net
+; PTR Records
+
+241   IN      PTR     picluster1.home.andvari.net.
+242   IN      PTR     picluster2.home.andvari.net.
+243   IN      PTR     picluster3.home.andvari.net.
+244   IN      PTR     picluster4.home.andvari.net.
+245   IN      PTR     picluster5.home.andvari.net.
+
+250   IN      PTR     hedwig.home.andvari.net. 
+251   IN      PTR     rabbitseason.home.andvari.net. 
+252   IN      PTR     tings.home.andvari.net.  
+253   IN      PTR     duckseason.home.andvari.net.  
+231   IN      PTR     print.home.andvari.net.  
+232   IN      PTR     scan.home.andvari.net.  

@@ -1,0 +1,57 @@
+$ORIGIN home.andvari.net.
+$TTL    604800
+@       IN      SOA     ns1.home.andvari.net. admin.home.andvari.net. (
+                 43     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800 )   ; Negative Cache TTL
+;
+; name servers - NS records
+     IN      NS      ns1.home.andvari.net.
+@    IN      A       192.168.100.250
+
+; name servers - A records
+ns1.home.andvari.net.          IN      A       192.168.100.250
+
+wan-router IN A 192.168.1.1
+
+; low-level services (usually service IPs)
+dns-vip         IN  A 192.168.100.5
+
+; pi cluster
+picluster1     IN A 192.168.100.241
+picluster2     IN A 192.168.100.242
+picluster3     IN A 192.168.100.243
+picluster4     IN A 192.168.100.244
+picluster5     IN A 192.168.100.245
+
+; infra machines and NAS
+hedwig         IN A 192.168.100.250
+rabbitseason   IN A 192.168.100.251
+tings          IN A 192.168.100.252
+duckseason     IN A 192.168.100.253
+print          IN A 192.168.100.231
+scan           IN A 192.168.100.232
+
+; Internet of Shit
+emonhub        IN A 192.168.110.210
+hue-hub        IN A 192.168.110.221
+heatmiser-hub  IN A 192.168.110.222
+somfy          IN A 192.168.110.223
+ip-phone       IN A 192.168.110.224
+
+; CNAMEs
+docker-registry IN CNAME docker-registry.service.home.consul.
+freshrss IN CNAME freshrss.service.home.consul.
+grafana IN CNAME grafana.service.home.consul
+home IN CNAME hedwig
+home-assistant IN CNAME hass.service.home.consul.
+influxdb IN CNAME influxdb.service.home.consul.
+mosquitto IN CNAME mosquitto.service.home.consul.
+mqtt IN CNAME mosquitto.service.home.consul.
+plex IN CNAME rabbitseason
+radarr IN CNAME radarr.service.home.consul.
+sabnzbd IN CNAME sabnzbd.service.home.consul.
+smtp IN CNAME postfix-andvari-smarthost.service.home.consul.
+sonarr IN CNAME sonarr.service.home.consul.
