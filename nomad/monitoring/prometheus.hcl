@@ -16,7 +16,9 @@ job "prometheus" {
         ]
         image = "prom/prometheus:v2.43.0"
         args = ["--config.file=/config/prometheus.yml",
-                "--storage.tsdb.path=/data/prom-tsdb/"]
+                "--storage.tsdb.path=/data/prom-tsdb/",
+                # Enable reload via web
+                "--web.enable-lifecycle"]
         labels {
           group = "prometheus"
         }
