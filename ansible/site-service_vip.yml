@@ -1,0 +1,6 @@
+- name: service VIP
+  hosts: service_vip
+  become: true
+  become_user: root
+  roles:
+    - role: ansible-keepalived

@@ -31,4 +31,3 @@
   become_user: root
   roles:
     - role: dns_server
-

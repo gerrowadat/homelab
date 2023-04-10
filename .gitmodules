@@ -1,3 +1,6 @@
 [submodule "ansible/roles/ansible-nfs-server"]
 	path = ansible/roles/ansible-nfs-server
 	url = https://github.com/mrlesmithjr/ansible-nfs-server
+[submodule "ansible/roles/ansible-keepalived"]
+	path = ansible/roles/ansible-keepalived
+	url = https://github.com/evrardjp/ansible-keepalived
