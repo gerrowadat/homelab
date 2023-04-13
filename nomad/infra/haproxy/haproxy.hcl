@@ -6,7 +6,7 @@ job "haproxy" {
     task "haproxy_server" {
       service {
         name = "haproxy"
-	      port = "haproxy"
+	      port = "haproxy_main"
       }
       driver = "docker" 
       config {
@@ -17,14 +17,17 @@ job "haproxy" {
         labels {
           group = "haproxy"
         }
-        ports = ["haproxy"]
+        ports = ["haproxy_main", "haproxy_freshrss"]
       }
     }
 
     network {
       mode = "host"
-      port "haproxy" {
+      port "haproxy_main" {
         static = "4567"
+      }
+      port "haproxy_freshrss" {
+        static = "4568"
       }
     }
   }
