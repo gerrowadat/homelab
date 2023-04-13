@@ -17,3 +17,25 @@ modules:
     timeout: 5s
     icmp:
       preferred_ip_protocol: ip4
+
+  home.andvari.net:
+    prober: dns
+    timeout: 5s
+    dns:
+      transport_protocol: "udp"
+      preferred_ip_protocol: "ip4"
+      query_name: "home.andvari.net"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR 
+
+  docker-registry.service.consul:
+    prober: dns
+    timeout: 5s
+    dns:
+      transport_protocol: "udp"
+      preferred_ip_protocol: "ip4"
+      query_name: "docker-registry.service.consul"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR 
