@@ -64,6 +64,34 @@ scrape_configs:
       - target_label: __address__
         replacement: prom-blackbox-exporter.service.home.consul:9115
 
+  - job_name: blackbox-dns
+    scrape_interval: 5s
+    metrics_path: /probe
+    static_configs:
+      - targets:
+        - home.andvari.net:192.168.100.250
+        - home.andvari.net:192.168.100.251
+        - home.andvari.net:192.168.100.253
+        - docker-registry.service.consul:192.168.100.250
+        - docker-registry.service.consul:192.168.100.251
+        - docker-registry.service.consul:192.168.100.253
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: (.*):.*$
+      replacement: $1
+      target_label: domain
+    - source_labels: [__address__]
+      regex: .*:(.*)$
+      replacement: $1
+      target_label: instance
+    - source_labels: [domain]
+      target_label: __param_module
+    - source_labels: [instance]
+      target_label: __param_target
+    - target_label: __address__
+      replacement: blackbox:9115
+
+
 alerting:
   alertmanagers:
     - static_configs:
