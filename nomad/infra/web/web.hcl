@@ -11,6 +11,8 @@ job "web" {
     }
 
     task "nginx_server" {
+
+      // home.andvari.net SSL
       template { 
         data = "{{ with nomadVar \"ssl_certs/home_andvari_net\" }}{{ .privkey }}{{ end }}"
         destination = "secrets/home.andvari.net-privkey.pem"
@@ -21,6 +23,23 @@ job "web" {
       template { 
         data = "{{ with nomadVar \"ssl_certs/home_andvari_net\" }}{{ .chain }}{{ end }}"
         destination = "secrets/home.andvari.net-fullchain.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 700
+      }
+
+
+      // news.home.andvari.net SSL
+      template { 
+        data = "{{ with nomadVar \"ssl_certs/news_home_andvari_net\" }}{{ .privkey }}{{ end }}"
+        destination = "secrets/news.home.andvari.net-privkey.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 700
+      }
+      template { 
+        data = "{{ with nomadVar \"ssl_certs/news_home_andvari_net\" }}{{ .chain }}{{ end }}"
+        destination = "secrets/news.home.andvari.net-fullchain.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
         perms = 700
