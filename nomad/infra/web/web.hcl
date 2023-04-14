@@ -73,7 +73,7 @@ job "web" {
       config {
         image = "haproxy:2.7"
         volumes = [
-          "/things/homelab/nomad/infra/haproxy:/usr/local/etc/haproxy"
+          "/things/homelab/nomad/infra/web:/usr/local/etc/haproxy"
         ]
         labels {
           group = "nginx_servers"
