@@ -19,6 +19,7 @@ job "grafana" {
         ports = ["grafana"]
       }
       env {
+        GF_AUTH_BASIC_ENABLED = "false"
         GF_SERVER_DOMAIN = "home.andvari.net"
         GF_SERVER_ROOT_URL = "https://home.andvari.net/grafana/"
         GF_SERVER_SERVE_FROM_SUB_PATH = "true"
