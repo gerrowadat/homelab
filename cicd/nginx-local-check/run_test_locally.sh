@@ -23,7 +23,7 @@ echo "Testing $LOCAL_CONFIG..."
 
 docker run --rm -t -a stdout --name test-nginx \
   -v $PWD/local-haproxy-upstreams.conf:/local/local-haproxy-upstreams.conf:ro \
-  -v /things/homelab/nomad/infra/web/default.conf:/etc/nginx/conf.d/default.conf \
+  -v ${LOCAL_CONFIG}:/etc/nginx/conf.d/default.conf \
   -v /things/docker/ssl:/etc/letsencrypt:ro \
   -v $PWD/dummy-fullchain.pem:/secrets/home.andvari.net-fullchain.pem \
   -v $PWD/dummy-privkey.pem:/secrets/home.andvari.net-privkey.pem:ro \
