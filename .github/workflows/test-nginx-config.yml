@@ -7,8 +7,10 @@ jobs:
     steps:
       - name: Check out repo 
         uses: actions/checkout@v3
+      - name: Generate dummy SSL cert/key
+        run: openssl req -x509 -nodes -newkey rsa:2048 -days 9999 -keyout /tmp/dummy-privkey.pem -out /tmp/dummy-fullchain.pem -subj '/CN=localhost'
       - name: Generate dparams.pem
-        run: openssl dhparam -out /ssl-dhparams.pem 2048
+        run: openssl dhparam -out /tmp/ssl-dhparams.pem 2048
       - name: Run docker test.
         uses: addnab/docker-run-action@v3
         with:
@@ -17,5 +19,7 @@ jobs:
             -v ${{ github.workspace }}/cicd/nginx-local-check/local-haproxy-upstreams.conf:/local/local-haproxy-upstreams.conf:ro
             -v ${{ github.workspace }}/nomad/infra/web/default.conf:/etc/nginx/conf.d/default.conf:ro
             -v /dev/null:/etc/letsencrypt/options-ssl-nginx.conf:ro
-            -v /ssl-dhparams.pem:/etc/letsencrypt/ssl-dhparams.pem:ro
+            -v /tmp/ssl-dhparams.pem:/etc/letsencrypt/ssl-dhparams.pem:ro
+            -v /tmp/dummy-privkey.pem:/secrets/home.andvari.net-privkey.pem:ro
+            -v /tmp/dummy-fullchain.pem:/secrets/home.andvari.net-fullchain.pem:ro
           run: nginx -c /etc/nginx/nginx.conf
