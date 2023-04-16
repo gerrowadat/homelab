@@ -1,0 +1,19 @@
+name: test-bind-config
+run-name: DNS config and zones OK
+on:
+  push:
+    paths:
+      - 'dns/etc-bind/**'
+jobs:
+  bind-config-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo 
+        uses: actions/checkout@v3
+      - name: Run docker test.
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ubuntu/bind9:latest
+          options: |
+            -v ${{ github.workspace }}/dns/etc-bind:/etc/bind:ro
+          run: named-checkconf -z /etc/bind/named.conf
