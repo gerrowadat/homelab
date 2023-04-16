@@ -1,5 +1,5 @@
-name: test-nginx-config
-run-name: see if nginx config is valid
+name: test-server-configs
+run-name: service configs are valid.
 on: [push]
 jobs:
   nginx-config-check:
