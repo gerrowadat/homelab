@@ -1,6 +1,9 @@
-name: test-server-configs
-run-name: service configs are valid.
-on: [push]
+name: test-nginx-config
+run-name: NGINX config at //nomad/infra/web/default.conf is good.
+on:
+  push:
+    paths:
+      - 'nomad/infra/web/default.conf'
 jobs:
   nginx-config-check:
     runs-on: ubuntu-latest
