@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Generate dummy SSL cert/key
         run: openssl req -x509 -nodes -newkey rsa:2048 -days 9999 -keyout /tmp/dummy-privkey.pem -out /tmp/dummy-fullchain.pem -subj '/CN=localhost'
-      - name: Generate dparams.pem
+      - name: Generate dhparams.pem
         run: openssl dhparam -out /tmp/ssl-dhparams.pem 2048
       - name: Run docker test.
         uses: addnab/docker-run-action@v3
