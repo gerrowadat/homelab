@@ -15,7 +15,7 @@ job "nomad-dns-exporter" {
       }
       driver = "docker" 
       config {
-        image = "gerrowadat/nomad-dns-exporter:0.0.2"
+        image = "gerrowadat/nomad-dns-exporter:0.0.4"
         labels {
           group = "nomad-dns-exporter"
         }
@@ -23,6 +23,7 @@ job "nomad-dns-exporter" {
       }
       env {
         NOMAD_SERVER = "${attr.unique.hostname}.home.andvari.net"
+        DNS_HOSTNAME = "0.0.0.0"
         DNS_PORT = "5333"
       }
     }
