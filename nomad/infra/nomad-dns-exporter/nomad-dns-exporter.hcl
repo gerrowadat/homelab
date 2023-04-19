@@ -1,7 +1,13 @@
 job "nomad-dns-exporter" {
-  type = "system"
   datacenters = ["home"]
   group "nomad-dns-exporter_servers" {
+    // Only run on core machines.
+    count = 3
+    constraint {
+      attribute = "${attr.cpu.arch}"
+      operator = "="
+      value = "amd64"
+    }
     task "nomad-dns-exporter_server" {
       service {
         name = "nomad-dns-exporter"
