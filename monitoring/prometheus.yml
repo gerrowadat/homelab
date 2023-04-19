@@ -75,6 +75,9 @@ scrape_configs:
         - docker-registry.service.consul:192.168.100.250
         - docker-registry.service.consul:192.168.100.251
         - docker-registry.service.consul:192.168.100.253
+        - nomad-dns-exporter.service.nomad:192.168.100.250
+        - nomad-dns-exporter.service.nomad:192.168.100.251
+        - nomad-dns-exporter.service.nomad:192.168.100.253
     relabel_configs:
     - source_labels: [__address__]
       regex: (.*):.*$
