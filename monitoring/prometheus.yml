@@ -23,16 +23,20 @@ scrape_configs:
     metrics_path: "/metrics"
     static_configs:
       - targets: ['prom-consul-exporter.service.consul:9107']
+
   - job_name: blackbox
     static_configs:
       - targets: ['prom-blackbox-exporter.service.home.consul:9115']
+
   - job_name: blackbox-http-base
     metrics_path: "/probe"
     params:
       module: [http_2xx]
     static_configs:
       - targets:
-        - home.andvari.net
+        - 192.168.100.250
+        - 192.168.100.251
+        - 192.168.100.253
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -40,6 +44,7 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: prom-blackbox-exporter.service.home.consul:9115
+
   - job_name: blackbox-ping
     metrics_path: "/probe"
     params:
