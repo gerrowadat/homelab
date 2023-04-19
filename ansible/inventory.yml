@@ -92,9 +92,10 @@ nomadconsul:
                 picluster1:
                 picluster2:
                 picluster3:
+                        nomad_server: false
                 picluster4:
+                        nomad_server: false
                 picluster5:
-                        # picluster5 is on wifi and likely shouldn't be the raft leader.
                         nomad_server: false
                 duckseason:
                         download_arch: amd64
