@@ -49,6 +49,7 @@
   ansible.builtin.copy:
     src: server.hcl
     dest: '/etc/nomad.d/'
+  when: nomad_server
 
 - name: Copy client.hcl
   ansible.builtin.copy:
