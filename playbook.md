@@ -26,3 +26,8 @@ sudo -s
 cd /things/homelab
 scripts/reload_prometheus.sh
 ```
+
+Backups
+-------
+
+See [backups/README.md](backups/README.md)
