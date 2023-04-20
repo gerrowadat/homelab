@@ -53,12 +53,37 @@ EOF
 
 echo "Starting infra jobs..."
 
-nomad job run infra/certbot/certbot.hcl
+# Generate/renew SSL certificates (some jobs need them).
+nomad job run nomad/infra/certbot/certbot.hcl
 
-nomad job run infra/letsencrypt-to-nomad-vars/letsencrypt-to-nomad-vars.hcl
+# Start syncing SSL certs to nomad (any jobs like the registry or web servers son't start without these).
+nomad job run nomad/infra/letsencrypt-to-nomad-vars/letsencrypt-to-nomad-vars.hcl
 
-nomad job run infra/docker-registry/docker-registry.hcl
+# Registry and registry proxy.
+nomad job run nomad/infra/docker-registry/docker-registry.hcl
+
+# This makes *.service.nomad start resolving corrently (or indeed, at all).
+nomad job run nomad/infra/nomad-dns-exporter/nomad-dns-exporter.hcl
+
+# Makes email delivery work (for a few things, including alerts!)
+nomad job run nomad/infra/postfix-andvari-smarthost/postfix-andvari-smarthost.hcl
+
+# Bring up web services. No backends yet, gimme a minute.
+nomad job run nomad/infra/web/web.hcl
 
 echo "Starting periodic tasks..."
 
-nomad job run cron/git-pull-homelab.hcl
+nomad job run nomad/cron/git-pull-homelab.hcl
+
+echo "Scheduling backups..."
+
+nomad job run nomad/backups/resticrunner-docker.hcl
+
+echo "Starting Monitoring services..."
+
+nomad job run nomad/monitoring/prom-blackbox-exporter.hcl
+nomad job run nomad/monitoring/prom-consul-exporter.hcl
+nomad job run nomad/monitoring/prom-alertmanager.hcl
+nomad job run nomad/monitoring/prometheus.hcl
+nomad job run nomad/monitoring/grafana.hcl
+
