@@ -31,7 +31,7 @@ then
   exit
 fi
 
-POLICY_NAME="${JOB}-restic-${conf}-policy"
+POLICY_NAME="${JOB}-restic-${CONFIG}-policy"
 POLICY_NAME="${POLICY_NAME//_/-}"
 
 nomad acl policy apply -namespace default -job $JOB $POLICY_NAME - <<EOF
