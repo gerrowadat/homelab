@@ -3,6 +3,7 @@ job "grafana" {
   group "grafana_servers" {
    
     task "grafana_server" {
+      user = "nobody"
       service {
         name = "grafana"
         port = "grafana"
