@@ -15,5 +15,5 @@ jobs:
         with:
           image: gerrowadat/docker-promtool
           options: |
-            -v ${{ github.workspace }}/monitoring:/etc/prometheus/:ro
-          run: promtool check config /etc/prometheus/prometheus.cfg
+            -v ${{ github.workspace }}/monitoring:/etc/prometheus:ro
+          run: promtool check config /etc/prometheus/prometheus.yml
