@@ -93,6 +93,7 @@ nomadconsul:
                 picluster2:
                 picluster3:
                         nomad_server: false
+                        consul_enabled: false
                 picluster4:
                         nomad_server: false
                         consul_enabled: false
