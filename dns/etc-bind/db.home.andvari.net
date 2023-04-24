@@ -1,7 +1,7 @@
 $ORIGIN home.andvari.net.
 $TTL    604800
 @       IN      SOA     ns1.home.andvari.net. admin.home.andvari.net. (
-                 46     ; Serial
+                 47     ; Serial
              604800     ; Refresh
               86400     ; Retry
             2419200     ; Expire
@@ -43,16 +43,16 @@ somfy          IN A 192.168.110.223
 ip-phone       IN A 192.168.110.224
 
 ; CNAMEs
-docker-registry IN CNAME docker-registry.service.home.consul.
+docker-registry IN CNAME docker-registry.job.nomad.
 news IN CNAME home.andvari.net.
-grafana IN CNAME grafana.service.home.consul
+grafana IN CNAME grafana.job.nomad.
 home IN CNAME hedwig
-home-assistant IN CNAME hass.service.home.consul.
-influxdb IN CNAME influxdb.service.home.consul.
-mosquitto IN CNAME mosquitto.service.home.consul.
-mqtt IN CNAME mosquitto.service.home.consul.
+home-assistant IN CNAME hass.job.nomad.
+influxdb IN CNAME influxdb.job.nomad.
+mosquitto IN CNAME mosquitto.job.nomad.
+mqtt IN CNAME mosquitto.job.nomad.
 plex IN CNAME rabbitseason
-radarr IN CNAME radarr.service.home.consul.
-sabnzbd IN CNAME sabnzbd.service.home.consul.
-smtp IN CNAME postfix-andvari-smarthost.service.home.consul.
-sonarr IN CNAME sonarr.service.home.consul.
+radarr IN CNAME radarr.job.nomad.
+sabnzbd IN CNAME sabnzbd.job.nomad.
+smtp IN CNAME postfix-andvari-smarthost.job.nomad.
+sonarr IN CNAME sonarr.job.nomad.
