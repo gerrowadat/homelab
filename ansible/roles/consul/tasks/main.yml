@@ -58,9 +58,11 @@
   ansible.builtin.copy:
     src: consul.service
     dest: '/etc/systemd/system/consul.service'
+  when: consul_enabled
 
 - name: Enable consul on boot.
   ansible.builtin.systemd:
     name: consul
     enabled: yes
     state: started
+  when: consul_enabled
