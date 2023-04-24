@@ -24,6 +24,12 @@ scrape_configs:
     static_configs:
       - targets: ['prom-consul-exporter.service.consul:9107']
 
+  - job_name: nomad-dns-exporter
+    scrape_interval: 5s
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ['hedwig:8901', 'rabbitseason:8901', 'duckseason:8901']
+
   - job_name: blackbox
     static_configs:
       - targets: ['prom-blackbox-exporter.service.home.consul:9115']
