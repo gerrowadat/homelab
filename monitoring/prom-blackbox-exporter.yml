@@ -46,7 +46,7 @@ modules:
     dns:
       transport_protocol: "udp"
       preferred_ip_protocol: "ip4"
-      query_name: "nomad-dns-exporter.service.nomad"
+      query_name: "nomad-dns-exporter.job.nomad"
       query_type: "A"
       valid_rcodes:
         - NOERROR 
