@@ -4,3 +4,6 @@
 [submodule "ansible/roles/ansible-keepalived"]
 	path = ansible/roles/ansible-keepalived
 	url = https://github.com/evrardjp/ansible-keepalived
+[submodule "cicd/prometheus-local-check/docker-promtool"]
+	path = cicd/prometheus-local-check/docker-promtool
+	url = https://github.com/dnanexus/docker-promtool
