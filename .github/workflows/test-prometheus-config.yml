@@ -3,7 +3,7 @@ run-name: prometheus.yml OK
 on:
   push:
     paths:
-      - 'nomad/monitoring/prometheus.yml'
+      - 'monitoring/**'
 jobs:
   prometheus-config-check:
     runs-on: ubuntu-latest
@@ -15,5 +15,5 @@ jobs:
         with:
           image: gerrowadat/docker-promtool
           options: |
-            -v ${{ github.workspace }}/nomad/monitoring:/etc/prometheus/:ro
+            -v ${{ github.workspace }}/monitoring:/etc/prometheus/:ro
           run: promtool check config /etc/prometheus/prometheus.cfg
