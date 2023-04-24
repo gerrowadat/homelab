@@ -22,7 +22,7 @@ scrape_configs:
     scrape_timeout: 1m
     metrics_path: "/metrics"
     static_configs:
-      - targets: ['prom-consul-exporter.service.consul:9107']
+      - targets: ['prom-consul-exporter.job.nomad:9107']
 
   - job_name: nomad-dns-exporter
     scrape_interval: 5s
@@ -32,7 +32,7 @@ scrape_configs:
 
   - job_name: blackbox
     static_configs:
-      - targets: ['prom-blackbox-exporter.service.home.consul:9115']
+      - targets: ['prom-blackbox-exporter.job.nomad:9115']
 
   - job_name: blackbox-http-base
     metrics_path: "/probe"
@@ -49,7 +49,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: prom-blackbox-exporter.service.home.consul:9115
+        replacement: prom-blackbox-exporter.job.nomad:9115
 
   - job_name: blackbox-ping
     metrics_path: "/probe"
@@ -73,7 +73,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: prom-blackbox-exporter.service.home.consul:9115
+        replacement: prom-blackbox-exporter.job.nomad:9115
 
   - job_name: blackbox-dns
     scrape_interval: 5s
@@ -83,12 +83,12 @@ scrape_configs:
         - home.andvari.net:192.168.100.250
         - home.andvari.net:192.168.100.251
         - home.andvari.net:192.168.100.253
-        - docker-registry.service.consul:192.168.100.250
-        - docker-registry.service.consul:192.168.100.251
-        - docker-registry.service.consul:192.168.100.253
-        - nomad-dns-exporter.service.nomad:192.168.100.250
-        - nomad-dns-exporter.service.nomad:192.168.100.251
-        - nomad-dns-exporter.service.nomad:192.168.100.253
+        - docker-registry.job.nomad:192.168.100.250
+        - docker-registry.job.nomad:192.168.100.251
+        - docker-registry.job.nomad:192.168.100.253
+        - nomad-dns-exporter.job.nomad:192.168.100.250
+        - nomad-dns-exporter.job.nomad:192.168.100.251
+        - nomad-dns-exporter.job.nomad:192.168.100.253
     relabel_configs:
     - source_labels: [__address__]
       regex: (.*):.*$
@@ -103,12 +103,12 @@ scrape_configs:
     - source_labels: [instance]
       target_label: __param_target
     - target_label: __address__
-      replacement: prom-blackbox-exporter.service.home.consul:9115
+      replacement: prom-blackbox-exporter.job/nomad:9115
 
 
 alerting:
   alertmanagers:
     - static_configs:
       - targets:
-        - prom-alertmanager.service.home.consul:9093
+        - prom-alertmanager.job.nomad:9093
 
