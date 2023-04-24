@@ -35,7 +35,7 @@ EOF
       }
       driver = "docker" 
       config {
-        image = "gerrowadat/resticrunner:0.0.1"
+        image = "gerrowadat/resticrunner:0.0.2"
         volumes = [
           "/things/docker:/things/docker:ro",
           # no keys here, just config and known_hosts.
@@ -50,6 +50,7 @@ EOF
       }
       env {
         RESTIC_JOBS = "docker"
+        HTTP_PORT = "8901"
       }
     }
 
