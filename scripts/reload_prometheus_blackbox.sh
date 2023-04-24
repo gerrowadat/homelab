@@ -9,4 +9,4 @@ fi
 # Update prom configs
 sudo -u nobody git pull
 
-curl -X POST http://prom-blackbox-exporter.service.consul:9115/-/reload
+curl -X POST http://prom-blackbox-exporter.job.nomad:9115/-/reload
