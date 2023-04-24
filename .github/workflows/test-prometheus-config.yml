@@ -1,0 +1,19 @@
+name: test-prometheus-config
+run-name: prometheus.yml OK
+on:
+  push:
+    paths:
+      - 'nomad/monitoring/prometheus.yml'
+jobs:
+  prometheus-config-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo 
+        uses: actions/checkout@v3
+      - name: Run docker test.
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gerrowadat/docker-promtool
+          options: |
+            -v ${{ github.workspace }}/nomad/monitoring:/etc/prometheus/:ro
+          run: promtool check config /etc/prometheus/prometheus.cfg
