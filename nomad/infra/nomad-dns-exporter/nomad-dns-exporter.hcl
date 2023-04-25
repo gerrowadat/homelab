@@ -24,6 +24,7 @@ job "nomad-dns-exporter" {
       env {
         NOMAD_SERVER = "${attr.unique.hostname}.home.andvari.net"
         NOMAD_DOMAIN = ".job.nomad"
+        DNS_TTL = "30"
         DNS_HOSTNAME = "0.0.0.0"
         HTTP_HOSTNAME = "0.0.0.0"
         DNS_PORT = "5333"
