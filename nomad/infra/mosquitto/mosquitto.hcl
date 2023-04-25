@@ -1,0 +1,28 @@
+job "mosquitto" {
+  datacenters = ["home"]
+  group "mqtt_servers" {
+    task "mosquitto_server" {
+      service {
+        name = "mosquitto"
+        port = "mqtt"
+      }
+      driver = "docker" 
+      config {
+         image = "eclipse-mosquitto:1.6.15"
+         volumes = [
+          "/things/docker/mosquitto:/mosquitto"
+         ]
+        labels {
+          group = "mqtt"
+        }
+        ports = ["mqtt"]
+      }
+    }
+    network {
+      mode = "host"
+      port "mqtt" {
+        static = "1883"
+      }
+    }
+  }
+}
