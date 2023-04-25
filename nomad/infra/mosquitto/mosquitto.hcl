@@ -2,6 +2,10 @@ job "mosquitto" {
   datacenters = ["home"]
   group "mqtt_servers" {
     task "mosquitto_server" {
+      template {
+        data = "{{ with nomadVar \"nomad/jobs/mosquitto\" }}{{ .passwd }}{{ end }}"
+        destination = "secrets/mosquitto_passwd"
+      }
       service {
         name = "mosquitto"
         port = "mqtt"
