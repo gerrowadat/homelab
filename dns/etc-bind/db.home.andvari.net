@@ -1,7 +1,7 @@
 $ORIGIN home.andvari.net.
 $TTL    604800
 @       IN      SOA     ns1.home.andvari.net. admin.home.andvari.net. (
-                 47     ; Serial
+                 48     ; Serial
              604800     ; Refresh
               86400     ; Retry
             2419200     ; Expire
@@ -50,7 +50,7 @@ home IN CNAME hedwig
 home-assistant IN CNAME hass.job.nomad.
 influxdb IN CNAME influxdb.job.nomad.
 mosquitto IN CNAME mosquitto.job.nomad.
-mqtt IN CNAME mosquitto.job.nomad.
+mqtt IN CNAME mosquitto.service.consul.
 plex IN CNAME rabbitseason
 radarr IN CNAME radarr.job.nomad.
 sabnzbd IN CNAME sabnzbd.job.nomad.
