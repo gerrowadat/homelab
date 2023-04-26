@@ -15,7 +15,7 @@ job "nomad-dns-exporter" {
       }
       driver = "docker" 
       config {
-        image = "gerrowadat/nomad-dns-exporter:0.0.4b"
+        image = "gerrowadat/nomad-dns-exporter:0.0.4e"
         labels {
           group = "nomad-dns-exporter"
         }
