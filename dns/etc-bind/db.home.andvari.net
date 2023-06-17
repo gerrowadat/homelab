@@ -1,7 +1,7 @@
 $ORIGIN home.andvari.net.
 $TTL    604800
 @       IN      SOA     ns1.home.andvari.net. admin.home.andvari.net. (
-                 49     ; Serial
+                 50     ; Serial
              604800     ; Refresh
               86400     ; Retry
             2419200     ; Expire
@@ -23,7 +23,6 @@ dns-vip         IN  A 192.168.100.5
 ; pi cluster
 picluster1     IN A 192.168.100.241
 picluster2     IN A 192.168.100.242
-picluster3     IN A 192.168.100.243
 picluster4     IN A 192.168.100.244
 picluster5     IN A 192.168.100.245
 
