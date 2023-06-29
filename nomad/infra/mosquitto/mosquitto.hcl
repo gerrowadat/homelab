@@ -1,6 +1,12 @@
 job "mosquitto" {
   datacenters = ["home"]
   group "mqtt_servers" {
+
+    constraint {
+      attribute = "${attr.unique.hostname}"
+      value = "hedwig"
+    }
+
     task "mosquitto_server" {
       template {
         data = "{{ with nomadVar \"nomad/jobs/mosquitto\" }}{{ .passwd }}{{ end }}"
