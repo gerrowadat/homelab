@@ -1,0 +1,23 @@
+- name: Install nut
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - nut
+
+- name: update nut.conf
+  ansible.builtin.copy:
+    src: nut.conf
+    dest: '/etc/nut/nut.conf'
+  register: nut_config
+
+- name: update ups.conf
+  ansible.builtin.template:
+    src: ups.conf.j2
+    dest: '/etc/nut/ups.conf'
+  register: ups_config
+
+- name: Reload nut-driver if we've updated the config.
+  ansible.builtin.systemd:
+    name: nut-driver.service
+    state: restarted
+  when: nut_config.changed or ups_config.changed

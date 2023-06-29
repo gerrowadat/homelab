@@ -120,3 +120,15 @@ nomadconsul:
                 nfs_primary: duckseason
                 nfs_share: "/export/things"
                 docker_registry_proxy: https://docker-registry.home.andvari.net:5001
+
+# Machines with a localy connected UPS.
+ups:
+        hosts:
+                hedwig:
+                        ups_name: eaton5s
+                duckseason:
+                        ups_name: eaton5p
+        vars:
+                ups_vendor_id: '0463'
+                ups_pollfreq: 30
+

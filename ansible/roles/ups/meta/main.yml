@@ -1,0 +1,8 @@
+galaxy_info:
+  author: Dave O'Connor
+  description: UPS-connected host
+
+
+  license: BSD-3-Clause
+
+  min_ansible_version: 2.9
