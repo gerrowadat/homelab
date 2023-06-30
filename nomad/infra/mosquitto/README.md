@@ -14,4 +14,4 @@ nomad-homelab/utilities/file_to_nomad_var.sh <my password file> nomad/jobs/mosqu
 
 nomad by default lets all tasks in a job access the `nomad/jobs/<jobname>` variable, so once your job is named 'mosquitto' you're all set.
 
-If you need to update your passwd file, you'll need to run the above again - if you want to get your existing passwd file from nomad, it's `nomad var get mosquitto/passwd_file` 
+If you need to update your passwd file, you'll need to run the above again - if you want to get your existing passwd file from nomad, it's `nomad var get nomad/jobs/mosquitto` 
