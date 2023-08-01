@@ -1,0 +1,8 @@
+- name: all Debian/Ubuntu/Raspbian/etc. hosts
+  hosts: linux_aptlike
+  any_errors_fatal: true
+  become: true
+  become_user: root
+  roles:
+    - linux_aptlike
+    - login
