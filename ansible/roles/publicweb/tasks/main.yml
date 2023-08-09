@@ -2,6 +2,7 @@
   ansible.builtin.apt:
     update-cache: yes
     pkg:
+      - cron
       - nginx
       - python3-certbot
       - python3-certbot-nginx
@@ -22,3 +23,10 @@
   ansible.builtin.git:
     repo: 'https://github.com/gerrowadat/www.sica.ie.git'
     dest: /var/www/www.sica.ie
+
+- name: certbot renew cron job
+  ansible.builtin.cron:
+    name: "certbot renew"
+    special_time: "weekly"
+    user: root
+    job: "certbot renew"
