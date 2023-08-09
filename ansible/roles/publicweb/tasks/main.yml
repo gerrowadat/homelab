@@ -1,0 +1,5 @@
+- name: Packages for a web server
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - nginx

@@ -2,3 +2,8 @@ linux_aptlike:
         hosts:
                 lucien.andvari.net:
                         ansible_user: doc
+publicweb:
+        hosts:
+                cupernicus.andvari.net:
+                        ansible_user: doc
+
