@@ -18,7 +18,6 @@
     path: '/home/{{ ansible_user }}/.backup'
     state: directory
     owner: '{{ ansible_user }}'
-    group: '{{ ansible_user }}'
     mode: '0700'
 
 - name: Install Vundle files
