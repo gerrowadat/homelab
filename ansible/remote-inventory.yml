@@ -4,6 +4,6 @@ linux_aptlike:
                         ansible_user: doc
 publicweb:
         hosts:
-                cupernicus.andvari.net:
+                copernicus.andvari.net:
                         ansible_user: doc
 
