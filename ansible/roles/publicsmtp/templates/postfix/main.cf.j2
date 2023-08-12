@@ -27,7 +27,6 @@ recipient_delimiter = +
 
 virtual_alias_domains =
 virtual_alias_maps = regexp:/etc/postfix/virtual_re
-local_recipient_maps =
 
 # mailbox setup
 home_mailbox = Maildir/
@@ -47,10 +46,6 @@ message_size_limit = 50000000
 smtp_host_lookup = dns,native
 lmtp_host_lookup = dns,native
 
-relay_domains = sica.ie
-
-{% if enable_mailman %}
-
 # Mailman
 unknown_local_recipient_reject_code = 550
 owner_request_special = no
@@ -62,4 +57,3 @@ local_recipient_maps =
 relay_domains =
     hash:/opt/mailman/mm/var/data/postfix_domains
 
-{% endif %}

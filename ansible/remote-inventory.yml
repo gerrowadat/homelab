@@ -11,4 +11,3 @@ publicsmtp:
                 hooty.andvari.net:
                         smtp_hostname: hooty
                         ansible_user: ubuntu
-                        enable_mailman: true
