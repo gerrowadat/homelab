@@ -30,7 +30,7 @@
       - flufl_lock==8.0.2
       - flufl_i18n==5.0.2
       - flufl.bounce==4.0
-    virtualenv: /opt/mailman/newvenv
+    virtualenv: /opt/mailman/venv
     virtualenv_command: python3 -m venv
   become_user: mailman
 
