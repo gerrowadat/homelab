@@ -4,8 +4,8 @@ linux_aptlike:
                         ansible_user: doc
 publicweb:
         hosts:
-                copernicus.andvari.net:
-                        ansible_user: doc
+                hooty.andvari.net:
+                        ansible_user: ubuntu
 publicsmtp:
         hosts:
                 hooty.andvari.net:
