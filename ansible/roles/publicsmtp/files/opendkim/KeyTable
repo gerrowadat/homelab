@@ -1,1 +1,2 @@
 mail._domainkey.sica.ie sica.ie:mail:/etc/opendkim/keys/sica.ie/mail.private
+mail._domainkey.swearing.org swearing.org:mail:/etc/opendkim/keys/swearing.org/mail.private
