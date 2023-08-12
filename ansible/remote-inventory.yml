@@ -6,4 +6,9 @@ publicweb:
         hosts:
                 copernicus.andvari.net:
                         ansible_user: doc
+publicsmtp:
+        hosts:
+                copernicus.andvari.net:
+                        smtp_hostname: copernicus
+                        ansible_user: doc
 

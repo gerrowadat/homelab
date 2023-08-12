@@ -1,0 +1,79 @@
+- name: Packages for an smtp server
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - postfix
+      - opendkim
+      - opendkim-tools
+
+- name: install opendkim.conf
+  ansible.builtin.copy:
+    src: opendkim/opendkim.conf
+    dest: /etc/opendkim.conf
+  register: opendkim_cf
+
+- name: make opendkim dirs
+  ansible.builtin.file:
+    path: /etc/opendkim/keys
+    state: directory
+
+- name: opendkim TrustedHosts
+  ansible.builtin.copy:
+    src: opendkim/TrustedHosts
+    dest: /etc/opendkim/TrustedHosts
+  register: opendkim_cf
+
+- name: opendkim KeyTable
+  ansible.builtin.copy:
+    src: opendkim/KeyTable
+    dest: /etc/opendkim/KeyTable
+  register: opendkim_cf
+
+- name: opendkim SigningTable
+  ansible.builtin.copy:
+    src: opendkim/SigningTable
+    dest: /etc/opendkim/SigningTable
+  register: opendkim_cf
+
+- name: reload opendkim
+  ansible.builtin.systemd:
+    name: opendkim.service
+    state: restarted
+  when: opendkim_cf.changed
+
+- name: install header_checks
+  ansible.builtin.copy:
+    src: postfix/header_checks
+    dest: /etc/postfix/header_checks
+  register: header_checks
+
+- name: rebuild header_checks
+  ansible.builtin.shell:
+    chdir: /etc/postfix
+    cmd: postmap header_checks
+  when: header_checks.changed
+
+- name: install virtual_re
+  ansible.builtin.copy:
+    src: postfix/virtual_re
+    dest: /etc/postfix/virtual_re
+  register: virtual_re
+
+- name: rebuild virtual_re
+  ansible.builtin.shell:
+    chdir: /etc/postfix
+    cmd: postmap virtual_re
+  when: virtual_re.changed
+
+- name: install postfix config
+  ansible.builtin.template:
+    src: postfix/main.cf.j2
+    dest: /etc/postfix/main.cf
+  register: postfix_cf
+
+- name: reload postfix for new config
+  ansible.builtin.systemd:
+    name: postfix.service
+    state: restarted
+  when: postfix_cf.changed
+

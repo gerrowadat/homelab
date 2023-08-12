@@ -16,3 +16,14 @@
     - linux_aptlike
     - login
     - publicweb
+
+- name: External smtp servers
+  hosts: publicsmtp
+  any_errors_fatal: true
+  become: true
+  become_user: root
+  roles:
+    - linux_aptlike
+    - login
+    - publicsmtp
+
