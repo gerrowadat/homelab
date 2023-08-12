@@ -1,5 +1,4 @@
 biff = no
-relay_domains = sica.ie
 
 # appending .domain is the MUA's job.
 append_dot_mydomain = no
@@ -48,3 +47,19 @@ message_size_limit = 50000000
 smtp_host_lookup = dns,native
 lmtp_host_lookup = dns,native
 
+relay_domains = sica.ie
+
+{% if enable_mailman %}
+
+# Mailman
+unknown_local_recipient_reject_code = 550
+owner_request_special = no
+
+transport_maps =
+    hash:/opt/mailman/mm/var/data/postfix_lmtp
+local_recipient_maps =
+    hash:/opt/mailman/mm/var/data/postfix_lmtp
+relay_domains =
+    hash:/opt/mailman/mm/var/data/postfix_domains
+
+{% endif %}
