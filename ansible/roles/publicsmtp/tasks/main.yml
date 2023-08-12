@@ -65,10 +65,16 @@
     cmd: postmap virtual_re
   when: virtual_re.changed
 
-- name: install postfix config
+- name: install postfix main.cf
   ansible.builtin.template:
     src: postfix/main.cf.j2
     dest: /etc/postfix/main.cf
+  register: postfix_cf
+
+- name: install postfix master.cf
+  ansible.builtin.copy:
+    src: postfix/master.cf
+    dest: /etc/postfix/master.cf
   register: postfix_cf
 
 - name: reload postfix for new config
