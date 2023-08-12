@@ -24,6 +24,18 @@
     repo: 'https://github.com/gerrowadat/www.sica.ie.git'
     dest: /var/www/www.sica.ie
 
+- name: install SH nginx config
+  ansible.builtin.copy:
+    src: www.strategichopes.co.conf
+    dest: /etc/nginx/sites-enabled/www.strategichopes.co.conf
+  register: sh_nginx
+
+- name: reload nginx for new config (strategichopes.co)
+  ansible.builtin.systemd:
+    name: nginx.service
+    state: restarted
+  when: sh_nginx.changed
+
 - name: certbot renew cron job
   ansible.builtin.cron:
     name: "certbot renew"
