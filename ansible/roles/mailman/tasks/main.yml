@@ -1,0 +1,57 @@
+- name: Packages for mailman
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - python3-dev
+      - python3-venv
+      - sassc
+      - lynx
+      - acl
+
+- name: Add mailman user
+  ansible.builtin.user:
+    name: mailman
+    shell: /bin/bash
+    home: /opt/mailman
+
+- name: /opt/mailman is there
+  ansible.builtin.file:
+    name: /opt/mailman
+    state: directory
+    owner: mailman
+
+- name: Install mailman3
+  ansible.builtin.pip:
+    name:
+      - wheel
+      - mailman
+      # mailman-related dependency fuckology
+      - importlib_resources==6.0.1
+      - flufl_lock==8.0.2
+      - flufl_i18n==5.0.2
+      - flufl.bounce==4.0
+    virtualenv: /opt/mailman/newvenv
+    virtualenv_command: python3 -m venv
+  become_user: mailman
+
+- name: install mailman config
+  ansible.builtin.copy:
+    src: mailman.cfg
+    dest: /etc/mailman3/mailman.cfg
+
+- name: make mailman_var/data
+  ansible.builtin.file:
+    name: /opt/mailman/mm/var/data
+    state: directory
+    owner: mailman
+
+- name: Install systemd service file.
+  ansible.builtin.copy:
+    src: mailman3.service
+    dest: /etc/systemd/system/mailman3.service
+
+- name: enable mailman on boot
+  ansible.builtin.systemd:
+    name: mailman3
+    enabled: yes
+    state: started

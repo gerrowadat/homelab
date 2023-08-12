@@ -26,4 +26,4 @@
     - linux_aptlike
     - login
     - publicsmtp
-
+    - mailman
