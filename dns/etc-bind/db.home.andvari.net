@@ -17,9 +17,6 @@ ns1.home.andvari.net.          IN      A       192.168.100.250
 
 wan-router IN A 192.168.1.1
 
-; low-level services (usually service IPs)
-dns-vip         IN  A 192.168.100.5
-
 ; pi cluster
 picluster1     IN A 192.168.100.241
 picluster2     IN A 192.168.100.242
@@ -45,12 +42,12 @@ ip-phone       IN A 192.168.110.224
 docker-registry IN CNAME docker-registry.job.nomad.
 news IN CNAME home.andvari.net.
 grafana IN CNAME grafana.job.nomad.
-home IN CNAME hedwig
+home IN CNAME hedwig.home.andvari.net.
 home-assistant IN CNAME hass.job.nomad.
 influxdb IN CNAME influxdb.job.nomad.
 mosquitto IN CNAME mosquitto.job.nomad.
 mqtt IN CNAME mosquitto.job.nomad.
-plex IN CNAME rabbitseason
+plex IN CNAME rabbitseason.home.andvari.net.
 radarr IN CNAME radarr.job.nomad.
 sabnzbd IN CNAME sabnzbd.job.nomad.
 smtp IN CNAME postfix-andvari-smarthost.job.nomad.
