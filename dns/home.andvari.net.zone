@@ -6,34 +6,33 @@ home.andvari.net. 21600 IN NS ns-cloud-d4.googledomains.com.
 home.andvari.net. IN A 192.168.100.250
 home.andvari.net. IN A 192.168.100.251
 home.andvari.net. IN A 192.168.100.253
-duckseason.home.andvari.net. IN A 192.168.100.253
-emonhub.home.andvari.net. IN A 192.168.110.210
-heatmiser-hub.home.andvari.net. IN A 192.168.110.222
-hedwig.home.andvari.net. IN A 192.168.100.250
-hue-hub.home.andvari.net. IN A 192.168.110.221
-ip-phone.home.andvari.net. IN A 192.168.110.224
-ns1.home.andvari.net. IN A 192.168.100.250
-picluster1.home.andvari.net. IN A 192.168.100.241
-picluster2.home.andvari.net. IN A 192.168.100.242
-picluster3.home.andvari.net. IN A 192.168.100.243
-picluster4.home.andvari.net. IN A 192.168.100.244
-picluster5.home.andvari.net. IN A 192.168.100.245
-print.home.andvari.net. IN A 192.168.100.231
-rabbitseason.home.andvari.net. IN A 192.168.100.251
-scan.home.andvari.net. IN A 192.168.100.232
-somfy.home.andvari.net. IN A 192.168.110.223
-tings.home.andvari.net. IN A 192.168.100.252
-wan-router.home.andvari.net. IN A 192.168.1.1
-docker-registry.home.andvari.net. IN CNAME docker-registry.job.nomad.
-grafana.home.andvari.net. IN CNAME grafana.job.nomad.
+duckseason.home.andvari.net. 86400 IN A 192.168.100.253
+emonhub.home.andvari.net. 86400 IN A 192.168.110.210
+heatmiser-hub.home.andvari.net. 86400  IN A 192.168.110.222
+hedwig.home.andvari.net. 86400 IN A 192.168.100.250
+hue-hub.home.andvari.net. 86400 IN A 192.168.110.221
+ip-phone.home.andvari.net. 86400 IN A 192.168.110.224
+picluster1.home.andvari.net. 86400 IN A 192.168.100.241
+picluster2.home.andvari.net. 86400 IN A 192.168.100.242
+picluster3.home.andvari.net. 86400 IN A 192.168.100.243
+picluster4.home.andvari.net. 86400 IN A 192.168.100.244
+picluster5.home.andvari.net. 86400 IN A 192.168.100.245
+print.home.andvari.net.  86400 IN A 192.168.100.231
+rabbitseason.home.andvari.net. 86400 IN A 192.168.100.251
+scan.home.andvari.net.  86400 IN A 192.168.100.232
+somfy.home.andvari.net. 86400 IN A 192.168.110.223
+tings.home.andvari.net. 86400 IN A 192.168.100.252
+wan-router.home.andvari.net. 86400 IN A 192.168.1.1
+docker-registry.home.andvari.net. IN CNAME docker-registry.nomad.home.andvari.net.
+grafana.home.andvari.net. IN CNAME grafana.nomad.home.andvari.net.
 home.home.andvari.net. IN CNAME hedwig.home.andvari.net.
-home-assistant.home.andvari.net. IN CNAME hass.job.nomad.
-influxdb.home.andvari.net. IN CNAME influxdb.job.nomad.
-mosquitto.home.andvari.net. IN CNAME mosquitto.job.nomad.
-mqtt.home.andvari.net. IN CNAME mosquitto.job.nomad.
+home-assistant.home.andvari.net. IN CNAME hass.nomad.home.andvari.net.
+influxdb.home.andvari.net. IN CNAME influxdb.nomad.home.andvari.net.
+mosquitto.home.andvari.net. IN CNAME mosquitto.nomad.home.andvari.net.
+mqtt.home.andvari.net. IN CNAME mosquitto.nomad.home.andvari.net.
 news.home.andvari.net. IN CNAME home.andvari.net.
 plex.home.andvari.net. IN CNAME rabbitseason.home.andvari.net.
-radarr.home.andvari.net. IN CNAME radarr.job.nomad.
-sabnzbd.home.andvari.net. IN CNAME sabnzbd.job.nomad.
-smtp.home.andvari.net. IN CNAME postfix-andvari-smarthost.job.nomad.
-sonarr.home.andvari.net. IN CNAME sonarr.job.nomad.
+radarr.home.andvari.net. IN CNAME radarr.nomad.home.andvari.net.
+sabnzbd.home.andvari.net. IN CNAME sabnzbd.nomad.home.andvari.net.
+smtp.home.andvari.net. IN CNAME postfix-andvari-smarthost.nomad.home.andvari.net.
+sonarr.home.andvari.net. IN CNAME sonarr.nomad.home.andvari.net.
