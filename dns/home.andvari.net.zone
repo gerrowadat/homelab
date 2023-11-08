@@ -3,9 +3,6 @@ home.andvari.net. 21600 IN NS ns-cloud-d1.googledomains.com.
 home.andvari.net. 21600 IN NS ns-cloud-d2.googledomains.com.
 home.andvari.net. 21600 IN NS ns-cloud-d3.googledomains.com.
 home.andvari.net. 21600 IN NS ns-cloud-d4.googledomains.com.
-home.andvari.net. IN A 192.168.100.250
-home.andvari.net. IN A 192.168.100.251
-home.andvari.net. IN A 192.168.100.253
 duckseason.home.andvari.net. 86400 IN A 192.168.100.253
 emonhub.home.andvari.net. 86400 IN A 192.168.110.210
 heatmiser-hub.home.andvari.net. 86400  IN A 192.168.110.222
