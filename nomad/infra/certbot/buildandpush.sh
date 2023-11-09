@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker build -t gerrowadat/certbot-joker .
-docker push gerrowadat/certbot-joker
+docker build -t gerrowadat/certbot .
+docker push gerrowadat/certbot
