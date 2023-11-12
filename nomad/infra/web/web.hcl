@@ -29,30 +29,11 @@ job "web" {
       }
 
 
-      // news.home.andvari.net SSL
-      template { 
-        data = "{{ with nomadVar \"ssl_certs/news_home_andvari_net\" }}{{ .privkey }}{{ end }}"
-        destination = "secrets/news.home.andvari.net-privkey.pem"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
-        perms = 700
-      }
-      template { 
-        data = "{{ with nomadVar \"ssl_certs/news_home_andvari_net\" }}{{ .chain }}{{ end }}"
-        destination = "secrets/news.home.andvari.net-fullchain.pem"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
-        perms = 700
-      }
       template { 
         data = <<EOH
           upstream local-haproxy-main {
             least_conn;
             server {{ env "NOMAD_ADDR_haproxy_main" }};
-          }
-          upstream local-haproxy-freshrss {
-            least_conn;
-            server {{ env "NOMAD_ADDR_haproxy_freshrss" }};
           }
         EOH
         destination = "local/local-haproxy-upstreams.conf"
@@ -98,7 +79,7 @@ job "web" {
         labels {
           group = "nginx_servers"
         }
-        ports = ["haproxy_main", "haproxy_freshrss"]
+        ports = ["haproxy_main"]
       }
     }
 
@@ -112,9 +93,6 @@ job "web" {
       }
       port "haproxy_main" {
         static = "4567"
-      }
-      port "haproxy_freshrss" {
-        static = "4568"
       }
     }
   }
