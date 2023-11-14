@@ -57,7 +57,6 @@ job "web" {
           group = "nginx"
         }
         ports = ["http", "https"]
-        dns_servers = ["192.168.100.250", "192.168.100.251", "192.168.100.253"]
       }
       resources {
         cpu = 200

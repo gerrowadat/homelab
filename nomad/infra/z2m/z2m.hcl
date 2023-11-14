@@ -23,7 +23,6 @@ job "z2m" {
           group = "z2m"
         }
         ports = ["z2m"]
-        dns_servers = ["192.168.100.250", "192.168.100.251"]
         privileged = true
         devices = [
           {
