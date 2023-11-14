@@ -17,7 +17,6 @@ job "prom-blackbox-exporter" {
           group = "prom-blackbox-exporter"
         }
         ports = ["prom-blackbox-exporter"]
-        dns_servers = ["192.168.100.250", "192.168.100.251", "192.168.100.253"]
         dns_search_domains = ["home.andvari.net"]
       }
       resources {

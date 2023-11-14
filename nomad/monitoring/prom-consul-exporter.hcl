@@ -16,7 +16,6 @@ job "prom-consul-exporter" {
           group = "prom-consul-exporter"
         }
         ports = ["prom-consul-exporter"]
-        dns_servers = ["192.168.100.250", "192.168.100.251", "192.168.100.253"]
       }
       resources {
         cpu = 500
