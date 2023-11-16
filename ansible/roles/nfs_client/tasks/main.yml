@@ -1,35 +1,7 @@
-- name: Create mountpoint /mnt/media
-  ansible.builtin.file:
-    path: '/mnt/media'
-    state: directory
-
-- name: Create mountpoint /mnt/docker
-  ansible.builtin.file:
-    path: '/mnt/media'
-    state: directory
-
 - name: Create mountpoint /things
   ansible.builtin.file:
     path: '/things'
     state: directory
-
-- name: Mount NFS share /mnt/media.
-  ansible.posix.mount:
-    path: /mnt/media
-    src: tings:/media
-    opts: nofail,noatime,nolock,intr,tcp
-    fstype: nfs
-    boot: true
-    state: mounted
-
-- name: Mount NFS share /mnt/docker
-  ansible.posix.mount:
-    path: /mnt/docker
-    src: tings:/docker
-    opts: nofail,noatime,nolock,intr,tcp
-    fstype: nfs
-    boot: true
-    state: mounted
 
 - name: Mount NFS share {{ nfs_primary }}:{{ nfs_share }} on /things
   ansible.posix.mount:
