@@ -22,22 +22,7 @@ nfs_server:
                 nfs_server_exports:
                         - export:
                           access:
-                                  - hostname: 'picluster*'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                                  - hostname: 'rabbitseason'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                                  - hostname: 'duckseason'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                                  - hostname: 'hedwig'
+                                  - hostname: '192.168.100.240/28'
                                     options:
                                         - 'rw'
                                         - 'sync'
