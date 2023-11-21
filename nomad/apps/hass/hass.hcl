@@ -22,7 +22,6 @@ job "hass" {
           group = "hass"
         }
         ports = ["hass"]
-        dns_servers = ["192.168.100.250", "192.168.100.251", "192.168.100.253"]
       }
      env {
        PYTHONUSERBASE = "/config/deps"

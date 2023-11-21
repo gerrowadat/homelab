@@ -1,9 +1,9 @@
-job "gcloud-dyndns" {
+job "gcloud-nomaddns" {
   datacenters = ["home"]
 
-  group "gcloud-dyndns_servers" {
+  group "gcloud-nomaddns_servers" {
 
-    task "gcloud-dyndns_worker" {
+    task "gcloud-nomaddns_worker" {
 
       template {
         data = "{{ with nomadVar \"cloud_dns_key\" }}{{ .json }}{{ end }}"
@@ -13,15 +13,16 @@ job "gcloud-dyndns" {
 
       driver = "docker" 
       config {
-        image = "gerrowadat/gcloud-dyndns:0.0.3"
+        image = "gerrowadat/clouddns-sync:0.0.6b"
         labels {
-          group = "gcloud-dyndns"
+          group = "gcloud-nomaddns"
         }
       }
       env {
+        GCLOUD_VERB = "nomad_sync"
         GCLOUD_DNS_INTERVAL_SECS = "600"
-        GCLOUD_DNS_ZONE = "home"
-        GCLOUD_DNS_RECORD_NAME = "home.andvari.net."
+        GCLOUD_DNS_ZONE = "home-nomad"
+        NOMAD_SERVER_URI = "http://hedwig.home.andvari.net:4646/"
         JSON_KEYFILE = "/secrets/cloud-dns.key.json"
       }
     }

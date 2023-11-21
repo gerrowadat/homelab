@@ -15,7 +15,6 @@ job "postfix-andvari-smarthost" {
           group = "postfix-andvari-smarthost"
         }
         ports = ["smtp"]
-        dns_servers = ["192.168.100.250", "192.168.100.251", "192.168.100.253"]
       }
       resources {
         cpu = 1000

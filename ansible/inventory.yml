@@ -22,22 +22,7 @@ nfs_server:
                 nfs_server_exports:
                         - export:
                           access:
-                                  - hostname: 'picluster*'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                                  - hostname: 'rabbitseason'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                                  - hostname: 'duckseason'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                                  - hostname: 'hedwig'
+                                  - hostname: '192.168.100.240/28'
                                     options:
                                         - 'rw'
                                         - 'sync'
@@ -48,44 +33,6 @@ nfs_server:
                                         - 'sync'
                                         - 'no_subtree_check'
                           path: /export/things
-
-
-dns_server:
-        hosts:
-                rabbitseason:
-                duckseason:
-                hedwig:
-
-service_vip:
-        hosts:
-                hedwig:
-                        keepalived_instances:
-                                internal:
-                                        state: 'MASTER'
-                                        priority: 250
-                                        interface: "enp0s25"
-                                        virtual_router_id: 42
-                                        vips:
-                                                - "192.168.100.5/24 dev enp0s25"
-
-                rabbitseason:
-                        keepalived_instances:
-                                internal:
-                                        state: 'BACKUP'
-                                        priority: 50
-                                        interface: "eno1"
-                                        virtual_router_id: 42
-                                        vips:
-                                                - "192.168.100.5/24 dev eno1"
-                duckseason:
-                        keepalived_instances:
-                                internal:
-                                        state: 'BACKUP'
-                                        priority: 150
-                                        interface: "enp2s0"
-                                        virtual_router_id: 42
-                                        vips:
-                                                - "192.168.100.5/24 dev enp2s0"
 
 
 nomadconsul:
