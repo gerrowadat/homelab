@@ -1,3 +1,14 @@
+- name: Add the gcloud apt key
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    keyring: /usr/share/keyrings/cloud.google.gpg
+    state: present
+
+- name: Add the gcloud apt repo
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+    state: present
+
 - name: Packages for a web server
   ansible.builtin.apt:
     update-cache: yes
@@ -6,6 +17,8 @@
       - nginx
       - python3-certbot
       - python3-certbot-nginx
+      - google-cloud-cli
+
 
 - name: install www.sica.ie nginx config
   ansible.builtin.copy:
