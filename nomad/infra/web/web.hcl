@@ -51,7 +51,6 @@ job "web" {
         volumes = [
           "/things/homelab/nomad/infra/web/default.conf:/etc/nginx/conf.d/default.conf",
           "/things/docker/ssl:/etc/letsencrypt",
-          "/things/docker/web/htpasswd:/etc/nginx/htpasswd"
         ]
         labels {
           group = "nginx"
