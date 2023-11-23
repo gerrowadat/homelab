@@ -1,7 +1,5 @@
 linux_aptlike:
         hosts:
-                vannu.local:
-                        ansible_user: doc
                 picluster1:
                 picluster2:
                 picluster4:
