@@ -20,7 +20,7 @@ job "gcloud-nomaddns" {
       }
       env {
         GCLOUD_VERB = "nomad_sync"
-        GCLOUD_DNS_INTERVAL_SECS = "600"
+        GCLOUD_DNS_INTERVAL_SECS = "60"
         GCLOUD_DNS_ZONE = "home-nomad"
         NOMAD_SERVER_URI = "http://hedwig.home.andvari.net:4646/"
         JSON_KEYFILE = "/secrets/cloud-dns.key.json"

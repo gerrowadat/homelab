@@ -20,23 +20,6 @@
       - google-cloud-cli
 
 
-- name: install www.sica.ie nginx config
-  ansible.builtin.copy:
-    src: www.sica.ie.conf
-    dest: /etc/nginx/sites-enabled/www.sica.ie.conf
-  register: sica_nginx
-
-- name: reload nginx for new config (sica.ie)
-  ansible.builtin.systemd:
-    name: nginx.service
-    state: restarted
-  when: sica_nginx.changed
-
-- name: pull www.sica.ie web content
-  ansible.builtin.git:
-    repo: 'https://github.com/gerrowadat/www.sica.ie.git'
-    dest: /var/www/www.sica.ie
-
 - name: install SH nginx config
   ansible.builtin.copy:
     src: www.strategichopes.co.conf
