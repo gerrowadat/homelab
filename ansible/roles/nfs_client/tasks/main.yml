@@ -11,3 +11,18 @@
     fstype: nfs
     boot: true
     state: mounted
+
+- name: Create mountpoint /mnt/data
+  ansible.builtin.file:
+    path: '/mnt/data'
+    state: directory
+
+- name: Mount NFS share tings:/data on /mnt/data
+  ansible.posix.mount:
+    path: /mnt/data
+    src: "tings:/data"
+    opts: nofail,noatime,nolock,intr,tcp
+    fstype: nfs
+    boot: true
+    state: mounted
+
