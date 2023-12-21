@@ -28,25 +28,3 @@ modules:
       query_type: "A"
       valid_rcodes:
         - NOERROR 
-
-  docker-registry.service.consul:
-    prober: dns
-    timeout: 5s
-    dns:
-      transport_protocol: "udp"
-      preferred_ip_protocol: "ip4"
-      query_name: "docker-registry.service.consul"
-      query_type: "A"
-      valid_rcodes:
-        - NOERROR 
-
-  nomad-dns-exporter.service.nomad:
-    prober: dns
-    timeout: 5s
-    dns:
-      transport_protocol: "udp"
-      preferred_ip_protocol: "ip4"
-      query_name: "nomad-dns-exporter.job.nomad"
-      query_type: "A"
-      valid_rcodes:
-        - NOERROR 
