@@ -77,15 +77,8 @@ scrape_configs:
     metrics_path: /probe
     static_configs:
       - targets:
-        - home.andvari.net:192.168.100.250
-        - home.andvari.net:192.168.100.251
-        - home.andvari.net:192.168.100.253
-        - docker-registry.job.nomad:192.168.100.250
-        - docker-registry.job.nomad:192.168.100.251
-        - docker-registry.job.nomad:192.168.100.253
-        - nomad-dns-exporter.job.nomad:192.168.100.250
-        - nomad-dns-exporter.job.nomad:192.168.100.251
-        - nomad-dns-exporter.job.nomad:192.168.100.253
+        - home.andvari.net
+        - docker-registry.home.nomad.andvari.net
     relabel_configs:
     - source_labels: [__address__]
       regex: (.*):.*$
