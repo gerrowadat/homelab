@@ -21,3 +21,14 @@
     "for": "5m"
     "labels":
       "severity": "critical"
+
+  - "alert": "TLSStatus"
+    "annotations":
+      "description": "{{ $labels.instance }} TLS connection failed"
+      "summary": "{{ $labels.instance }} failed TCP connection or returned invalid certificate"
+    "expr": |
+      probe_success{job="blackbox-tls"} < 1
+    "for": "5m"
+    "labels":
+      "severity": "critical"
+
