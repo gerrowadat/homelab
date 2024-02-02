@@ -15,7 +15,6 @@ modules:
   tcp_cert:
     prober: tcp
     timeout: 5s
-    ip_protocol_fallback: true
     tcp:
       tls: true
 
