@@ -21,13 +21,3 @@
     "for": "5m"
     "labels":
       "severity": "critical"
-
-  - "alert": "DNSUnhappy"
-    "annotations":
-      "description": "{{ $labels.instance }} failed to resolve {{ $labels.domain }}"
-      "summary": "{{ $labels.instance }} failed to resolve {{ $labels.domain }}"
-    "expr": |
-      probe_success{job="blackbox-dns"} < 1
-    "for": "1m"
-    "labels":
-      "severity": "critical"

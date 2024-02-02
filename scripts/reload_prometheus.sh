@@ -9,4 +9,4 @@ fi
 # Update prom configs
 sudo -u nobody git pull
 
-curl -X POST http://prometheus.job.nomad:9090/-/reload
+curl -X POST http://prometheus.home.nomad.andvari.net:9090/-/reload

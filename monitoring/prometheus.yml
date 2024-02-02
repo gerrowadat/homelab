@@ -22,7 +22,7 @@ scrape_configs:
     scrape_timeout: 1m
     metrics_path: "/metrics"
     static_configs:
-      - targets: ['prom-consul-exporter.job.nomad:9107']
+      - targets: ['prom-consul-exporter.home.nomad.andvari.net:9107']
 
   - job_name: nomad-dns-exporter
     scrape_interval: 5s
@@ -32,7 +32,7 @@ scrape_configs:
 
   - job_name: blackbox
     static_configs:
-      - targets: ['prom-blackbox-exporter.job.nomad:9115']
+      - targets: ['prom-blackbox-exporter.home.nomad.andvari.net:9115']
 
   - job_name: blackbox-http-base
     metrics_path: "/probe"
@@ -47,7 +47,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: prom-blackbox-exporter.job.nomad:9115
+        replacement: prom-blackbox-exporter.home.nomad.andvari.net:9115
 
   - job_name: blackbox-ping
     metrics_path: "/probe"
@@ -70,35 +70,11 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: prom-blackbox-exporter.job.nomad:9115
-
-  - job_name: blackbox-dns
-    scrape_interval: 5s
-    metrics_path: /probe
-    static_configs:
-      - targets:
-        - home.andvari.net
-        - docker-registry.home.nomad.andvari.net
-    relabel_configs:
-    - source_labels: [__address__]
-      regex: (.*):.*$
-      replacement: $1
-      target_label: domain
-    - source_labels: [__address__]
-      regex: .*:(.*)$
-      replacement: $1
-      target_label: instance
-    - source_labels: [domain]
-      target_label: __param_module
-    - source_labels: [instance]
-      target_label: __param_target
-    - target_label: __address__
-      replacement: prom-blackbox-exporter.job/nomad:9115
-
+        replacement: prom-blackbox-exporter.home.nomad.andvari.net:9115
 
 alerting:
   alertmanagers:
     - static_configs:
       - targets:
-        - prom-alertmanager.job.nomad:9093
+        - prom-alertmanager.home.nomad.andvari.net:9093
 
