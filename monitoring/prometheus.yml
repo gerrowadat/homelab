@@ -72,6 +72,26 @@ scrape_configs:
       - target_label: __address__
         replacement: prom-blackbox-exporter.home.nomad.andvari.net:9115
 
+  - job_name: blackbox-tls
+    metrics_path: "/probe"
+    params:
+      module: [tcp_cert]
+    scrape_interval: 1m
+    static_configs:
+      - targets:
+        - www.strategichopes.co:443
+        - www.sica.ie:443
+        - www.andvari.net:443
+        - log.andvari.net:443
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prom-blackbox-exporter.home.nomad.andvari.net:9115
+
+
 alerting:
   alertmanagers:
     - static_configs:
