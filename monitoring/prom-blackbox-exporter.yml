@@ -12,12 +12,6 @@ modules:
     prober: http
     timeout: 15s
 
-  tcp_cert:
-    prober: tcp
-    timeout: 5s
-    tcp:
-      tls: true
-
   icmp:
     prober: icmp
     timeout: 5s
