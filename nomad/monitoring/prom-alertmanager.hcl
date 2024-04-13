@@ -7,13 +7,21 @@ job "prom-alertmanager" {
 	      port = "prom-alertmanager"
       }
       driver = "docker" 
+
+      template {
+        data = "{{ with nomadVar \"nomad/jobs/prom-alertmanager\" }}{{ .prom_alertmanager_yml }}{{ end }}"
+        destination = "local/alertmanager.yml"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 744
+      }
+
       config {
         image = "prom/alertmanager"
         volumes = [
-          "/things/homelab/monitoring:/config",
           "/things/docker/prom-alertmanager:/data"
         ]
-        args = ["--config.file=/config/prom-alertmanager.yml",
+        args = ["--config.file=/local/alertmanager.yml",
                 "--storage.path=/data"]
         labels {
           group = "prom-alertmanager"
