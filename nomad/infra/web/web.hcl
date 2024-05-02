@@ -28,6 +28,23 @@ job "web" {
         perms = 700
       }
 
+
+      // drone.home.andvari.net SSL
+      template { 
+        data = "{{ with nomadVar \"ssl_certs/drone_home_andvari_net\" }}{{ .privkey }}{{ end }}"
+        destination = "secrets/drone.home.andvari.net-privkey.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 700
+      }
+      template { 
+        data = "{{ with nomadVar \"ssl_certs/drone_home_andvari_net\" }}{{ .chain }}{{ end }}"
+        destination = "secrets/drone.home.andvari.net-fullchain.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 700
+      }
+
       // nginx.cf
       template { 
         data = "{{ with nomadVar \"nomad/jobs/web\" }}{{ .nginx_cf }}{{ end }}"
