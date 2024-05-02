@@ -19,7 +19,7 @@ job "letsencrypt-to-nomad-vars" {
 
       driver = "docker" 
       env {
-        DOMAINS = "home.andvari.net docker-registry.home.andvari.net news.home.andvari.net"
+        DOMAINS = "home.andvari.net docker-registry.home.andvari.net drone.home.andvari.net"
         NOMAD_SERVER = "${attr.unique.hostname}"
         CHECK_FREQUENCY_HRS = "24"
       }
