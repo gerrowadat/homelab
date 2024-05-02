@@ -27,6 +27,6 @@ docker run --rm -t -a stdout --name test-nginx \
   -v /things/docker/ssl:/etc/letsencrypt:ro \
   -v $PWD/dummy-fullchain.pem:/secrets/home.andvari.net-fullchain.pem \
   -v $PWD/dummy-privkey.pem:/secrets/home.andvari.net-privkey.pem:ro \
-  -v $PWD/dummy-fullchain.pem:/secrets/news.home.andvari.net-fullchain.pem:ro \
-  -v $PWD/dummy-privkey.pem:/secrets/news.home.andvari.net-privkey.pem:ro \
+  -v $PWD/dummy-fullchain.pem:/secrets/drone.home.andvari.net-fullchain.pem:ro \
+  -v $PWD/dummy-privkey.pem:/secrets/drone.home.andvari.net-privkey.pem:ro \
   nginx:latest nginx -c /etc/nginx/nginx.conf -t
