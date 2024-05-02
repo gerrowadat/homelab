@@ -1,20 +1,21 @@
 job "drone" {
   datacenters = ["home"]
   group "drone_servers" {
-    // Run on a pi.
-    constraint {
-      attribute = "${attr.cpu.arch}"
-      operator = "!="
-      value = "amd64"
-    }
+
     task "drone-server" {
+      // Run on a pi.
+      constraint {
+        attribute = "${attr.cpu.arch}"
+        operator = "=="
+        value = "arm64"
+      }
       driver = "docker" 
       config {
         image = "drone/drone:2"
         labels {
           group = "drone"
         }
-        ports = ["drone-server-http", "drone-server-https"]
+        ports = ["drone-server-http"]
       }
       resources {
         cpu = 1000
@@ -42,7 +43,23 @@ EOH
        DRONE_USER_FILTER = "gerrowadat"
       }
     }
-    task "drone-runner-docker" {
+    network {
+      port "drone-server-http" {
+        static = 3338
+        to = 80
+      }
+    }
+  }
+
+  group "drone_runners_arm64" {
+
+    task "drone-runner-docker-arm64" {
+      // Run on a pi.
+      constraint {
+        attribute = "${attr.cpu.arch}"
+        operator = "=="
+        value = "arm64"
+      }
       driver = "docker"
       config {
         image = "drone/drone-runner-docker:1"
@@ -73,17 +90,65 @@ EOH
        DRONE_RPC_PROTO = "https"
        DRONE_USER_FILTER = "gerrowadat"
        DRONE_RUNNER_CAPACITY = 2
-       DRONE_RUNNER_NAME = "drone-runner-docker"
+       DRONE_RUNNER_NAME = "drone-runner-docker-arm64"
       }
     }
+    network {
+      port "drone-runner-docker" {
+        static = 3340
+        to = 3000
+      }
+    }
+  }
+
+  group "drone_runners_amd64" {
+
+    task "drone-runner-docker-amd64" {
+      // Run on a nuc.
+      constraint {
+        attribute = "${attr.cpu.arch}"
+        operator = "=="
+        value = "amd64"
+      }
+      driver = "docker"
+      config {
+        image = "drone/drone-runner-docker:1"
+        labels {
+          group = "drone"
+        }
+        volumes = [
+          "/var/run/docker.sock:/var/run/docker.sock"
+        ]
+        ports = ["drone-runner-docker"]
+      }
+      
+
+      template {
+        data = <<EOH
+     {{- with nomadVar "nomad/jobs/drone" -}}
+     # Externally-addressable host
+     DRONE_RPC_HOST={{ .serverhost }}
+     # openssl rand -hex 16
+     DRONE_RPC_SECRET={{ .rpcsecret }}
+     {{- end -}}
+EOH
+        destination = "drone.env"
+        env = true
+      }
+      env {
+       TZ = "Europe/Dublin"
+       DRONE_RPC_PROTO = "https"
+       DRONE_USER_FILTER = "gerrowadat"
+       DRONE_RUNNER_CAPACITY = 2
+       DRONE_RUNNER_NAME = "drone-runner-docker-amd64"
+      }
+    }
+
+
     network {
       port "drone-server-http" {
         static = 3338
         to = 80
-      }
-      port "drone-server-https" {
-        static = 3339
-        to = 443
       }
       port "drone-runner-docker" {
         static = 3340
