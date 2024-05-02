@@ -61,7 +61,8 @@ job "web" {
       config {
         image = "nginx"
         volumes = [
-          "/things/homelab/nomad/infra/web/default.conf:/etc/nginx/conf.d/default.conf",
+          //"/things/homelab/nomad/infra/web/default.conf:/etc/nginx/conf.d/default.conf",
+          "local/nginx.cf:/etc/nginx/conf.d/default.conf",
           "/things/docker/ssl:/etc/letsencrypt",
         ]
         labels {
