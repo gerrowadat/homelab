@@ -25,6 +25,6 @@ jobs:
             -v /tmp/ssl-dhparams.pem:/etc/letsencrypt/ssl-dhparams.pem:ro
             -v /tmp/dummy-privkey.pem:/secrets/home.andvari.net-privkey.pem:ro
             -v /tmp/dummy-fullchain.pem:/secrets/home.andvari.net-fullchain.pem:ro
-            -v /tmp/dummy-privkey.pem:/secrets/news.home.andvari.net-privkey.pem:ro
-            -v /tmp/dummy-fullchain.pem:/secrets/news.home.andvari.net-fullchain.pem:ro
+            -v /tmp/dummy-privkey.pem:/secrets/drone.home.andvari.net-privkey.pem:ro
+            -v /tmp/dummy-fullchain.pem:/secrets/drone.home.andvari.net-fullchain.pem:ro
           run: nginx -c /etc/nginx/nginx.conf -t
