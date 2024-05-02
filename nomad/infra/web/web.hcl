@@ -27,10 +27,11 @@ job "web" {
         change_signal = "SIGHUP"
         perms = 700
       }
-      // haproxy.cfg
+
+      // nginx.cf
       template { 
-        data = "{{ with nomadVar \"nomad/jobs/web\" }}{{ .haproxy_cfg }}{{ end }}"
-        destination = "local/haproxy.cfg"
+        data = "{{ with nomadVar \"nomad/jobs/web\" }}{{ .nginx_cf }}{{ end }}"
+        destination = "local/nginx.cf"
         change_mode = "signal"
         change_signal = "SIGHUP"
         perms = 700
@@ -75,15 +76,20 @@ job "web" {
     }
 
     task "haproxy_server" {
-      service {
-        name = "haproxy"
-        port = "haproxy_main"
+      // haproxy.cfg
+      template { 
+        data = "{{ with nomadVar \"nomad/jobs/web\" }}{{ .haproxy_cfg }}{{ end }}"
+        destination = "local/haproxy.cfg"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 744
       }
       driver = "docker"
       config {
         image = "haproxy:2.7"
         volumes = [
-          "/things/homelab/nomad/infra/web:/usr/local/etc/haproxy"
+            // local/haproxy.cfg is populated from nomad var nomad/jobs/web:haproxy_cfg
+            "local/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
         ]
         labels {
           group = "nginx_servers"
