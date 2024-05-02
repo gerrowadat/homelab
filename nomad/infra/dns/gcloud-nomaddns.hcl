@@ -4,6 +4,10 @@ job "gcloud-nomaddns" {
   group "gcloud-nomaddns_servers" {
 
     task "gcloud-nomaddns_worker" {
+      service {
+        name = "gcloud-nomaddns"
+        port = "gcloud-nomaddns"
+      }
 
       template {
         data = "{{ with nomadVar \"cloud_dns_key\" }}{{ .json }}{{ end }}"
@@ -13,7 +17,7 @@ job "gcloud-nomaddns" {
 
       driver = "docker" 
       config {
-        image = "gerrowadat/clouddns-sync:0.0.6b"
+        image = "gerrowadat/clouddns-sync:0.0.7"
         labels {
           group = "gcloud-nomaddns"
         }
@@ -24,6 +28,13 @@ job "gcloud-nomaddns" {
         GCLOUD_DNS_ZONE = "home-nomad"
         NOMAD_SERVER_URI = "http://hedwig.home.andvari.net:4646/"
         JSON_KEYFILE = "/secrets/cloud-dns.key.json"
+        HTTP_PORT = "8823"
+      }
+    }
+    network {
+      mode = "host"
+      port "gcloud-nomaddns" {
+        static = 8823
       }
     }
   }
