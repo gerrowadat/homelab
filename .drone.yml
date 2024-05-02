@@ -14,5 +14,30 @@ steps:
   - echo hello world
  
 trigger:
+  event:
+    - pull_request
+    - push
+  branch:
+  - main
+
+---
+kind: pipeline
+type: docker
+name: default
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: verify-haproxy-config
+  image: haproxy:2.7
+  commands:
+  - haproxy -f nomad/infra/web/haproxy.cfg -c
+ 
+trigger:
+  event:
+    - pull_request
+    - push
   branch:
   - main
