@@ -66,6 +66,7 @@ steps:
 - name: verify-bind-dns-config
   image: ubuntu/bind9:latest
   commands:
+  - rm -rf /etc/bind
   - ln -sf /drone/src/dns/etc-bind /etc/bind
   - named-checkconf -z /etc/bind/named.conf
  
