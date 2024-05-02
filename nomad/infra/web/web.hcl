@@ -3,7 +3,7 @@ job "web" {
   group "web_servers" {
 
     // Only run on core machines.
-    count = 3
+    count = 2
     constraint {
       attribute = "${attr.cpu.arch}"
       operator = "="
@@ -27,13 +27,24 @@ job "web" {
         change_signal = "SIGHUP"
         perms = 700
       }
-
+      // haproxy.cfg
+      template { 
+        data = "{{ with nomadVar \"nomad/jobs/web\" }}{{ .haproxy_cfg }}{{ end }}"
+        destination = "local/haproxy.cfg"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 700
+      }
 
       template { 
         data = <<EOH
           upstream local-haproxy-main {
             least_conn;
             server {{ env "NOMAD_ADDR_haproxy_main" }};
+          }
+          upstream local-haproxy-drone {
+            least_conn;
+            server {{ env "NOMAD_ADDR_haproxy_drone" }};
           }
         EOH
         destination = "local/local-haproxy-upstreams.conf"
@@ -77,7 +88,7 @@ job "web" {
         labels {
           group = "nginx_servers"
         }
-        ports = ["haproxy_main"]
+        ports = ["haproxy_main", "haproxy_drone"]
       }
     }
 
@@ -91,6 +102,9 @@ job "web" {
       }
       port "haproxy_main" {
         static = "4567"
+      }
+      port "haproxy_drone" {
+        static = "4568"
       }
     }
   }
