@@ -67,6 +67,7 @@ steps:
   image: ubuntu/bind9:latest
   commands:
   - ln -sf /drone/src/dns/etc-bind /etc/bind
+  - ls -al /etc/bind
   - named-checkconf -z /etc/bind/named.conf
  
 trigger:
