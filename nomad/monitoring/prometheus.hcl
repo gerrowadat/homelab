@@ -9,6 +9,14 @@ job "prometheus" {
       }
       driver = "docker" 
 
+      template {
+        data = "{{ with nomadVar \"nomad/jobs/prometheus\" }}{{ .prometheus_yml }}{{ end }}"
+        destination = "local/prometheus.yml"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 744
+      }
+
       config {
         volumes = [
           "/things/homelab/monitoring:/config",
