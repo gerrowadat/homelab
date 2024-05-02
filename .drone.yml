@@ -14,9 +14,6 @@ steps:
   - echo hello world
  
 trigger:
-  event:
-    - pull_request
-    - push
   branch:
   - main
 
@@ -36,8 +33,5 @@ steps:
   - haproxy -f nomad/infra/web/haproxy.cfg -c
  
 trigger:
-  event:
-    - pull_request
-    - push
   branch:
   - main
