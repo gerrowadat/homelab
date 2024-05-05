@@ -74,3 +74,22 @@ trigger:
   branch:
   - main
 
+---
+kind: pipeline
+type: docker
+name: nginx-config
+
+platform:
+  os: linux
+
+steps:
+- name: verify-nginx-config
+  image: gerrowadat/testmynginx:latest
+  commands:
+  - nginx -t -c /drone/src/nomad/infra/web/default.conf
+ 
+trigger:
+  branch:
+  - main
+
+
