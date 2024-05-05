@@ -86,7 +86,7 @@ steps:
 - name: verify-nginx-config
   image: gerrowadat/testmynginx:3
   commands:
-  - nginx -t -c /drone/src/nomad/infra/web/default.conf
+  - nginx -V -t -c /drone/src/nomad/infra/web/default.conf
  
 trigger:
   branch:
