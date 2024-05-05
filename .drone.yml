@@ -101,7 +101,7 @@ steps:
 
   # Actually copy in our configs and run tests.
   - cp /drone/src/nomad/infra/web/default.conf /etc/nginx/conf.d/default.conf
-  - cp /drone/src/nomad/cicd/nginx-local-check/local-haproxy-upstreams.conf /local/local-haproxy-upstreams.conf
+  - cp /drone/src/cicd/nginx-local-check/local-haproxy-upstreams.conf /local/local-haproxy-upstreams.conf
   - nginx -V -t 
  
 trigger:
