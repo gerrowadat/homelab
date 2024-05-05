@@ -1,5 +1,7 @@
 FROM nginx:latest
 
+# Copy a dummy HAproxy upstreams file.
+COPY local-haproxy-upstreams.conf /local/local-haproxy-upstreams.conf
 
 # Generate dummy SSL certs.
 RUN openssl req -x509 -nodes -newkey rsa:2048 -days 9999 -keyout /tmp/dummy-privkey.pem -out /tmp/dummy-fullchain.pem -subj '/CN=localhost'
