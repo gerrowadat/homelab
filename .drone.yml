@@ -94,3 +94,8 @@ trigger:
   - main
 
 
+---
+kind: signature
+hmac: f8cbafc62d3fe754cc564ded91c9b3016083640e90e809f48669ce9235de3b03
+
+...
