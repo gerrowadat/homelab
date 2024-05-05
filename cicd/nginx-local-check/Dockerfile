@@ -1,4 +1,7 @@
-FROM nginx:latest
+FROM ubuntu:latest
+
+RUN apt update
+RUN apt -y install nginx openssl
 
 # Copy a dummy HAproxy upstreams file.
 COPY local-haproxy-upstreams.conf /local/local-haproxy-upstreams.conf
