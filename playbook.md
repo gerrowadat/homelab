@@ -31,3 +31,10 @@ Backups
 -------
 
 See [backups/README.md](backups/README.md)
+
+Web Serving - Add a new backend
+-------------------------------
+
+Add the backend to nomad/infra/web/haproxy.cfg -- se the other examples.
+
+Add to the template in nomad/infra/web/web.hcl to add the new backend 'upstream', make sure to also add a dummy version to cicd/web/local-haproxy-upstreams.conf so the test pass.
