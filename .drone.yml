@@ -100,7 +100,6 @@ steps:
   - openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
 
   # I guess this should exist.
-  - mkdir /etc/letsencrypt
   - touch /etc/letsencrypt/options-ssl-nginx.conf
 
   # Actually copy in our configs and run tests.
