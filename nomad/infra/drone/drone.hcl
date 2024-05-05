@@ -24,15 +24,18 @@ job "drone" {
 
       template {
         data = <<EOH
-     {{- with nomadVar "nomad/jobs/drone" -}}
-     # Externally-addressable host
-     DRONE_SERVER_HOST={{ .serverhost }}
-     # openssl rand -hex 16
-     DRONE_RPC_SECRET={{ .rpcsecret }}
-     #Github stuff
-     DRONE_GITHUB_CLIENT_ID={{ .githubclientid }}
-     DRONE_GITHUB_CLIENT_SECRET={{ .githubclientsecret }}
-     {{- end -}}
+{{- with nomadVar "nomad/jobs/drone" -}}
+# Externally-addressable host
+DRONE_SERVER_HOST={{ .serverhost }}
+# openssl rand -hex 16
+DRONE_RPC_SECRET={{ .rpcsecret }}
+#Github stuff
+DRONE_GITHUB_CLIENT_ID={{ .githubclientid }}
+DRONE_GITHUB_CLIENT_SECRET={{ .githubclientsecret }}
+# converter endpoint (pathschanged)
+DRONE_CONVERT_PLUGIN_SECRET={{ .ymlpluginsecret }}
+DRONE_CONVERT_PLUGIN_ENDPOINT="http://{{ env "NOMAD_ADDR_drone_yml_converter_pathschanged_http" }}"
+{{- end -}}
 EOH
         destination = "drone.env"
         env = true
@@ -43,10 +46,41 @@ EOH
        DRONE_USER_FILTER = "gerrowadat"
       }
     }
+
+    task "drone-yml-converter-pathschanged" {
+      driver = "docker" 
+      config {
+        image = "meltwater/drone-convert-pathschanged"
+        labels {
+          group = "drone"
+        }
+        ports = ["drone-yml-converter-pathschanged-http"]
+      }
+      template {
+        data = <<EOH
+{{- with nomadVar "nomad/jobs/drone" -}}
+DRONE_SECRET={{ .ymlpluginsecret }}
+TOKEN={{ .githubrepotoken }}
+{{- end -}}
+EOH
+        destination = "drone.env"
+        env = true
+      }
+      env {
+       TZ = "Europe/Dublin"
+       DRONE_DEBUG = true
+       PROVIDER = "github"
+      }
+    }
+
     network {
       port "drone-server-http" {
         static = 3338
         to = 80
+      }
+      port "drone-yml-converter-pathschanged-http" {
+        static = 3339
+        to = 3000
       }
     }
   }
