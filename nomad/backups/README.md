@@ -1,26 +1,27 @@
-Configs for restic backups.
+# Configs for restic backups.
 
 This uses a couple of things:
 
    - [resticrunner](https://github.com/gerrowadat/nomad-homelab/tree/main/resticrunner)
-   - The stuff in [//homelab/backups/](https://github.com/gerrowadat/homelab/tree/main/backups) to set things up.
+   - The [nomad-conf](https://github.com/gerrowadat/nomad-homelab/tree/main/nomad-conf) tool for getting stuff in there.
+       - `go install github.com/gerrowadat/nomad-homelab/nomad-conf@latest`
 
-How to add a new backup:
+# Initial setup
 
- - Figure out the remote repo (I use sftp to offsite). Generate an ssh keypair, ideally just for this purpose.
-     - Run 'restic init' first, all this runner does is run 'restic backup'.
- - Run [load_backup_config.sh](https://github.com/gerrowadat/homelab/blob/main/backups/load_backup_config.sh)
-   - Feed it a config name (can be anything), then your repo location and password.
- - Create your new .hcl file here:
-    - Should be very similar to the others.
-    - mae sure to update RESTIC_JOBS in the env{} block, and point the bind mount for `/root/.ssh` to a place with a suitable ssh_config.
-    - you'll eaither need to log into the container once to accept the remote host key, or pre-populate a known_hosts in the bind mount, or set `StrictHostKeyChecking no` in ssh_config if you like to live dangerously.
-  - Start your job (it won't work because it doesn't have access to the restic/ vars)
-  - Run [grant_job_access_to_restic_keys.sh](https://github.com/gerrowadat/homelab/blob/main/backups/grant_job_access_to_restic_keys.sh) thusly:
-    - `./grant_job_access_to_restic_keys.sh jobname configname`
-    - Your job should then come up. Go look at the logs an see what went wrong.
-  - Have fun!
+Its assumed you're backing up via ssh, because that's what I do. Assume I do it.
 
-TODO:
+  - Populate SSH stuff for the 'resticrunner'  job.
+   - `nomad-conf upload ~/.ssh/config nomad/jobs/resticrunner:ssh_config`
+   - `nomad-conf upload ~/.ssh/known_hosts nomad/jobs/resticrunner:ssh_known_hosts`
+   - `nomad-conf upload ~/.ssh/id_rsa nomad/jobs/resticrunner:ssh_key`
+   - `echo "sftp:user@host" | nomad-conf var put nomad/jobs/resticrunner:restic_sftp_uri`
+   - `echo "myresticrepopassword" | nomad-conf var put nomad/jobs/resticrunner:restic_repo_pass`
 
-  - Monitoring.
+  - Take a look at resticrunner.hcl and things should be working assuming you're using the above variables correctly.
+
+
+# Setting up backups on a new host:
+ - Add a task in resticruner.hcl with a config written by the template and the right volumes. Take a look at the existing things.
+
+# Adding a new directory
+ - Add a new resticrunner ini entry for each directory within the right task definition for your host.
