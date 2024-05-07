@@ -1,4 +1,4 @@
-job "resticrunner-localssd" {
+job "resticrunner" {
   datacenters = ["home"]
   group "resticrunner-duckseason" {
 
@@ -9,17 +9,17 @@ job "resticrunner-localssd" {
 
     task "resticrunner-duckseason" {
       template { 
-        data = "{{ with nomadVar \"nomad/jobs/resticrunner-localssd\" }}{{ .ssh_key }}{{ end }}"
+        data = "{{ with nomadVar \"nomad/jobs/resticrunner\" }}{{ .ssh_key }}{{ end }}"
         destination = "secrets/localssd-ssh-key"
         perms = "700"
       }
       template { 
-        data = "{{ with nomadVar \"nomad/jobs/resticrunner-localssd\" }}{{ .ssh_config }}{{ end }}"
+        data = "{{ with nomadVar \"nomad/jobs/resticrunner\" }}{{ .ssh_config }}{{ end }}"
         destination = "local/ssh_config"
         perms = "700"
       }
       template { 
-        data = "{{ with nomadVar \"nomad/jobs/resticrunner-localssd\" }}{{ .ssh_known_hosts }}{{ end }}"
+        data = "{{ with nomadVar \"nomad/jobs/resticrunner\" }}{{ .ssh_known_hosts }}{{ end }}"
         destination = "local/known_hosts"
         perms = "700"
       }
@@ -27,8 +27,8 @@ job "resticrunner-localssd" {
         data = <<EOF
 [duckseason_localssd]
 sshkeyfile=/secrets/localssd-ssh-key
-repository={{ with nomadVar "nomad/jobs/resticrunner-localssd" }}{{ .restic_sftp_uri }}{{ end }}:duckseason
-repo_password={{ with nomadVar "nomad/jobs/resticrunner-localssd" }}{{ .restic_repo_pass }}{{ end }}
+repository={{ with nomadVar "nomad/jobs/resticrunner" }}{{ .restic_sftp_uri }}{{ end }}:duckseason
+repo_password={{ with nomadVar "nomad/jobs/resticrunner" }}{{ .restic_repo_pass }}{{ end }}
 local_dir=/localssd
 interval_hrs=24
 ssh_extra_args=-F /local/ssh_config
@@ -66,17 +66,17 @@ EOF
     }
     task "resticrunner-hedwig" {
       template { 
-        data = "{{ with nomadVar \"nomad/jobs/resticrunner-localssd\" }}{{ .ssh_key }}{{ end }}"
+        data = "{{ with nomadVar \"nomad/jobs/resticrunner\" }}{{ .ssh_key }}{{ end }}"
         destination = "secrets/localssd-ssh-key"
         perms = "700"
       }
       template { 
-        data = "{{ with nomadVar \"nomad/jobs/resticrunner-localssd\" }}{{ .ssh_config }}{{ end }}"
+        data = "{{ with nomadVar \"nomad/jobs/resticrunner\" }}{{ .ssh_config }}{{ end }}"
         destination = "local/ssh_config"
         perms = "700"
       }
       template { 
-        data = "{{ with nomadVar \"nomad/jobs/resticrunner-localssd\" }}{{ .ssh_known_hosts }}{{ end }}"
+        data = "{{ with nomadVar \"nomad/jobs/resticrunner\" }}{{ .ssh_known_hosts }}{{ end }}"
         destination = "local/known_hosts"
         perms = "700"
       }
@@ -84,8 +84,8 @@ EOF
         data = <<EOF
 [hedwig_localssd]
 sshkeyfile=/secrets/localssd-ssh-key
-repository={{ with nomadVar "nomad/jobs/resticrunner-localssd" }}{{ .restic_sftp_uri }}{{ end }}:hedwig
-repo_password={{ with nomadVar "nomad/jobs/resticrunner-localssd" }}{{ .restic_repo_pass }}{{ end }}
+repository={{ with nomadVar "nomad/jobs/resticrunner" }}{{ .restic_sftp_uri }}{{ end }}:hedwig
+repo_password={{ with nomadVar "nomad/jobs/resticrunner" }}{{ .restic_repo_pass }}{{ end }}
 local_dir=/localssd
 interval_hrs=24
 ssh_extra_args=-F /local/ssh_config
