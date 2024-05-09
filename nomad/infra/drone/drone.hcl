@@ -35,9 +35,12 @@ DRONE_GITHUB_CLIENT_SECRET={{ .githubclientsecret }}
 # converter endpoint (pathschanged)
 DRONE_CONVERT_PLUGIN_SECRET={{ .ymlpluginsecret }}
 DRONE_CONVERT_PLUGIN_ENDPOINT="http://{{ env "NOMAD_ADDR_drone_yml_converter_pathschanged_http" }}"
+# postgres
+DRONE_DATABASE_DRIVER=postgres
+DRONE_DATABASE_DATASOURCE="postgres://drone:{{ .postgres_pass }}@postgres.home.nomad.andvari.net:5432/drone?sslmode=disable"
 {{- end -}}
 EOH
-        destination = "drone.env"
+        destination = "secrets/drone.env"
         env = true
       }
       env {
