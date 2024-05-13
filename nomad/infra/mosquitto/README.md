@@ -3,7 +3,7 @@ mosquitto MQTT server
 
 This is mainly used by home assistant. It's a pretty standard setup, aside from getting its password file from a nomad var.
 
-To set up your password file, generate a .htaccess file (on ubuntu, install `apache2-utils` and then `htpasswd -c mypasswdfile myuser`).
+To set up your password file, generate a mosquitto password file with the mosquitto_passwd utility included with mosquitto (it's possible Apache's `htpasswd` can be coaxed into doing the right thing, but it doesn't by default).
 
 Then, load it into nomad:
 
