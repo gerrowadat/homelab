@@ -22,7 +22,7 @@ job "nut2mqtt" {
         command = "nut2mqtt"
         args = [
           "--upsd_host=${attr.unique.hostname}.home.andvari.net",
-          "--mqtt_topic_base=energy/nut/${attr.unique.hostname}/",
+          "--mqtt_topic_base=nut2mqtt/${attr.unique.hostname}/",
           "--mqtt_host=mqtt.home.andvari.net"
         ]
       }
