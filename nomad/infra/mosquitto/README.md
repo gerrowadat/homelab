@@ -8,10 +8,10 @@ To set up your password file, generate a .htaccess file (on ubuntu, install `apa
 Then, load it into nomad:
 
 ```
-git clone https://github.com/gerrowadat/nomad-homelab.git
-nomad-homelab/utilities/file_to_nomad_var.sh <my password file> nomad/jobs/mosquitto passwd
+go install github.com/gerrowadat/nomad-homelab/nomad-conf@latest
+nomad-conf upload mypasswdfile nomad/job/mosquitto:passwd
 ```
 
 nomad by default lets all tasks in a job access the `nomad/jobs/<jobname>` variable, so once your job is named 'mosquitto' you're all set.
 
-If you need to update your passwd file, you'll need to run the above again - if you want to get your existing passwd file from nomad, it's `nomad var get nomad/jobs/mosquitto` 
+If you need to update your passwd file, you'll need to run the above again - if you want to get your existing passwd file from nomad, it's `nomad-conf var get nomad/jobs/mosquitto:passwd` 
