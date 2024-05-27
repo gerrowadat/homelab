@@ -30,6 +30,13 @@ scrape_configs:
     static_configs:
       - targets: ['hedwig:5334', 'rabbitseason:5334', 'duckseason:5334']
 
+  - job_name: nut2mqtt
+    scrape_interval: 5s
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ['nut2mqtt.home.nomad.andvari.net:3494']
+
+
   - job_name: blackbox
     static_configs:
       - targets: ['prom-blackbox-exporter.home.nomad.andvari.net:9115']
