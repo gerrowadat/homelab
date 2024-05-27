@@ -8,7 +8,7 @@ job "nut2mqtt" {
     task "nut2mqtt" {
       driver = "docker" 
       config {
-        image = "gerrowadat/nut2mqtt:0.1.3"
+        image = "gerrowadat/nut2mqtt:0.1.4"
         labels {
           group = "nut2mqtt"
         }
