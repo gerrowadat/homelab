@@ -32,6 +32,9 @@ steps:
   - promtool check config monitoring/prometheus.yml
  
 trigger:
+  paths:
+    include:
+      "monitoring/*"
   branch:
   - main
 
@@ -96,6 +99,6 @@ trigger:
 
 ---
 kind: signature
-hmac: f8cbafc62d3fe754cc564ded91c9b3016083640e90e809f48669ce9235de3b03
+hmac: 3866a6b9f24166f17cfd34f5c4358df66d786c8cf5b4de2b8ce3ed6b0d0526f6
 
 ...
