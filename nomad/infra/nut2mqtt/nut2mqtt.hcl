@@ -1,29 +1,24 @@
 job "nut2mqtt" {
   datacenters = ["home"]
   group "nut2mqtt_servers" {
-    count = 2
+    count = 1
      constraint {
       distinct_hosts = true
     }  
     task "nut2mqtt" {
-      // Run on machines with attached UPS.
-      constraint {
-        attribute = "${attr.unique.hostname}"
-        operator = "set_contains_any"
-        value = "hedwig,duckseason"
-      }
       driver = "docker" 
       config {
-        image = "gerrowadat/nut2mqtt:0.0.1"
+        image = "gerrowadat/nut2mqtt:0.1.3"
         labels {
           group = "nut2mqtt"
         }
         ports = ["nut2mqtt"]
         command = "nut2mqtt"
         args = [
-          "--upsd_host=${attr.unique.hostname}.home.andvari.net",
-          "--mqtt_topic_base=nut2mqtt/${attr.unique.hostname}/",
-          "--mqtt_host=mqtt.home.andvari.net"
+          "--upsd-hosts=hedwig,duckseason",
+          "--mqtt-topic-base=nut2mqtt/",
+          "--mqtt-host=mqtt.home.andvari.net",
+          "--http-listen=:3494"
         ]
       }
      template {
