@@ -14,8 +14,9 @@ steps:
   - haproxy -f nomad/infra/web/haproxy.cfg -c
  
 trigger:
-  branch:
-  - main
+  paths:
+    include:
+      "nomad/infra/web/*"
 
 ---
 kind: pipeline
@@ -35,6 +36,7 @@ trigger:
   paths:
     include:
       "monitoring/*"
+
 ---
 kind: pipeline
 type: docker
@@ -52,8 +54,10 @@ steps:
   - named-checkconf -z /etc/bind/named.conf
  
 trigger:
-  branch:
-  - main
+  paths:
+    include:
+      "dns/*"
+
 
 ---
 kind: pipeline
@@ -90,12 +94,13 @@ steps:
   - nginx -V -t 
  
 trigger:
-  branch:
-  - main
-
+  paths:
+    include:
+      - "nomad/infra/web/*"
+      - "cicd/web/*"
 
 ---
 kind: signature
-hmac: 5b170edc709e560c694db03210b2d14576df0ea676f9cbc880b863d7b234ce6e
+hmac: 522964b0a6bc1b3614a1af06eff016fa52eed2440c7b9970ffac2cfae9b8f782
 
 ...
