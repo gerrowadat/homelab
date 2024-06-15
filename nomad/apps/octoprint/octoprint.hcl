@@ -3,10 +3,6 @@ job "octoprint" {
   group "octoprint_servers" {
    
     task "octoprint_server" {
-      service {
-        name = "octoprint"
-        port = "octoprint"
-      }
       # picluster5 is attached to the 3d printer.
       constraint {
         attribute = "${attr.unique.hostname}"
