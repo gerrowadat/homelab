@@ -1,12 +1,9 @@
 job "z2m" {
+  priority = 100
   datacenters = ["home"]
   group "z2m_servers" {
    
     task "z2m_server" {
-      service {
-        name = "z2m"
-        port = "z2m"
-      }
       # The machine with the conbee.
       constraint {
         attribute = "${attr.unique.hostname}"
@@ -14,7 +11,7 @@ job "z2m" {
       }
       driver = "docker" 
       config {
-        image = "koenkk/zigbee2mqtt:1.31.2"
+        image = "koenkk/zigbee2mqtt:1.39.0"
         volumes = [
           "/things/docker/z2m:/app/data",
           "/run/udev:/run/udev:ro",
