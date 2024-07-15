@@ -2,10 +2,6 @@ job "prom-alertmanager" {
   datacenters = ["home"]
   group "prom-alertmanager_servers" {
     task "prom-alertmanager_server" {
-      service {
-	      name = "prom-alertmanager"
-	      port = "prom-alertmanager"
-      }
       driver = "docker" 
 
       template {
@@ -22,6 +18,7 @@ job "prom-alertmanager" {
           "/things/docker/prom-alertmanager:/data"
         ]
         args = ["--config.file=/local/alertmanager.yml",
+                "--web.external-url=http://prom-alertmanager.home.nomad.andvari.net:9093/",
                 "--storage.path=/data"]
         labels {
           group = "prom-alertmanager"

@@ -25,6 +25,8 @@ job "prometheus" {
         image = "prom/prometheus:v2.43.0"
         args = ["--config.file=/config/prometheus.yml",
                 "--storage.tsdb.path=/data/prom-tsdb/",
+                # URL to pass to alertmanager etc.
+                "--web.external-url=http://prometheus.home.nomad.andvari.net:9090/",
                 # Enable reload via web
                 "--web.enable-lifecycle"]
         labels {
