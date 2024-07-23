@@ -7,6 +7,7 @@ job "miniflux" {
         data = <<EOF
 DATABASE_URL=postgres://miniflux:{{ with nomadVar "nomad/jobs/miniflux" }}{{ .postgres_pass }}{{ end }}@postgres.home.nomad.andvari.net/miniflux?sslmode=disable
 RUN_MIGRATIONS=1
+BASE_URL=https://home.andvari.net/rss
 EOF
         destination = "secrets/miniflux_env"
         env = true
