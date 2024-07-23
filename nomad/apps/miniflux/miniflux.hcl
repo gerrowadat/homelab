@@ -20,7 +20,8 @@ EOF
     network {
       mode = "host"
       port "miniflux" {
-        static = "8080"
+        static = "8822"
+        to = "8080"
       }
     }
   }
