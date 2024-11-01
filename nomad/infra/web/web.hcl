@@ -104,7 +104,7 @@ job "web" {
       }
       driver = "docker"
       config {
-        image = "haproxy:2.7"
+        image = "haproxy:2.8"
         volumes = [
             // local/haproxy.cfg is populated from nomad var nomad/jobs/web:haproxy_cfg
             "local/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
