@@ -14,7 +14,7 @@ job "hass" {
       }
       driver = "docker" 
       config {
-        image = "homeassistant/home-assistant:2024.5.2"
+        image = "homeassistant/home-assistant:2024.10.4"
         volumes = [
           "/localssd/hass:/config",
           "/etc/localtime:/etc/localtime",
