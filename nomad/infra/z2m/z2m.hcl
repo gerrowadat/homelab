@@ -11,7 +11,7 @@ job "z2m" {
       }
       driver = "docker" 
       config {
-        image = "koenkk/zigbee2mqtt:1.39.0"
+        image = "koenkk/zigbee2mqtt:1.40.2"
         volumes = [
           "/things/docker/z2m:/app/data",
           "/run/udev:/run/udev:ro",
