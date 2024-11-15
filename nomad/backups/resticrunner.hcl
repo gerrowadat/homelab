@@ -1,5 +1,6 @@
 job "resticrunner" {
   datacenters = ["home"]
+  priority = 100
   group "resticrunner-duckseason" {
 
     constraint {
@@ -51,6 +52,9 @@ EOF
         destination = "secrets/config.ini"
       }
       driver = "docker" 
+      resources {
+        memory = 1024
+      }
       config {
         image = "gerrowadat/resticrunner:0.0.5"
         volumes = [
@@ -66,6 +70,7 @@ EOF
       env {
         RESTIC_JOBS = "duckseason_localssd,duckseason_docker"
         HTTP_PORT = "8902"
+        GOGC = 20
       }
     }
     network {
@@ -108,6 +113,9 @@ ssh_extra_args=-F /local/ssh_config
 EOF
         destination = "secrets/config.ini"
       }
+      resources {
+        memory = 1024
+      }
       driver = "docker" 
       config {
         image = "gerrowadat/resticrunner:0.0.5"
@@ -123,6 +131,7 @@ EOF
       env {
         RESTIC_JOBS = "hedwig_localssd"
         HTTP_PORT = "8902"
+        GOGC = 20
       }
     }
     network {
