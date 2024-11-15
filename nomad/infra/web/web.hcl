@@ -3,7 +3,7 @@ job "web" {
   group "web_servers" {
 
     // Only run on core machines.
-    count = 2
+    count = 3
     constraint {
       attribute = "${attr.cpu.arch}"
       operator = "="
