@@ -9,7 +9,7 @@ job "postgres" {
       }
       driver = "docker" 
       config {
-        image = "postgres:16"
+        image = "postgres:16.4"
         volumes = [
           "/localssd/postgres:/var/lib/postgresql/data"
         ]
