@@ -2,6 +2,7 @@ linux_aptlike:
         hosts:
                 picluster1:
                 picluster2:
+                picluster3:
                 picluster4:
                 picluster5:
                 duckseason:
