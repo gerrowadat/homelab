@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Dave O'Connor
+  description: k8s hosts
+
+
+  license: BSD-3-Clause
+
+  # for deb822_repository
+  min_ansible_version: 2.15
+
+dependencies:
+  # List your role dependencies here, one per line. Be sure to remove the '[]' above,
+  # if you add dependencies to this list.
+  - nfs_client
+  - linux_aptlike
+  - docker
+  

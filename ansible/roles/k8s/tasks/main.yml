@@ -1,0 +1,47 @@
+# Enable packet forwarding.
+- name: enable ip_forward
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: required packages
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gpg
+      # For deb822_repository below
+      - python3-debian
+
+
+- name: Prepare apt keyring directory.
+  ansible.builtin.file:
+    path: "/etc/apt/keyrings"
+    state: directory
+    mode: 0755
+
+
+- name: Add Kubernetes APT repository
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types: [deb]
+    uris: "https://pkgs.k8s.io/core:/stable:/v{{ k8s_majorversion }}/deb/"
+    signed_by: "https://pkgs.k8s.io/core:/stable:/v{{ k8s_majorversion }}/deb/Release.key"
+    suites: [/]
+    state: present
+    enabled: yes
+
+- name: required k8s packages
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - kubectl={{ k8s_aptversion }}
+      - kubelet={{ k8s_aptversion }}
+      - kubeadm={{ k8s_aptversion }}
+
+
