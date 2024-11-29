@@ -7,6 +7,12 @@
     state: present
     reload: true
 
+- name: turn off swap
+  ansible.builtin.systemd_service:
+    name: dphys-swapfile.service
+    state: stopped
+    enabled: false
+
 - name: required packages
   ansible.builtin.apt:
     update-cache: yes
@@ -50,3 +56,4 @@
     name: kubelet.service
     state: started
     enabled: true
+
