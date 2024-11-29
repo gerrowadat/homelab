@@ -1,7 +1,7 @@
 $ORIGIN home.andvari.net.
 $TTL    604800
 @       IN      SOA     ns1.home.andvari.net. admin.home.andvari.net. (
-                 50     ; Serial
+                 51     ; Serial
              604800     ; Refresh
               86400     ; Retry
             2419200     ; Expire
@@ -20,6 +20,7 @@ wan-router IN A 192.168.1.1
 ; pi cluster
 picluster1     IN A 192.168.100.241
 picluster2     IN A 192.168.100.242
+picluster3     IN A 192.168.100.243
 picluster4     IN A 192.168.100.244
 picluster5     IN A 192.168.100.245
 
@@ -32,7 +33,6 @@ print          IN A 192.168.100.231
 scan           IN A 192.168.100.232
 
 ; Internet of Shit
-emonhub        IN A 192.168.110.210
 hue-hub        IN A 192.168.110.221
 heatmiser-hub  IN A 192.168.110.222
 somfy          IN A 192.168.110.223
@@ -52,3 +52,4 @@ radarr IN CNAME radarr.job.nomad.
 sabnzbd IN CNAME sabnzbd.job.nomad.
 smtp IN CNAME postfix-andvari-smarthost.job.nomad.
 sonarr IN CNAME sonarr.job.nomad.
+k8scontrolplane IN CNAME picluster2.home.andvari.net.
