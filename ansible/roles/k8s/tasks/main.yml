@@ -45,3 +45,8 @@
       - kubeadm={{ k8s_aptversion }}
 
 
+- name: Enable and start the kubelet
+  ansible.builtin.systemd_service:
+    name: kubelet.service
+    state: started
+    enabled: true
