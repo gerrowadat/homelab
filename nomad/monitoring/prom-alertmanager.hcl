@@ -1,6 +1,15 @@
 job "prom-alertmanager" {
   datacenters = ["home"]
   group "prom-alertmanager_servers" {
+
+    volume "monitoring" {
+      type = "csi"
+      source = "monitoring"
+      read_only = false
+      attachment_mode = "file-system"
+      access_mode = "multi-node-multi-writer"
+    }
+
     task "prom-alertmanager_server" {
       driver = "docker" 
 
@@ -14,17 +23,21 @@ job "prom-alertmanager" {
 
       config {
         image = "prom/alertmanager"
-        volumes = [
-          "/things/docker/prom-alertmanager:/data"
-        ]
+        //volumes = [
+        //  "/things/docker/prom-alertmanager:/data"
+        //]
         args = ["--config.file=/local/alertmanager.yml",
                 "--web.external-url=http://prom-alertmanager.home.nomad.andvari.net:9093/",
-                "--storage.path=/data"]
+                "--storage.path=/data/prom-alertmanager"]
         labels {
           group = "prom-alertmanager"
         }
         ports = ["prom-alertmanager"]
         dns_search_domains = ["home.andvari.net"]
+      }
+      volume_mount {
+        volume = "monitoring"
+        destination = "/data"
       }
       resources {
         cpu = 1000
