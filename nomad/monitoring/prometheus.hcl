@@ -10,6 +10,14 @@ job "prometheus" {
       access_mode = "multi-node-multi-writer"
     }
 
+    volume "gitrepo" {
+      type = "csi"
+      source = "gitrepo"
+      read_only = true
+      attachment_mode = "file-system"
+      access_mode = "multi-node-multi-writer"
+    }
+
     task "prometheus_server" {
       service {
 	      name = "prometheus"
@@ -17,21 +25,9 @@ job "prometheus" {
       }
       driver = "docker" 
 
-      template {
-        data = "{{ with nomadVar \"nomad/jobs/prometheus\" }}{{ .prometheus_yml }}{{ end }}"
-        destination = "local/prometheus.yml"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
-        perms = 744
-      }
-
       config {
-        volumes = [
-          "/things/homelab/monitoring:/config",
-          //"/things/docker/prometheus:/data"
-        ]
         image = "prom/prometheus:v2.43.0"
-        args = ["--config.file=/config/prometheus.yml",
+        args = ["--config.file=/config/monitoring/prometheus.yml",
                 "--storage.tsdb.path=/data/prometheus/prom-tsdb/",
                 # URL to pass to alertmanager etc.
                 "--web.external-url=http://prometheus.home.nomad.andvari.net:9090/",
@@ -46,6 +42,10 @@ job "prometheus" {
       volume_mount {
         volume = "monitoring"
         destination = "/data"
+      }
+      volume_mount {
+        volume = "gitrepo"
+        destination = "/config"
       }
       resources {
         cpu = 2000

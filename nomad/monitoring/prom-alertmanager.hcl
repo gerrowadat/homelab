@@ -10,23 +10,20 @@ job "prom-alertmanager" {
       access_mode = "multi-node-multi-writer"
     }
 
+    volume "gitrepo" {
+      type = "csi"
+      source = "gitrepo"
+      read_only = true
+      attachment_mode = "file-system"
+      access_mode = "multi-node-multi-writer"
+    }
+
     task "prom-alertmanager_server" {
       driver = "docker" 
 
-      template {
-        data = "{{ with nomadVar \"nomad/jobs/prom-alertmanager\" }}{{ .prom_alertmanager_yml }}{{ end }}"
-        destination = "local/alertmanager.yml"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
-        perms = 744
-      }
-
       config {
         image = "prom/alertmanager"
-        //volumes = [
-        //  "/things/docker/prom-alertmanager:/data"
-        //]
-        args = ["--config.file=/local/alertmanager.yml",
+        args = ["--config.file=/config/monitoring/alertmanager.yml",
                 "--web.external-url=http://prom-alertmanager.home.nomad.andvari.net:9093/",
                 "--storage.path=/data/prom-alertmanager"]
         labels {
@@ -38,6 +35,10 @@ job "prom-alertmanager" {
       volume_mount {
         volume = "monitoring"
         destination = "/data"
+      }
+      volume_mount {
+        volume = "gitrepo"
+        destination = "/config"
       }
       resources {
         cpu = 1000
