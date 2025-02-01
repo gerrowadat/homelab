@@ -1,3 +1,9 @@
+- name: Install required packages.
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - unzip
+
 - name: Make dir to tidy up downloads for install
   become: true
   become_user: '{{ ansible_user }}'
