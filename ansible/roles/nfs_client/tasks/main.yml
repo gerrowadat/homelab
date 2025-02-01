@@ -1,3 +1,9 @@
+- name: Install required packages.
+  ansible.builtin.apt:
+    update-cache: yes
+    pkg:
+      - nfs-common
+
 - name: Create mountpoint /things
   ansible.builtin.file:
     path: '/things'
