@@ -17,6 +17,10 @@ nfs_server:
                                         - 'no_subtree_check'
                           path: /export/things
 
+login:
+        hosts:
+                rabbitseason:
+                        ansible_user: doc
 
 nomadconsul:
         hosts:
@@ -29,9 +33,6 @@ nomadconsul:
                         download_arch: amd64
                         ansible_user: doc
                         nfs_primary: localhost
-                rabbitseason:
-                        download_arch: amd64
-                        ansible_user: doc
                 hedwig:
                         download_arch: amd64
                         ansible_user: doc

@@ -30,3 +30,11 @@
   become_user: root
   roles:
     - role: dns_server
+
+- name: login servers
+  hosts: login
+  become: true
+  become_user: root
+  roles:
+    - role: login
+
