@@ -1,5 +1,5 @@
-id = "telly" # ID as seen in nomad
-name = "telly" # Display name
+id = "sonarr" # ID as seen in nomad
+name = "sonarr" # Display name
 type = "csi"
 plugin_id = "tings-srv-nfs" # Needs to match the deployed plugin
 
