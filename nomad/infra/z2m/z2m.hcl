@@ -7,26 +7,18 @@ job "z2m" {
       # The machine with the conbee.
       constraint {
         attribute = "${attr.unique.hostname}"
-        value = "picluster4"
+        value = "picluster5"
       }
       driver = "docker" 
+      user = "nobody:dialout"
       config {
-        image = "koenkk/zigbee2mqtt:1.40.2"
+        image = "koenkk/zigbee2mqtt:2.1.1"
         volumes = [
           "/things/docker/z2m:/app/data",
           "/run/udev:/run/udev:ro",
         ]
-        labels {
-          group = "z2m"
-        }
         ports = ["z2m"]
         privileged = true
-        devices = [
-          {
-            host_path = "/dev/ttyACM0"
-            container_path = "/dev/ttyACM0"
-          }
-        ]
       }
       resources {
         cpu = 2000
