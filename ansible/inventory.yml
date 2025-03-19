@@ -20,6 +20,7 @@ nfs_server:
 login:
         hosts:
                 rabbitseason:
+                bebop:
                         ansible_user: doc
 
 nomadconsul:
