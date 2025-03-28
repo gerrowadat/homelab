@@ -21,6 +21,7 @@ login:
         hosts:
                 rabbitseason:
                 bebop:
+                rocksteady:
                         ansible_user: doc
 
 nomadconsul:
