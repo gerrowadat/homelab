@@ -3,6 +3,7 @@ home.andvari.net. 21600 IN NS ns-cloud-d1.googledomains.com.
 home.andvari.net. 21600 IN NS ns-cloud-d2.googledomains.com.
 home.andvari.net. 21600 IN NS ns-cloud-d3.googledomains.com.
 home.andvari.net. 21600 IN NS ns-cloud-d4.googledomains.com.
+k8scontrol.home.andvari.net. 86400 IN A 192.168.100.240
 bebop.home.andvari.net. 86400 IN A 192.168.100.247
 rocksteady.home.andvari.net. 86400 IN A 192.168.100.248
 donkeh.home.andvari.net. 86400 IN A 192.168.100.249
@@ -36,4 +37,3 @@ sabnzbd.home.andvari.net. IN CNAME sabnzbd.home.nomad.andvari.net.
 smtp.home.andvari.net. IN CNAME postfix-andvari-smarthost.home.nomad.andvari.net.
 sonarr.home.andvari.net. IN CNAME sonarr.home.nomad.andvari.net.
 drone.home.andvari.net. IN CNAME home.andvari.net.
-k8scontrolplane.home.andvari.net. IN CNAME picluster2.home.andvari.net.
