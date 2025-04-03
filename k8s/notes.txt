@@ -1,0 +1,13 @@
+New nodes (things I can't be arsed to ansiblise):
+  - Add to 'k8s' ansible inventory and run.
+  - Get cri-dockerd:
+    - wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.16/cri-dockerd_0.3.16.3-0.ubuntu-jammy_amd64.deb (or whatever)
+    - dpkg -i  ...
+  - Do normal k8s install, but with --cri-socket unix:///var/run/cri-dockerd.sock
+  - If it's a control plane node:
+    - k taint node donkeh node-role.kubernetes.io/control-plane:NoSchedule-
+
+Post-cluster-turnup nonsense:
+  - ingress-nginx for bare metal
+    - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/baremetal/deploy.yaml
+

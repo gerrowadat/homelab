@@ -14,7 +14,6 @@
   become: true
   become_user: root
   roles:
-    - nfs_client
     - k8s
 
 - name: nfs servers

@@ -20,13 +20,11 @@ nfs_server:
 login:
         hosts:
                 rabbitseason:
-                bebop:
-                rocksteady:
                         ansible_user: doc
 
 nomadconsul:
         hosts:
-                picluster1:
+                picluster2:
                 picluster4:
                 picluster5:
                         nomad_server: false
@@ -36,9 +34,6 @@ nomadconsul:
                         ansible_user: doc
                         nfs_primary: localhost
                 hedwig:
-                        download_arch: amd64
-                        ansible_user: doc
-                donkeh:
                         download_arch: amd64
                         ansible_user: doc
         vars:
@@ -56,12 +51,13 @@ nomadconsul:
 
 k8s:
         hosts:
-                picluster2:
-                picluster3:
+                bebop:
+                rocksteady:
+                donkeh:
         vars:
                 # for docker, etc.
-                download_arch: arm64
-                ansible_user: pi
+                download_arch: amd64
+                ansible_user: doc
                 # nfs_primary and nfs_share define where /things is (it's at nfs_primary:nfs_share)
                 # If you update this, remember to set nfs_primary to localhost for that host only, above.
                 nfs_primary: duckseason

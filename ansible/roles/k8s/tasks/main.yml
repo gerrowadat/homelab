@@ -7,11 +7,14 @@
     state: present
     reload: true
 
-- name: turn off swap
-  ansible.builtin.systemd_service:
-    name: dphys-swapfile.service
-    state: stopped
-    enabled: false
+- name: turn off swap now
+  command: swapoff -a
+
+- name: turn off swap on boot
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    search_string: "/swap.img"
+    state: absent
 
 - name: required packages
   ansible.builtin.apt:
