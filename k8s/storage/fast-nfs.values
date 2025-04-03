@@ -1,0 +1,6 @@
+nfs:
+  path: /export/things
+  server: 192.168.100.253
+storageClass:
+  name: fast-nfs
+  provisionerName: k8s-sigs.io/fast-nfs-subdir-external-provisioner

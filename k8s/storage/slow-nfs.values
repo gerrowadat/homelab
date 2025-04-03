@@ -1,0 +1,6 @@
+nfs:
+  path: /srv
+  server: 192.168.100.252
+storageClass:
+  name: slow-nfs
+  provisionerName: k8s-sigs.io/slow-nfs-subdir-external-provisioner
