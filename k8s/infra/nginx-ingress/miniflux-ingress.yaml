@@ -1,0 +1,23 @@
+# The miniflux helm chart lets you set an ingress but it's a pain to spec everything there, so do it here.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: miniflux-ingress
+  namespace: miniflux
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/whitelist-source-range: 192.168.100.0/24
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: home.andvari.net
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: miniflux
+                port:
+                  number: 8080
+            path: /rss(/|$)(.*)

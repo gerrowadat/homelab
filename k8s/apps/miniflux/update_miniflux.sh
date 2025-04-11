@@ -4,6 +4,8 @@
 
 export POSTGRES_PASS=`kubectl get secret -n miniflux postgres -o=jsonpath='{ .data.pass }' | base64 --decode`
 
+# Note: The ingress for this service is managed outside the helm chart, see ../../infra/nginx-ingress/miniflux-ingress.yaml
+
 helm upgrade miniflux oci://ghcr.io/gabe565/charts/miniflux \
   --install \
   --namespace miniflux \
