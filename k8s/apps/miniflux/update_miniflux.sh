@@ -9,6 +9,5 @@ export POSTGRES_PASS=`kubectl get secret -n miniflux postgres -o=jsonpath='{ .da
 helm upgrade miniflux oci://ghcr.io/gabe565/charts/miniflux \
   --install \
   --namespace miniflux \
-  --set env.BASE_URL='https://home.andvari.net/rss' \
   --set postgresql.enabled='false' \
   --set env.DATABASE_URL="postgres://miniflux:${POSTGRES_PASS}@postgres.home.nomad.andvari.net/miniflux?sslmode=disable"
