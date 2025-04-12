@@ -6,7 +6,6 @@ metadata:
   name: miniflux-ingress
   namespace: miniflux
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/whitelist-source-range: 192.168.100.0/24
 spec:
   ingressClassName: nginx
@@ -14,10 +13,10 @@ spec:
     - host: home.andvari.net
       http:
         paths:
-          - pathType: ImplementationSpecific
+          - pathType: Prefix
+            path: /rss
             backend:
               service:
                 name: miniflux
                 port:
                   number: 8080
-            path: /rss(/|$)(.*)
