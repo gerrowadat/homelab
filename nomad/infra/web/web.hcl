@@ -2,12 +2,10 @@ job "web" {
   datacenters = ["home"]
   group "web_servers" {
 
-    // Only run on core machines.
-    count = 3
+    count = 1
     constraint {
-      attribute = "${attr.cpu.arch}"
-      operator = "="
-      value = "amd64"
+      attribute = "${attr.unique.hostname}"
+      value = "hedwig"
     }
 
     task "nginx_server" {
@@ -63,6 +61,10 @@ job "web" {
           upstream local-haproxy-drone {
             least_conn;
             server {{ env "NOMAD_ADDR_haproxy_drone" }};
+          }
+          upstream local-kubehttp {
+            least_conn;
+            server 192.168.100.240;
           }
         EOH
         destination = "local/local-haproxy-upstreams.conf"
