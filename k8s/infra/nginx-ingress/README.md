@@ -6,40 +6,26 @@ Chart install:
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace --set controller.kind=DaemonSet --set controller.hostNetwork=true --set controller.daemonset.useHostPort=true
 ```
 
-An example Ingress that makes use of the controller:
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: example
-    namespace: foo
-  spec:
-    ingressClassName: nginx
-    rules:
-      - host: www.example.com
-        http:
-          paths:
-            - pathType: Prefix
-              backend:
-                service:
-                  name: exampleService
-                  port:
-                    number: 80
-              path: /
-    # This section is only required if TLS is to be enabled for the Ingress
-    tls:
-      - hosts:
-        - www.example.com
-        secretName: example-tls
+Next, we want cert-manager:
 
-If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+```
+helm repo add jetstack https://charts.jetstack.io --force-update
+helm install \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.17.0 \
+  --set crds.enabled=true
 
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: example-tls
-    namespace: foo
-  data:
-    tls.crt: <base64 encoded cert>
-    tls.key: <base64 encoded key>
-  type: kubernetes.io/tls
+k apply -f cluster-issuer.staging.yaml
+k apply -f cluster-issuer.yaml
+```
 
+Now, add TLS stuff to your Ingress - see `miniflux-ingress.yaml` for an example.
+
+Check the thing:
+
+```
+kubectl get certifications -A
+...
+```

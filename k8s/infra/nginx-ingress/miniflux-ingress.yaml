@@ -8,8 +8,15 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/whitelist-source-range: 192.168.100.0/24
+    # TODO: Remove this when we actually terminate ssl here :)
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+      - home.andvari.net
+      secretName: "andvari-home-prod-tls"
   rules:
     - host: home.andvari.net
       http:
