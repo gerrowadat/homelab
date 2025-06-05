@@ -15,7 +15,7 @@ job "nut2mqtt" {
         ports = ["nut2mqtt"]
         command = "nut2mqtt"
         args = [
-          "--upsd-hosts=hedwig,duckseason",
+          "--upsd-hosts=duckseason",
           "--mqtt-topic-base=nut2mqtt/",
           "--mqtt-host=mqtt.home.andvari.net",
           "--http-listen=:3494"
