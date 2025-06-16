@@ -10,4 +10,5 @@ helm upgrade miniflux oci://ghcr.io/gabe565/charts/miniflux \
   --install \
   --namespace miniflux \
   --set postgresql.enabled='false' \
-  --set env.DATABASE_URL="postgres://miniflux:${POSTGRES_PASS}@postgres.home.nomad.andvari.net/miniflux?sslmode=disable"
+  --set env.DATABASE_URL="postgres://miniflux:${POSTGRES_PASS}@postgres.home.nomad.andvari.net/miniflux?sslmode=disable" \
+  --set env.BASE_URL=https://home.andvari.net/rss
