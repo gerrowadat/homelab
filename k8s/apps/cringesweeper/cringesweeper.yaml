@@ -16,6 +16,10 @@ spec:
       creationTimestamp: null
       labels:
         app: cringesweeper
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
     spec:
       containers:
       - image: gerrowadat/cringesweeper:v0.2.0
