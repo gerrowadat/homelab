@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cringesweeper
+  name: cringesweeper
+  namespace: cringesweeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cringesweeper
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: cringesweeper
+    spec:
+      containers:
+      - image: gerrowadat/cringesweeper:v0.2.0
+        name: cringesweeper
+        command: ["/app/cringesweeper"]
+        args: ["server", "--port=8080", "--platforms=bluesky,mastodon", "--max-post-age=60d", "--preserve-pinned", "--preserve-selflike", "--unlike-posts", "--unshare-reposts"]
+        # These are created menually
+        # kubectl create secret -n cringesweeper generic bsky --from-literal=username=blah.bsky.app --from-literal=app_password=MyApPPaSsWoRd
+        env:
+        - name: BLUESKY_USER
+          valueFrom:
+            secretKeyRef:
+              name: bsky
+              key: username
+        - name: BLUESKY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bsky
+              key: app_password
+        - name: MASTODON_USER
+          valueFrom:
+            secretKeyRef:
+              name: mastodon
+              key: username
+        - name: MASTODON_INSTANCE
+          valueFrom:
+            secretKeyRef:
+              name: mastodon
+              key: instance
+        - name: MASTODON_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: mastodon
+              key: access_token

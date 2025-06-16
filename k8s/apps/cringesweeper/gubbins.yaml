@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: cringesweeper
+  name: cringesweeper
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cringesweeper
+  name: cringesweeper
+  namespace: cringesweeper
+spec:
+  ports:
+  - port: 8084
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: cringesweeper
+  sessionAffinity: None
+  type: ClusterIP
