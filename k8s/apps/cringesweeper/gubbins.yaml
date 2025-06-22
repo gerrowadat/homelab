@@ -21,3 +21,19 @@ spec:
     app: cringesweeper
   sessionAffinity: None
   type: ClusterIP
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cringesweeper-servicemonitor
+  namespace: monitoring 
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: cringesweeper
+  endpoints:
+  - port: http-metrics
+    path: /metrics
+    interval: 15s
