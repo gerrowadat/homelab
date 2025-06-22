@@ -4,3 +4,4 @@ nfs:
 storageClass:
   name: fast-nfs
   provisionerName: k8s-sigs.io/fast-nfs-subdir-external-provisioner
+  defaultClass: true
