@@ -26,6 +26,21 @@ job "web" {
         perms = 700
       }
 
+      // birbs.home.andvari.net SSL
+      template { 
+        data = "{{ with nomadVar \"ssl_certs/birbs_home_andvari_net\" }}{{ .privkey }}{{ end }}"
+        destination = "secrets/birbs.home.andvari.net-privkey.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 700
+      }
+      template { 
+        data = "{{ with nomadVar \"ssl_certs/birbs_home_andvari_net\" }}{{ .chain }}{{ end }}"
+        destination = "secrets/birbs.home.andvari.net-fullchain.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+        perms = 700
+      }
 
       // drone.home.andvari.net SSL
       template { 
