@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: birdnet
+  name: birdnet
+  namespace: birdnet
+spec:
+  ports:
+  - port: 8085
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: birdnet
+  sessionAffinity: None
+  type: ClusterIP

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: birdnet
+  name: birdnet
+  namespace: birdnet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: birdnet
+  strategy: {}
+  template:
+    metadata:
+      namespace: birdnet
+      labels:
+        app: birdnet
+    spec:
+      volumes:
+        - name: birdnet-data
+          persistentVolumeClaim:
+            claimName: birdnet-data
+      containers:
+      - image: ghcr.io/tphakala/birdnet-go:nightly
+        name: birdnet
+        volumeMounts:
+          - mountPath: "/config"
+            name: birdnet-data
+          - mountPath: "/data"
+            name: birdnet-data
+        env:
+          - name: TZ
+            value: Europe/Dublin
+          - name: BIRDNET_UID
+            value: "65534"
+          - name: BIRDNET_GID
+            value: "65534"
+          - name: BIRDNET_LATITUDE
+            valueFrom:
+              secretKeyRef:
+                name: location
+                key: lat
+          - name: BIRDNET_LONGITUDE
+            valueFrom:
+              secretKeyRef:
+                name: location
+                key: long
