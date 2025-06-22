@@ -37,3 +37,7 @@ sabnzbd.home.andvari.net. IN CNAME sabnzbd.home.nomad.andvari.net.
 smtp.home.andvari.net. IN CNAME postfix-andvari-smarthost.home.nomad.andvari.net.
 sonarr.home.andvari.net. IN CNAME sonarr.home.nomad.andvari.net.
 drone.home.andvari.net. IN CNAME home.andvari.net.
+
+k8svip.home.andvari.net. IN CNAME k8scontrol.home.andvari.net.
+birbs.home.andvari.net. IN CNAME k8svip.home.andvari.net.
+
