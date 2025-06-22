@@ -1,0 +1,30 @@
+# The miniflux helm chart lets you set an ingress but it's a pain to spec everything there, so do it here.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: birdnet-ingress
+  namespace: birdnet
+  annotations:
+    #nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/whitelist-source-range: 192.168.100.0/24
+    # TODO: Remove this when we actually terminate ssl here :)
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - birbs.home.andvari.net
+      secretName: "andvari-birbs-prod-tls"
+  rules:
+    - host: birbs.home.andvari.net
+      http:
+        paths:
+          - pathType: Prefix
+            backend:
+              service:
+                name: birdnet
+                port:
+                  number: 8085
+            path: /
