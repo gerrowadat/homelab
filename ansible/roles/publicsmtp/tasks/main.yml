@@ -77,6 +77,12 @@
     dest: /etc/postfix/master.cf
   register: postfix_cf
 
+- name: install /etc/mailname
+  ansible.builtin.template:
+    src: postfix/mailname.j2
+    dest: /etc/mailname
+  register: postfix_cf
+
 - name: reload postfix for new config
   ansible.builtin.systemd:
     name: postfix.service
