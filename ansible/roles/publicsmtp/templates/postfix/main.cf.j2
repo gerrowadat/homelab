@@ -1,7 +1,10 @@
+smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
 biff = no
 
 # appending .domain is the MUA's job.
 append_dot_mydomain = no
+
+readme_directory = no
 
 # TLS for incoming.
 smtpd_use_tls = yes
@@ -23,7 +26,7 @@ myhostname = {{ smtp_hostname }}.andvari.net
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
-mydestination = {{ smtp_hostname }}, localhost.localdomain, localhost, {{ smtp_hostname }}.andvari.net, sica.ie
+mydestination = {{ smtp_hostname }}, localhost.localdomain, localhost, {{ smtp_hostname }}.andvari.net, mail.andvari.net
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0
 recipient_delimiter = +
@@ -48,15 +51,4 @@ message_size_limit = 50000000
 
 smtp_host_lookup = dns,native
 lmtp_host_lookup = dns,native
-
-# Mailman
-unknown_local_recipient_reject_code = 550
-owner_request_special = no
-
-transport_maps =
-    hash:/opt/mailman/mm/var/data/postfix_lmtp
-local_recipient_maps =
-    hash:/opt/mailman/mm/var/data/postfix_lmtp
-relay_domains =
-    hash:/opt/mailman/mm/var/data/postfix_domains
 

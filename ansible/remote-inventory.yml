@@ -2,10 +2,7 @@ linux_aptlike:
         hosts:
                 lucien.andvari.net:
                         ansible_user: doc
-publicweb:
-        hosts:
-                hooty.andvari.net:
-                        ansible_user: ubuntu
+
 publicsmtp:
         hosts:
                 hooty.andvari.net:
