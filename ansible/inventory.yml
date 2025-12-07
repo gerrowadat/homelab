@@ -28,7 +28,6 @@ nomadconsul:
                 picluster4:
                 picluster5:
                         nomad_server: false
-                        consul_enabled: false
                 duckseason:
                         download_arch: amd64
                         ansible_user: doc
