@@ -3,6 +3,16 @@ job "postgres" {
   priority = 90
   group "postgres_servers" {
     task "postgres" {
+      service {
+        name = "postgres"
+        port = "postgres"
+        check {
+          name = "TCP Connection Check"
+          type = "tcp"
+          interval = "10s"
+          timeout = "2s"
+        }
+      }
       constraint {
         attribute = "${attr.unique.hostname}"
         value = "hedwig"
