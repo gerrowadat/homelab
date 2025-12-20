@@ -35,6 +35,9 @@ nomadconsul:
                 hedwig:
                         download_arch: amd64
                         ansible_user: doc
+                donkeh:
+                        download_arch: amd64
+                        ansible_user: doc
         vars:
                 download_arch: arm64
                 ansible_user: pi
@@ -52,7 +55,6 @@ k8s:
         hosts:
                 bebop:
                 rocksteady:
-                donkeh:
         vars:
                 # for docker, etc.
                 download_arch: amd64
