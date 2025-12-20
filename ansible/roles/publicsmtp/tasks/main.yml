@@ -5,6 +5,7 @@
       - postfix
       - opendkim
       - opendkim-tools
+      - postsrsd
 
 - name: install opendkim.conf
   ansible.builtin.copy:
@@ -40,6 +41,18 @@
     name: opendkim.service
     state: restarted
   when: opendkim_cf.changed
+
+- name: Configure postsrsd
+  ansible.builtin.template:
+    src: postsrsd/etc-default-postsrsd.j2
+    dest: /etc/default/postsrsd
+  register: postsrsd_cf.changed
+
+- name: reload postsrsd for new config
+  ansible.builtin.systemd:
+    name: postsrsd.service
+    state: restarted
+  when: postsrsd_cf.changed
 
 - name: install header_checks
   ansible.builtin.copy:
