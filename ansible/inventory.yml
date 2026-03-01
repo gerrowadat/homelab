@@ -49,7 +49,6 @@ nomadconsul:
                 # If you update this, remember to set nfs_primary to localhost for that host only, above.
                 nfs_primary: duckseason
                 nfs_share: "/export/things"
-                docker_registry_proxy: https://docker-registry.service.home.consul:5001
 
 k8s:
         hosts:
