@@ -75,3 +75,10 @@ ups:
                 ups_vendor_id: '0463'
                 ups_pollfreq: 30
 
+
+# DNS servers that can redsolve consul addresses.
+dns_server:
+        hosts:
+                hedwig:
+                duckseason:
+
