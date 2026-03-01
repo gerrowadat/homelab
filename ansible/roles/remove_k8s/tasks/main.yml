@@ -1,0 +1,49 @@
+# Remove Kubernetes components from a host being repurposed as a Nomad node.
+# All tasks ignore errors so this is safe to run on hosts where k8s was never installed.
+
+- name: Stop and disable kubelet
+  ansible.builtin.systemd_service:
+    name: kubelet.service
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Remove apt holds on k8s packages
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  loop:
+    - kubectl
+    - kubelet
+    - kubeadm
+  ignore_errors: true
+
+- name: Remove k8s packages
+  ansible.builtin.apt:
+    state: absent
+    purge: true
+    pkg:
+      - kubectl
+      - kubelet
+      - kubeadm
+      - kubernetes-cni
+
+- name: Remove Kubernetes apt repository
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    state: absent
+
+- name: Remove k8s data and config directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/kubernetes
+    - /var/lib/kubelet
+    - /var/lib/etcd
+    - /opt/cni
+    - /etc/cni
+
+- name: autoremove orphaned packages
+  ansible.builtin.apt:
+    autoremove: true
