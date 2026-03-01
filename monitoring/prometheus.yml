@@ -24,12 +24,6 @@ scrape_configs:
     static_configs:
       - targets: ['prom-consul-exporter.home.nomad.andvari.net:9107']
 
-  - job_name: nomad-dns-exporter
-    scrape_interval: 5s
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ['hedwig:5334', 'rabbitseason:5334', 'duckseason:5334', 'donkeh:5334']
-
   - job_name: nut2mqtt
     scrape_interval: 5s
     metrics_path: "/metrics"

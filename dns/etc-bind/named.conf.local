@@ -31,14 +31,3 @@ zone "consul" {
     //dnssec-validation no;
     forwarders { 127.0.0.1 port 8600; };
 };
-
-// Talk to nomad-dns-exporter for .nomad.
-zone "nomad" {
-    type forward;
-    forward only;
-   // dnssec-enable no;
-    //dnssec-validation no;
-    forwarders { 192.168.100.250 port 5333;
-                 192.168.100.251 port 5333;
-                 192.168.100.253 port 5333;};
-};

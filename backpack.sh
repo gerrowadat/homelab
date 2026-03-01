@@ -59,9 +59,6 @@ nomad job run nomad/infra/certbot/certbot.hcl
 # Start syncing SSL certs to nomad (web servers won't start without these).
 nomad job run nomad/infra/letsencrypt-to-nomad-vars/letsencrypt-to-nomad-vars.hcl
 
-# This makes *.service.nomad start resolving corrently (or indeed, at all).
-nomad job run nomad/infra/nomad-dns-exporter/nomad-dns-exporter.hcl
-
 # Makes email delivery work (for a few things, including alerts!)
 nomad job run nomad/infra/postfix-andvari-smarthost/postfix-andvari-smarthost.hcl
 
