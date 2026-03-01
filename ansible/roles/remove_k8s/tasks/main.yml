@@ -54,17 +54,26 @@
 
 - name: Unmount all kubelet bind mounts (deepest first)
   ansible.builtin.shell:
-    cmd: findmnt -rno TARGET /var/lib/kubelet | sort -r | xargs -r umount -l
+    cmd: >
+      awk '{print $2}' /proc/mounts
+      | grep '^/var/lib/kubelet'
+      | sort -r
+      | xargs -r umount -l
   failed_when: false
   changed_when: false
 
-- name: Remove k8s data and config directories
+- name: Remove /var/lib/kubelet via shell (avoids rmtree on busy paths)
+  ansible.builtin.shell:
+    cmd: rm -rf /var/lib/kubelet
+  failed_when: false
+  changed_when: false
+
+- name: Remove other k8s data and config directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
     - /etc/kubernetes
-    - /var/lib/kubelet
     - /var/lib/etcd
     - /opt/cni
     - /etc/cni
