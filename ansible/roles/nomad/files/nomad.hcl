@@ -3,6 +3,9 @@ data_dir = "/opt/nomad"
 acl {
   enabled = true
 }
+consul {
+  address = "127.0.0.1:8500"
+}
 plugin "docker" {
   config {
     allow_privileged = true

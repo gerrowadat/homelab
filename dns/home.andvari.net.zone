@@ -24,7 +24,6 @@ scan.home.andvari.net.  86400 IN A 192.168.100.232
 somfy.home.andvari.net. 86400 IN A 192.168.110.223
 tings.home.andvari.net. 86400 IN A 192.168.100.252
 wan-router.home.andvari.net. 86400 IN A 192.168.1.1
-docker-registry.home.andvari.net. IN CNAME docker-registry.home.nomad.andvari.net.
 grafana.home.andvari.net. IN CNAME grafana.home.nomad.andvari.net.
 home.home.andvari.net. IN CNAME hedwig.home.andvari.net.
 home-assistant.home.andvari.net. IN CNAME hass.home.nomad.andvari.net.
