@@ -1,18 +1,28 @@
 # Remove Kubernetes components from a host being repurposed as a Nomad node.
-# All tasks ignore errors so this is safe to run on hosts where k8s was never installed.
+# Gates most destructive tasks on whether kubelet is actually present,
+# so re-running after a completed teardown is safe.
+
+- name: Check if kubelet binary is present
+  ansible.builtin.stat:
+    path: /usr/bin/kubelet
+  register: kubelet_bin
+
+- name: Set k8s_present fact
+  ansible.builtin.set_fact:
+    k8s_present: "{{ kubelet_bin.stat.exists }}"
 
 - name: Stop and disable kubelet
   ansible.builtin.systemd_service:
     name: kubelet.service
     state: stopped
     enabled: false
-  ignore_errors: true
+  when: k8s_present
 
 - name: Stop containerd
   ansible.builtin.systemd_service:
     name: containerd.service
     state: stopped
-  ignore_errors: true
+  when: k8s_present
 
 - name: Remove apt holds on k8s packages
   ansible.builtin.dpkg_selections:
@@ -22,6 +32,7 @@
     - kubectl
     - kubelet
     - kubeadm
+  when: k8s_present
   ignore_errors: true
 
 - name: Remove k8s packages
@@ -33,16 +44,25 @@
       - kubelet
       - kubeadm
       - kubernetes-cni
+  when: k8s_present
 
 - name: Remove Kubernetes apt repository
   ansible.builtin.deb822_repository:
     name: kubernetes
     state: absent
+  when: k8s_present
+
+- name: Check for kubelet bind mounts
+  ansible.builtin.command:
+    cmd: findmnt --recursive --noheadings /var/lib/kubelet
+  register: kubelet_mounts
+  failed_when: false
+  changed_when: false
 
 - name: Unmount kubelet bind mounts
   ansible.builtin.command:
     cmd: umount --recursive --lazy /var/lib/kubelet
-  ignore_errors: true
+  when: kubelet_mounts.rc == 0 and kubelet_mounts.stdout != ""
 
 - name: Remove k8s data and config directories
   ansible.builtin.file:
@@ -55,6 +75,7 @@
     - /opt/cni
     - /etc/cni
 
-- name: autoremove orphaned packages
+- name: Autoremove orphaned packages
   ansible.builtin.apt:
     autoremove: true
+  when: k8s_present
