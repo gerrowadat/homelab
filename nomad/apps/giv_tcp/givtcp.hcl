@@ -10,7 +10,7 @@ job "givtcp" {
     task "givtcp_server" {
       driver = "docker" 
       config {
-        image = "britkat/giv_tcp-ma:2.4.0"
+        image = "britkat/giv_tcp-ma:3.4.1"
         labels {
           group = "givtcp"
         }

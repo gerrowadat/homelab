@@ -18,7 +18,7 @@ job "mosquitto" {
       }
       driver = "docker" 
       config {
-         image = "eclipse-mosquitto:1.6.15"
+         image = "eclipse-mosquitto:2.0.22"
          volumes = [
           "/things/docker/mosquitto:/mosquitto"
          ]
