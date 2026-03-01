@@ -52,17 +52,11 @@
     state: absent
   when: k8s_present
 
-- name: Check for kubelet bind mounts
-  ansible.builtin.command:
-    cmd: findmnt --recursive --noheadings /var/lib/kubelet
-  register: kubelet_mounts
+- name: Unmount all kubelet bind mounts (deepest first)
+  ansible.builtin.shell:
+    cmd: findmnt -rno TARGET /var/lib/kubelet | sort -r | xargs -r umount -l
   failed_when: false
   changed_when: false
-
-- name: Unmount kubelet bind mounts
-  ansible.builtin.command:
-    cmd: umount --recursive --lazy /var/lib/kubelet
-  when: kubelet_mounts.rc == 0 and kubelet_mounts.stdout != ""
 
 - name: Remove k8s data and config directories
   ansible.builtin.file:
