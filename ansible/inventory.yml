@@ -80,5 +80,6 @@ ups:
 dns_server:
         hosts:
                 hedwig:
+                rabbitseason:
                 duckseason:
 
