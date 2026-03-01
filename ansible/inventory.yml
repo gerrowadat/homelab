@@ -62,9 +62,6 @@ nomadconsul:
                   - "192.168.100.250"
                   - "192.168.100.253"
 
-k8s:
-        hosts: {}
-
 # Machines with a localy connected UPS.
 ups:
         hosts:
