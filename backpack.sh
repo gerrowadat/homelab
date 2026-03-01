@@ -62,9 +62,6 @@ nomad job run nomad/infra/letsencrypt-to-nomad-vars/letsencrypt-to-nomad-vars.hc
 # Registry and registry proxy.
 nomad job run nomad/infra/docker-registry/docker-registry.hcl
 
-# This makes *.service.nomad start resolving corrently (or indeed, at all).
-nomad job run nomad/infra/nomad-dns-exporter/nomad-dns-exporter.hcl
-
 # Makes email delivery work (for a few things, including alerts!)
 nomad job run nomad/infra/postfix-andvari-smarthost/postfix-andvari-smarthost.hcl
 
