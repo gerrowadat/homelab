@@ -12,7 +12,7 @@ job "z2m" {
       driver = "docker" 
       user = "nobody:dialout"
       config {
-        image = "koenkk/zigbee2mqtt:2.1.1"
+        image = "koenkk/zigbee2mqtt:2.9.0"
         volumes = [
           "/things/docker/z2m:/app/data",
           "/run/udev:/run/udev:ro",

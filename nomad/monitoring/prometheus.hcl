@@ -26,7 +26,7 @@ job "prometheus" {
       driver = "docker" 
 
       config {
-        image = "prom/prometheus:v2.43.0"
+        image = "prom/prometheus:v3.10.0"
         args = ["--config.file=/config/monitoring/prometheus.yml",
                 "--storage.tsdb.path=/data/prometheus/prom-tsdb/",
                 # URL to pass to alertmanager etc.
