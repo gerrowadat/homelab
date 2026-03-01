@@ -17,7 +17,7 @@ job "nut2mqtt" {
         args = [
           "--upsd-hosts=duckseason",
           "--mqtt-topic-base=nut2mqtt/",
-          "--mqtt-host=mqtt.home.andvari.net",
+          "--mqtt-host=mosquitto.service.home.consul",
           "--http-listen=:3494"
         ]
       }

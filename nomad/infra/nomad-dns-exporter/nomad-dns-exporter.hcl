@@ -22,7 +22,7 @@ job "nomad-dns-exporter" {
         ports = ["nomad-dns-exporter-http", "nomad-dns-exporter-dns"]
       }
       env {
-        NOMAD_SERVER = "${attr.unique.hostname}.home.andvari.net"
+        NOMAD_SERVER = "${attr.unique.hostname}"
         NOMAD_DOMAIN = ".job.nomad"
         DNS_TTL = "30"
         DNS_HOSTNAME = "0.0.0.0"

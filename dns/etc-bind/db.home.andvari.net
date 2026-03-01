@@ -40,7 +40,6 @@ somfy          IN A 192.168.110.223
 ip-phone       IN A 192.168.110.224
 
 ; CNAMEs
-docker-registry IN CNAME docker-registry.job.nomad.
 news IN CNAME home.andvari.net.
 grafana IN CNAME grafana.job.nomad.
 home IN CNAME hedwig.home.andvari.net.
