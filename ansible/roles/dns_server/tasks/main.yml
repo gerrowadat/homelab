@@ -1,6 +1,7 @@
 - name: Install bind9
   ansible.builtin.apt:
-    update-cache: yes
+    update_cache: yes
+    cache_valid_time: 3600
     pkg:
       - bind9
       - rsync
