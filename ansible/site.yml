@@ -37,3 +37,9 @@
   roles:
     - role: login
 
+- name: UPS machines
+  hosts: ups
+  become: true
+  become_user: root
+  roles:
+    - role: ups

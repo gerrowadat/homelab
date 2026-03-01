@@ -1,6 +1,7 @@
 - name: Install required packages.
   ansible.builtin.apt:
-    update-cache: yes
+    update_cache: yes
+    cache_valid_time: 3600
     pkg:
       - nfs-common
 

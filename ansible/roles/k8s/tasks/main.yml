@@ -18,7 +18,8 @@
 
 - name: required packages
   ansible.builtin.apt:
-    update-cache: yes
+    update_cache: yes
+    cache_valid_time: 3600
     pkg:
       - apt-transport-https
       - ca-certificates
@@ -47,7 +48,7 @@
 
 - name: required k8s packages
   ansible.builtin.apt:
-    update-cache: yes
+    update_cache: yes
     pkg:
       - kubectl={{ k8s_aptversion }}
       - kubelet={{ k8s_aptversion }}
