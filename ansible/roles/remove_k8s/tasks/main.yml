@@ -8,6 +8,12 @@
     enabled: false
   ignore_errors: true
 
+- name: Stop containerd
+  ansible.builtin.systemd_service:
+    name: containerd.service
+    state: stopped
+  ignore_errors: true
+
 - name: Remove apt holds on k8s packages
   ansible.builtin.dpkg_selections:
     name: "{{ item }}"
@@ -32,6 +38,11 @@
   ansible.builtin.deb822_repository:
     name: kubernetes
     state: absent
+
+- name: Unmount kubelet bind mounts
+  ansible.builtin.command:
+    cmd: umount --recursive --lazy /var/lib/kubelet
+  ignore_errors: true
 
 - name: Remove k8s data and config directories
   ansible.builtin.file:
