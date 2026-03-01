@@ -52,8 +52,8 @@ nomadconsul:
                 # DNS servers that forward .consul queries to the local consul agent.
                 # These are the nomad server nodes running bind9 with consul forwarding.
                 docker_dns_servers:
+                  - "192.168.100.249"
                   - "192.168.100.250"
-                  - "192.168.100.251"
                   - "192.168.100.253"
 
 k8s:
@@ -85,6 +85,6 @@ ups:
 dns_server:
         hosts:
                 hedwig:
-                rabbitseason:
+                donkeh:
                 duckseason:
 
