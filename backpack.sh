@@ -56,11 +56,8 @@ echo "Starting infra jobs..."
 # Generate/renew SSL certificates (some jobs need them).
 nomad job run nomad/infra/certbot/certbot.hcl
 
-# Start syncing SSL certs to nomad (any jobs like the registry or web servers son't start without these).
+# Start syncing SSL certs to nomad (web servers won't start without these).
 nomad job run nomad/infra/letsencrypt-to-nomad-vars/letsencrypt-to-nomad-vars.hcl
-
-# Registry and registry proxy.
-nomad job run nomad/infra/docker-registry/docker-registry.hcl
 
 # This makes *.service.nomad start resolving corrently (or indeed, at all).
 nomad job run nomad/infra/nomad-dns-exporter/nomad-dns-exporter.hcl
