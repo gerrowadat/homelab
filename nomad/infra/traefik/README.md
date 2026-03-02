@@ -22,57 +22,6 @@ by adding tags to its `service` block — no separate nginx config or cert plumb
 
 ---
 
-## Bootstrap (first-time setup)
-
-### 1. Create the data directory on hedwig
-
-```bash
-ssh hedwig mkdir -p /localssd/traefik
-```
-
-### 2. Create the Nomad ACL policy and token
-
-```bash
-nomad acl policy apply -description "Traefik service catalog reader" traefik nomad/acl/traefik-policy.hcl
-nomad acl token create -name="traefik" -policy=traefik
-# Save the Secret ID from the output
-```
-
-### 3. Set the Nomad variables
-
-Nomad's workload identity gives jobs automatic read access to variables under
-`nomad/jobs/<jobname>`, so all config including the GCP credentials lives there.
-
-If migrating from the old certbot setup, retrieve the existing key first:
-
-```bash
-nomad var get -out=json cloud_dns_key | jq -r '.Items.json' > /tmp/gcp-credentials.json
-```
-
-Then write all variables in one command:
-
-```bash
-nomad var put nomad/jobs/traefik \
-  acme_email=you@example.com \
-  gce_project=your-gcp-project-id \
-  nomad_token=<Secret ID from step 2> \
-  gcp_credentials_json="$(cat /tmp/gcp-credentials.json)"
-rm /tmp/gcp-credentials.json
-```
-
-`gce_project` must match the GCP project that owns the `home.andvari.net` DNS zone.
-
-### 5. Deploy
-
-```bash
-nomad job run nomad/infra/traefik/traefik.hcl
-```
-
-Check the dashboard at `http://hedwig:8080` (LAN only) to confirm routes and
-certificates are loading correctly.
-
----
-
 ## Playbook
 
 ### Add a route for a Nomad-managed service
@@ -129,7 +78,7 @@ runs in host network mode and resolves via the local Consul-aware DNS.
 
 ### Check certificate status
 
-Open the dashboard at `http://hedwig:8080` and go to **HTTPS** → certificates,
+Open the dashboard at `http://hedwig:8888` and go to **HTTPS** → certificates,
 or inspect `acme.json` directly:
 
 ```bash
@@ -196,7 +145,7 @@ certs from scratch and you may hit Let's Encrypt rate limits.
 
 ### Debug routing problems
 
-- Dashboard at `http://hedwig:8080` shows all routers, services, and middlewares
+- Dashboard at `http://hedwig:8888` shows all routers, services, and middlewares
   and whether they are healthy.
 - Check Traefik logs:
   ```bash

@@ -17,7 +17,7 @@ job "traefik" {
       port "http"  { static = 80 }
       port "https" { static = 443 }
       # Admin/dashboard -- only reachable on the internal network.
-      port "admin" { static = 8080 }
+      port "admin" { static = 8888 }
     }
 
     task "traefik" {
@@ -56,8 +56,8 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
-  admin:
-    address: ":8080"
+  traefik:
+    address: ":8888"
 
 certificatesResolvers:
   le:
@@ -67,13 +67,19 @@ certificatesResolvers:
       dnsChallenge:
         # lego's built-in gcloud provider; uses GCE_SERVICE_ACCOUNT_FILE + GCE_PROJECT.
         provider: gcloud
+        # Use public resolvers for propagation checks. The local resolvers find
+        # ns1.home.andvari.net authoritative (split-horizon) and return NXDOMAIN
+        # for the challenge record, even though Cloud DNS has it correctly.
+        resolvers:
+          - "8.8.8.8:53"
+          - "8.8.4.4:53"
 
 providers:
   # Native Nomad provider -- discovers services from the Nomad service catalog.
   # Jobs opt in to routing by adding traefik.enable=true and router tags.
   nomad:
     endpoint:
-      address: "http://127.0.0.1:4646"
+      address: "http://192.168.100.250:4646"
       token: "{{ with nomadVar "nomad/jobs/traefik" }}{{ .nomad_token }}{{ end }}"
   # File provider for dynamic config (middlewares etc.) that isn't tied to a service.
   file:
@@ -81,14 +87,14 @@ providers:
 
 api:
   dashboard: true
-  # Dashboard is served on the admin entrypoint (port 8080), which is not
+  # Dashboard is served on the traefik entrypoint (port 8888), which is not
   # exposed externally -- insecure mode is fine here.
   insecure: true
 
 ping: {}
 
 log:
-  level: INFO
+  level: DEBUG
 EOH
         destination = "local/traefik.yml"
       }
