@@ -86,11 +86,31 @@ The `internal-only@file` middleware restricts access to `192.168.100.0/24`.
 Apply it to any router that should not be reachable from the internet.
 To make something fully public, omit the `middlewares` tag.
 
-## For services not managed in this repo (sonarr, radarr, etc.)
+## For services not managed as Nomad jobs (sonarr, radarr, etc.)
 
-If a service is running but not defined here, add tags to its Nomad job file
-using the same pattern above. Traefik picks up the change immediately when the
-job is redeployed — no Traefik restart needed.
+Services that can't carry their own Traefik tags (externally managed, or running
+outside Nomad) are routed via the file provider in the `dynamic.yml` template
+inside `traefik.hcl`. Add a router and service entry there:
+
+```yaml
+routers:
+  myapp:
+    rule: "Host(`home.andvari.net`) && PathPrefix(`/myapp`)"
+    tls:
+      certResolver: le
+    middlewares: [internal-only]
+    service: myapp
+
+services:
+  myapp:
+    loadBalancer:
+      servers:
+        - url: "http://myapp.service.home.consul:1234"
+```
+
+Redeploy the Traefik job after editing to pick up the change. Consul DNS names
+(`*.service.home.consul`) work as backend URLs because Traefik runs in host
+network mode and resolves via the local Consul-aware DNS.
 
 ## Moving Traefik to a different host
 

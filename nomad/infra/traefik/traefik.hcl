@@ -93,7 +93,9 @@ EOH
         destination = "local/traefik.yml"
       }
 
-      # Dynamic configuration: middlewares referenced by service tags.
+      # Dynamic configuration: middlewares and routes for externally-managed
+      # services (i.e. not Nomad jobs that can carry their own Traefik tags).
+      # Add a router + service pair here for each such backend.
       template {
         data = <<EOH
 http:
@@ -104,6 +106,31 @@ http:
         # should not be reachable from the internet.
         sourceRange:
           - "192.168.100.0/24"
+
+  routers:
+    sonarr:
+      rule: "Host(`home.andvari.net`) && PathPrefix(`/tv`)"
+      tls:
+        certResolver: le
+      middlewares: [internal-only]
+      service: sonarr
+    radarr:
+      rule: "Host(`home.andvari.net`) && PathPrefix(`/movies`)"
+      tls:
+        certResolver: le
+      middlewares: [internal-only]
+      service: radarr
+
+  services:
+    # Consul DNS resolves these to wherever the service is currently running.
+    sonarr:
+      loadBalancer:
+        servers:
+          - url: "http://sonarr.service.home.consul:8989"
+    radarr:
+      loadBalancer:
+        servers:
+          - url: "http://radarr.service.home.consul:7878"
 EOH
         destination = "local/dynamic.yml"
       }
