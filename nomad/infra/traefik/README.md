@@ -11,7 +11,8 @@ by adding tags to its `service` block — no separate nginx config or cert plumb
 - Traefik runs on `hedwig`, owning ports 80 and 443.
 - Port 80 redirects everything to HTTPS.
 - TLS certificates are obtained automatically via Let's Encrypt DNS-01 challenge
-  using the GCP Cloud DNS service account in the `cloud_dns_key` Nomad variable.
+  using the GCP Cloud DNS service account stored as `gcp_credentials_json` in the
+  `nomad/jobs/traefik` Nomad variable.
 - `acme.json` (the cert store) lives at `/localssd/traefik/acme.json` on hedwig's
   local SSD, persisting across container restarts.
 - Traefik discovers services by reading the Nomad service catalog. Jobs opt in
@@ -37,63 +38,29 @@ nomad acl token create -name="traefik" -policy=traefik
 # Save the Secret ID from the output
 ```
 
-### 3. Grant Traefik access to cloud_dns_key
+### 3. Set the Nomad variables
 
 Nomad's workload identity gives jobs automatic read access to variables under
-`nomad/jobs/<jobname>`. The GCP credentials live at `cloud_dns_key` (a top-level
-path), so access must be granted explicitly. Two options:
+`nomad/jobs/<jobname>`, so all config including the GCP credentials lives there.
 
-**Option A — ACL binding rule (recommended: keeps the key in one place)**
-
-```bash
-# Apply the variable-access policy
-nomad acl policy apply \
-  -description "Traefik variable access" \
-  traefik-vars \
-  nomad/acl/traefik-vars-policy.hcl
-
-# Bind the policy to the traefik job's workload identity
-nomad acl binding-rule create \
-  -auth-method=nomad-workloads \
-  -bind-type=policy \
-  -bind-name=traefik-vars \
-  "-selector=${value.nomad_job_id} == \"traefik\""
-```
-
-This requires the `nomad-workloads` auth method to be configured on the cluster
-(it is present by default in Nomad 1.7+). After this, the traefik job's workload
-identity token will automatically include the `traefik-vars` policy and can read
-`cloud_dns_key` in its template blocks.
-
-**Option B — Copy the key into nomad/jobs/traefik (simpler, no binding rules)**
-
-If workload identity auth methods aren't set up, just store the key under the
-path the job can already access:
+If migrating from the old certbot setup, retrieve the existing key first:
 
 ```bash
-nomad var put nomad/jobs/traefik \
-  gcp_credentials_json="$(cat /path/to/gcp-service-account.json)" \
-  ...
+nomad var get -out=json cloud_dns_key | jq -r '.Items.json' > /tmp/gcp-credentials.json
 ```
 
-Then update the template block in `traefik.hcl` that reads `cloud_dns_key` to
-read `.gcp_credentials_json` from `nomad/jobs/traefik` instead.
-
-### 4. Set the Nomad variables
+Then write all variables in one command:
 
 ```bash
 nomad var put nomad/jobs/traefik \
   acme_email=you@example.com \
   gce_project=your-gcp-project-id \
-  nomad_token=<Secret ID from step 2>
+  nomad_token=<Secret ID from step 2> \
+  gcp_credentials_json="$(cat /tmp/gcp-credentials.json)"
+rm /tmp/gcp-credentials.json
 ```
 
 `gce_project` must match the GCP project that owns the `home.andvari.net` DNS zone.
-`cloud_dns_key` should already exist from the old certbot setup; if not:
-
-```bash
-nomad var put cloud_dns_key json=@/path/to/gcp-service-account.json
-```
 
 ### 5. Deploy
 

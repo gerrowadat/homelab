@@ -26,7 +26,7 @@ job "traefik" {
       # GCP service account key for DNS-01 ACME challenge.
       # Same Nomad variable used by the old certbot job.
       template {
-        data        = "{{ with nomadVar `cloud_dns_key` }}{{ .json }}{{ end }}"
+        data        = "{{ with nomadVar `nomad/jobs/traefik` }}{{ .gcp_credentials_json }}{{ end }}"
         destination = "secrets/gcp-credentials.json"
         perms       = "600"
       }
