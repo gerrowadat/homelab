@@ -6,6 +6,7 @@ Nomad ACL policy definitions.
 |---|---|
 | `variable-admin-policy.hcl` | Read/write access to all Nomad variables in all namespaces |
 | `traefik-policy.hcl` | Read access to the default namespace service catalog for Traefik routing |
+| `traefik-vars-policy.hcl` | Read access to `cloud_dns_key` for Traefik's workload identity |
 
 ## Applying policies and creating tokens
 

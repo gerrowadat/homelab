@@ -37,7 +37,49 @@ nomad acl token create -name="traefik" -policy=traefik
 # Save the Secret ID from the output
 ```
 
-### 3. Set the Nomad variables
+### 3. Grant Traefik access to cloud_dns_key
+
+Nomad's workload identity gives jobs automatic read access to variables under
+`nomad/jobs/<jobname>`. The GCP credentials live at `cloud_dns_key` (a top-level
+path), so access must be granted explicitly. Two options:
+
+**Option A — ACL binding rule (recommended: keeps the key in one place)**
+
+```bash
+# Apply the variable-access policy
+nomad acl policy apply \
+  -description "Traefik variable access" \
+  traefik-vars \
+  nomad/acl/traefik-vars-policy.hcl
+
+# Bind the policy to the traefik job's workload identity
+nomad acl binding-rule create \
+  -auth-method=nomad-workloads \
+  -bind-type=policy \
+  -bind-name=traefik-vars \
+  "-selector=${value.nomad_job_id} == \"traefik\""
+```
+
+This requires the `nomad-workloads` auth method to be configured on the cluster
+(it is present by default in Nomad 1.7+). After this, the traefik job's workload
+identity token will automatically include the `traefik-vars` policy and can read
+`cloud_dns_key` in its template blocks.
+
+**Option B — Copy the key into nomad/jobs/traefik (simpler, no binding rules)**
+
+If workload identity auth methods aren't set up, just store the key under the
+path the job can already access:
+
+```bash
+nomad var put nomad/jobs/traefik \
+  gcp_credentials_json="$(cat /path/to/gcp-service-account.json)" \
+  ...
+```
+
+Then update the template block in `traefik.hcl` that reads `cloud_dns_key` to
+read `.gcp_credentials_json` from `nomad/jobs/traefik` instead.
+
+### 4. Set the Nomad variables
 
 ```bash
 nomad var put nomad/jobs/traefik \
@@ -53,7 +95,7 @@ nomad var put nomad/jobs/traefik \
 nomad var put cloud_dns_key json=@/path/to/gcp-service-account.json
 ```
 
-### 4. Deploy
+### 5. Deploy
 
 ```bash
 nomad job run nomad/infra/traefik/traefik.hcl
