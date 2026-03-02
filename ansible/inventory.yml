@@ -38,6 +38,12 @@ nomadconsul:
                 donkeh:
                         download_arch: amd64
                         ansible_user: doc
+                bebop:
+                        download_arch: amd64
+                        ansible_user: doc
+                rocksteady:
+                        download_arch: amd64
+                        ansible_user: doc
         vars:
                 download_arch: arm64
                 ansible_user: pi
@@ -55,19 +61,6 @@ nomadconsul:
                   - "192.168.100.249"
                   - "192.168.100.250"
                   - "192.168.100.253"
-
-k8s:
-        hosts:
-                bebop:
-                rocksteady:
-        vars:
-                # for docker, etc.
-                download_arch: amd64
-                ansible_user: doc
-                # nfs_primary and nfs_share define where /things is (it's at nfs_primary:nfs_share)
-                # If you update this, remember to set nfs_primary to localhost for that host only, above.
-                nfs_primary: duckseason
-                nfs_share: "/export/things"
 
 # Machines with a localy connected UPS.
 ups:

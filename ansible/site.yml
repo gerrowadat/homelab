@@ -4,17 +4,10 @@
   become: true
   become_user: root
   roles:
+    - remove_k8s
     - nfs_client
     - nomad
     - consul
-
-- name: k8s hosts
-  hosts: k8s
-  any_errors_fatal: true
-  become: true
-  become_user: root
-  roles:
-    - k8s
 
 - name: nfs servers
   hosts: nfs_server
