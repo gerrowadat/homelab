@@ -18,6 +18,7 @@ job "octoprint" {
           group = "octoprint"
         } 
         ports = ["octoprint"]
+        # privileged is required for USB serial and video device access.
         privileged = true
         devices = [
          {
@@ -35,6 +36,9 @@ job "octoprint" {
       }
     }
     network {
+      # host networking is required alongside privileged mode for reliable USB
+      # device access. The container listens on port 80; static = "8888" exposes
+      # it on the host at 8888.
       mode = "host"
       port "octoprint" {
         static = "8888"

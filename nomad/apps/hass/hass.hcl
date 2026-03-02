@@ -25,6 +25,9 @@ job "hass" {
         ports = ["hass"]
       }
      env {
+       # Home Assistant installs user Python packages (HACS integrations etc.) into
+       # /config/deps, which is on the bind-mounted local SSD. This makes them
+       # persist across container restarts without modifying the image.
        PYTHONUSERBASE = "/config/deps"
        PYTHONPATH = "/config/deps/python3.8/site-packages"
      }

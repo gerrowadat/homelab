@@ -9,15 +9,19 @@ job "z2m" {
         attribute = "${attr.unique.hostname}"
         value = "picluster5"
       }
-      driver = "docker" 
+      driver = "docker"
+      # 'dialout' group gives access to the Conbee USB serial device (/dev/ttyACM*).
+      # 'nobody' keeps the process unprivileged otherwise.
       user = "nobody:dialout"
       config {
         image = "koenkk/zigbee2mqtt:2.9.0"
         volumes = [
           "/things/docker/z2m:/app/data",
+          # udev is needed so the container can detect the Conbee stick's device path.
           "/run/udev:/run/udev:ro",
         ]
         ports = ["z2m"]
+        # privileged is required for direct USB/serial device access.
         privileged = true
       }
       resources {

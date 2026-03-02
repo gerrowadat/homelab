@@ -11,7 +11,11 @@ scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets: ['localhost:9090']
+  # Static targets rather than Consul service discovery -- the cluster is small
+  # and fixed, so the complexity of SD isn't worth it.
   - job_name: node_exporter
+    # 1m interval rather than the global 15s -- node metrics don't need to be
+    # that fresh and this keeps cardinality down.
     scrape_interval: 1m
     scrape_timeout: 1m
     metrics_path: "/metrics"
@@ -58,6 +62,8 @@ scrape_configs:
     metrics_path: "/probe"
     params:
       module: [icmp]
+    # 1m for ICMP -- more frequent than this tends to cause alert flapping
+    # on transient packet loss.
     scrape_interval: 1m
     static_configs:
       - targets:
