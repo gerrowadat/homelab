@@ -93,9 +93,10 @@ EOH
         destination = "local/traefik.yml"
       }
 
-      # Dynamic configuration: middlewares and routes for externally-managed
-      # services (i.e. not Nomad jobs that can carry their own Traefik tags).
-      # Add a router + service pair here for each such backend.
+      # Dynamic configuration: middlewares and path-based routes for all
+      # home.andvari.net subdirectories. Hostname-based routes (e.g.
+      # birbs.home.andvari.net) use Nomad service tags instead.
+      # Add a router + service pair here for each path-based backend.
       template {
         data = <<EOH
 http:
@@ -120,6 +121,12 @@ http:
         certResolver: le
       middlewares: [internal-only]
       service: radarr
+    miniflux:
+      rule: "Host(`home.andvari.net`) && PathPrefix(`/rss`)"
+      tls:
+        certResolver: le
+      middlewares: [internal-only]
+      service: miniflux
 
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -131,6 +138,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://radarr.service.home.consul:7878"
+    miniflux:
+      loadBalancer:
+        servers:
+          - url: "http://miniflux.service.home.consul:8822"
 EOH
         destination = "local/dynamic.yml"
       }

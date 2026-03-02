@@ -5,13 +5,8 @@ job "miniflux" {
       service {
         name = "miniflux"
         port = "miniflux"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.miniflux.rule=Host(`home.andvari.net`) && PathPrefix(`/rss`)",
-          "traefik.http.routers.miniflux.tls=true",
-          "traefik.http.routers.miniflux.tls.certresolver=le",
-          "traefik.http.routers.miniflux.middlewares=internal-only@file",
-        ]
+        # Routing for /rss is defined in nomad/infra/traefik/traefik.hcl
+        # (dynamic.yml file provider) alongside the other path-based routes.
         check {
           name = "HTTP Connection Check"
           type = "http"
