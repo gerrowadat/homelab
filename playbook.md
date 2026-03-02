@@ -30,6 +30,9 @@ See [backups/README.md](backups/README.md)
 Web Serving - Add a new backend
 -------------------------------
 
-Add the backend to nomad/infra/web/haproxy.cfg -- se the other examples.
+See `nomad/infra/traefik/README.md` for the full playbook.
 
-Add to the template in nomad/infra/web/web.hcl to add the new backend 'upstream', make sure to also add a dummy version to cicd/web/local-haproxy-upstreams.conf so the test pass.
+Short version: if the service is a Nomad job, add `traefik.*` tags to its
+`service` block and redeploy the job. If it's externally managed (e.g. sonarr),
+add a router + service entry to the `dynamic.yml` template in
+`nomad/infra/traefik/traefik.hcl` and redeploy the traefik job.

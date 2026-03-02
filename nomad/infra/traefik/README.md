@@ -4,7 +4,7 @@ Traefik is the ingress and SSL termination layer for the cluster. It replaces
 the previous nginx + certbot + letsencrypt-to-nomad-vars setup.
 
 It uses the native Nomad service provider, so any job can opt into routing just
-by adding tags to its `service` block — no nginx config to edit, no cert plumbing.
+by adding tags to its `service` block — no separate nginx config or cert plumbing.
 
 ## How it works
 
@@ -14,8 +14,12 @@ by adding tags to its `service` block — no nginx config to edit, no cert plumb
   using the GCP Cloud DNS service account in the `cloud_dns_key` Nomad variable.
 - `acme.json` (the cert store) lives at `/localssd/traefik/acme.json` on hedwig's
   local SSD, persisting across container restarts.
-- Traefik discovers services by reading the Nomad service catalog. Services opt in
+- Traefik discovers services by reading the Nomad service catalog. Jobs opt in
   with `traefik.enable=true` tags.
+- Services not managed as Nomad jobs (sonarr, radarr, etc.) are routed via the
+  file provider in the `dynamic.yml` template inside `traefik.hcl`.
+
+---
 
 ## Bootstrap (first-time setup)
 
@@ -55,11 +59,16 @@ nomad var put cloud_dns_key json=@/path/to/gcp-service-account.json
 nomad job run nomad/infra/traefik/traefik.hcl
 ```
 
-Check the dashboard at `http://hedwig:8080` (LAN only).
+Check the dashboard at `http://hedwig:8080` (LAN only) to confirm routes and
+certificates are loading correctly.
 
-## Exposing a service through Traefik
+---
 
-Add tags to the job's `service` block:
+## Playbook
+
+### Add a route for a Nomad-managed service
+
+Add tags to the job's `service` block and redeploy the job:
 
 ```hcl
 service {
@@ -70,27 +79,19 @@ service {
     "traefik.http.routers.myapp.rule=Host(`myapp.home.andvari.net`)",
     "traefik.http.routers.myapp.tls=true",
     "traefik.http.routers.myapp.tls.certresolver=le",
-    # omit the middleware line to make the service publicly accessible
+    # omit this line to make the route publicly accessible
     "traefik.http.routers.myapp.middlewares=internal-only@file",
   ]
 }
 ```
 
-Traefik will request a certificate for `myapp.home.andvari.net` automatically
-the first time a request arrives. Also add a DNS record pointing the hostname
-at hedwig (`192.168.100.250`), or a CNAME to `hedwig.home.andvari.net.`.
+Traefik picks up the new service immediately. Also add a DNS record pointing
+the hostname at hedwig (`192.168.100.250`), or a CNAME to `hedwig.home.andvari.net.`
+in `dns/home.andvari.net.zone`.
 
-## IP restriction
+### Add a route for an externally-managed service
 
-The `internal-only@file` middleware restricts access to `192.168.100.0/24`.
-Apply it to any router that should not be reachable from the internet.
-To make something fully public, omit the `middlewares` tag.
-
-## For services not managed as Nomad jobs (sonarr, radarr, etc.)
-
-Services that can't carry their own Traefik tags (externally managed, or running
-outside Nomad) are routed via the file provider in the `dynamic.yml` template
-inside `traefik.hcl`. Add a router and service entry there:
+Edit the `dynamic.yml` template in `traefik.hcl` and add a router + service pair:
 
 ```yaml
 routers:
@@ -108,13 +109,101 @@ services:
         - url: "http://myapp.service.home.consul:1234"
 ```
 
-Redeploy the Traefik job after editing to pick up the change. Consul DNS names
-(`*.service.home.consul`) work as backend URLs because Traefik runs in host
-network mode and resolves via the local Consul-aware DNS.
+Then redeploy the Traefik job:
 
-## Moving Traefik to a different host
+```bash
+nomad job run nomad/infra/traefik/traefik.hcl
+```
 
-1. Copy `/localssd/traefik/acme.json` to the same path on the new host.
+Consul DNS names (`*.service.home.consul`) work as backend URLs because Traefik
+runs in host network mode and resolves via the local Consul-aware DNS.
+
+### Check certificate status
+
+Open the dashboard at `http://hedwig:8080` and go to **HTTPS** → certificates,
+or inspect `acme.json` directly:
+
+```bash
+ssh hedwig "cat /localssd/traefik/acme.json | python3 -m json.tool | grep -A2 'domain'"
+```
+
+Traefik renews certificates automatically when they are within 30 days of expiry.
+No manual action is normally needed.
+
+### Force certificate renewal
+
+Traefik renews automatically, but if you need to force it (e.g. after a DNS
+change or to recover a broken cert):
+
+```bash
+# Stop Traefik, remove the cert entry from acme.json, restart.
+nomad job stop traefik
+ssh hedwig "cat /localssd/traefik/acme.json | python3 -c \"
+import sys, json
+d = json.load(sys.stdin)
+# Remove the specific cert -- Traefik will re-request it on next start
+for resolver in d.values():
+    resolver.get('Certificates', [])[:] = [
+        c for c in resolver.get('Certificates', [])
+        if 'yourdomain.com' not in str(c.get('domain', ''))
+    ]
+print(json.dumps(d, indent=2))
+\" > /tmp/acme-new.json && mv /tmp/acme-new.json /localssd/traefik/acme.json"
+nomad job run nomad/infra/traefik/traefik.hcl
+```
+
+Or to force renewal of all certs at once, remove `acme.json` entirely and
+redeploy — but be mindful of [Let's Encrypt rate limits](https://letsencrypt.org/docs/rate-limits/)
+(5 duplicate cert requests per week per domain).
+
+### Upgrade Traefik
+
+Edit the image tag in `traefik.hcl`:
+
+```hcl
+image = "traefik:v3.x"
+```
+
+Then redeploy:
+
+```bash
+nomad job run nomad/infra/traefik/traefik.hcl
+```
+
+Check the [Traefik migration guide](https://doc.traefik.io/traefik/migration/v2-to-v3/)
+before jumping major versions.
+
+### Move Traefik to a different host
+
+1. Copy `acme.json` to the same path on the new host:
+   ```bash
+   scp hedwig:/localssd/traefik/acme.json newhost:/localssd/traefik/acme.json
+   ```
 2. Update the `constraint` in `traefik.hcl` to the new hostname.
-3. Redeploy. **Do not skip copying acme.json** — if it's missing, Traefik will
-   re-request all certs from scratch and you may hit Let's Encrypt rate limits.
+3. Redeploy.
+
+**Do not skip copying `acme.json`** — if it's missing, Traefik re-requests all
+certs from scratch and you may hit Let's Encrypt rate limits.
+
+### Debug routing problems
+
+- Dashboard at `http://hedwig:8080` shows all routers, services, and middlewares
+  and whether they are healthy.
+- Check Traefik logs:
+  ```bash
+  nomad alloc logs <alloc-id>
+  ```
+- To find the current allocation ID:
+  ```bash
+  nomad job status traefik
+  ```
+- Set `level: DEBUG` in the `log` section of `traefik.yml` temporarily for
+  verbose output, then redeploy.
+
+---
+
+## IP restriction
+
+The `internal-only@file` middleware restricts access to `192.168.100.0/24`.
+Apply it to any router that should not be reachable from the internet.
+To make a route fully public, omit the `middlewares` tag/key entirely.
