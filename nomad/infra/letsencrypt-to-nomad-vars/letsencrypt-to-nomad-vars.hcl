@@ -20,6 +20,8 @@ job "letsencrypt-to-nomad-vars" {
       driver = "docker" 
       env {
         DOMAINS = "home.andvari.net drone.home.andvari.net birbs.home.andvari.net"
+        # This job is pinned to duckseason, so ${attr.unique.hostname} is always
+        # "duckseason". Using the attribute avoids hardcoding the hostname string twice.
         NOMAD_SERVER = "${attr.unique.hostname}"
         CHECK_FREQUENCY_HRS = "24"
       }

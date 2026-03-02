@@ -10,8 +10,12 @@ job "web" {
 
     task "nginx_server" {
 
+      // SSL certs are stored as Nomad variables by the letsencrypt-to-nomad-vars job.
+      // change_mode = "signal" + SIGHUP means nginx reloads its config automatically
+      // when a cert is renewed, without restarting the container.
+
       // home.andvari.net SSL
-      template { 
+      template {
         data = "{{ with nomadVar \"ssl_certs/home_andvari_net\" }}{{ .privkey }}{{ end }}"
         destination = "secrets/home.andvari.net-privkey.pem"
         change_mode = "signal"

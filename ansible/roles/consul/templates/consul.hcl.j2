@@ -1,10 +1,15 @@
 datacenter = "home"
 data_dir = "/opt/consul"
 encrypt = "{{ consul_gossip_key }}"
+# TLS verification disabled -- this is a trusted internal LAN and the gossip
+# encryption key (above) is sufficient. Enabling mTLS here would require
+# distributing certificates to every node.
 verify_incoming = false
 verify_outgoing = false
 verify_server_hostname = false
 acl = {
+  # ACL disabled; default_policy = "allow" means all agents can read/write.
+  # Acceptable for a homelab where all nodes are trusted.
   enabled = false
   default_policy = "allow"
   enable_token_persistence = true
