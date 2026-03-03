@@ -19,9 +19,10 @@ jobs:
       - name: Validate prometheus config
         run: |
           docker run --rm \
+            --entrypoint promtool \
             -v "$GITHUB_WORKSPACE/monitoring:/monitoring:ro" \
             prom/prometheus:v3.10.0 \
-            promtool check config /monitoring/prometheus.yml
+            check config /monitoring/prometheus.yml
 
       - name: Validate alertmanager config
         run: |

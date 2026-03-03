@@ -9,9 +9,10 @@ echo "==> Checking monitoring configs in ${MONITORING_DIR}"
 echo ""
 echo "--- prometheus config ---"
 docker run --rm \
+  --entrypoint promtool \
   -v "${MONITORING_DIR}:/monitoring:ro" \
   prom/prometheus:v3.10.0 \
-  promtool check config /monitoring/prometheus.yml
+  check config /monitoring/prometheus.yml
 echo "PASS: prometheus config"
 
 echo ""
