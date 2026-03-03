@@ -5,7 +5,7 @@ Prometheus-based monitoring stack.
 | Job | What it is |
 |---|---|
 | `prometheus` | Metrics collection and alerting |
-| `grafana` | Dashboards |
+
 | `prom-alertmanager` | Alert routing (email notifications) |
 | `prom-blackbox-exporter` | HTTP and ICMP probes |
 | `prom-consul-exporter` | Consul cluster metrics |
