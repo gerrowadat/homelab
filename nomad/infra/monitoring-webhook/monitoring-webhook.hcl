@@ -97,7 +97,7 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
         print(format % args, flush=True)
 
     def do_POST(self):
-        if self.path != "/hooks/monitoring-reload":
+        if self.path != "/webhooks/monitoring-reload":
             self.send_response(404)
             self.end_headers()
             return
@@ -160,12 +160,6 @@ PYEOF
       service {
         name = "monitoring-webhook"
         port = "monitoring-webhook"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.monitoring-webhook.rule=Host(`hooks.andvari.net`)",
-          "traefik.http.routers.monitoring-webhook.tls=true",
-          "traefik.http.routers.monitoring-webhook.tls.certresolver=le",
-        ]
         check {
           name     = "TCP health check"
           type     = "tcp"

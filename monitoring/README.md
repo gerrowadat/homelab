@@ -58,7 +58,7 @@ nomad run nomad/infra/monitoring-webhook/monitoring-webhook.hcl
 
 In the repo Settings → Webhooks → Add webhook:
 
-- **Payload URL:** `https://hooks.andvari.net/hooks/monitoring-reload`
+- **Payload URL:** `https://home.andvari.net/webhooks/monitoring-reload`
 - **Content type:** `application/json`
 - **Secret:** the same random secret from step 1
 - **Events:** Just the push event
