@@ -6,7 +6,11 @@ job "nut2mqtt" {
       distinct_hosts = true
     }  
     task "nut2mqtt" {
-      driver = "docker" 
+      service {
+        name = "nut2mqtt"
+        port = "nut2mqtt"
+      }
+      driver = "docker"
       config {
         image = "gerrowadat/nut2mqtt:0.1.4"
         labels {
