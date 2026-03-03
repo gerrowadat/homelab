@@ -27,7 +27,7 @@
       "description": "{{ $labels.instance }} is not responding"
       "summary": "{{ $labels.instance }} is not responding"
     "expr": |
-      probe_success{job="blackbox-consul-http"} < 1
+      probe_success{job=~"blackbox-consul-.*"} < 1
     "for": "5m"
     "labels":
       "severity": "critical"

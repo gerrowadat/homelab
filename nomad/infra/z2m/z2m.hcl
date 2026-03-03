@@ -4,6 +4,10 @@ job "z2m" {
   group "z2m_servers" {
    
     task "z2m_server" {
+      service {
+        name = "z2m"
+        port = "z2m"
+      }
       # The machine with the conbee.
       constraint {
         attribute = "${attr.unique.hostname}"
