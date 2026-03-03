@@ -6,19 +6,13 @@
       - bind9
       - rsync
 
-- name: We have a config to copy in
-  stat:
-    path: /things/homelab/dns/etc-bind/named.conf
-  register: bind_config
-
 - name: Install /etc/bind
   ansible.posix.synchronize:
-    src: /things/homelab/dns/etc-bind/
+    src: "{{ playbook_dir }}/../dns/etc-bind/"
     dest: /etc/bind/
     checksum: true
     recursive: true
     delete: true
-  when: bind_config.stat.exists
   register: bind_conf_update
 
 - name: Reload bind if we've updated the config.
