@@ -21,6 +21,7 @@ job "monitoring-webhook" {
 
     task "monitoring-webhook_server" {
       driver = "docker"
+      user   = "nobody"
 
       config {
         image   = "python:3.12-alpine"
@@ -28,7 +29,6 @@ job "monitoring-webhook" {
         args    = ["-c", "apk add --no-cache git && python /local/webhook.py"]
         ports   = ["monitoring-webhook"]
         dns_search_domains = ["home.andvari.net"]
-        user    = "nobody"
       }
 
       volume_mount {
