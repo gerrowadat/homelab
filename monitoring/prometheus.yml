@@ -7,85 +7,114 @@ rule_files:
   - "node_exporter_recording_rules.yml"
   - "node_exporter_alerting_rules.yml"
 
-scrape_configs:
-  - job_name: prometheus
-    static_configs:
-      - targets: ['localhost:9090']
-  # Static targets rather than Consul service discovery -- the cluster is small
-  # and fixed, so the complexity of SD isn't worth it.
-  - job_name: node_exporter
-    # 1m interval rather than the global 15s -- node metrics don't need to be
-    # that fresh and this keeps cardinality down.
-    scrape_interval: 1m
-    scrape_timeout: 1m
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ['hedwig:9100', 'rabbitseason:9100', 'duckseason:9100', 'donkeh:9100', 'bebop:9100', 'rocksteady:9100',  'picluster5:9100', 'tings:9100']
-  - job_name: consul
-    scrape_interval: 1m
-    scrape_timeout: 1m
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ['prom-consul-exporter.service.home.consul:9107']
-
-  - job_name: nut2mqtt
-    scrape_interval: 5s
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ['nut2mqtt.service.home.consul:3494']
-
-
-  - job_name: blackbox
-    static_configs:
-      - targets: ['prom-blackbox-exporter.service.home.consul:9115']
-
-  - job_name: blackbox-http-base
-    metrics_path: "/probe"
-    params:
-      module: [http_2xx]
-    static_configs:
-      - targets:
-        - home.andvari.net/rss/
-        - www.sica.ie
-        - www.strategichopes.co
-        - www.andvari.net
-        - log.andvari.net
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: prom-blackbox-exporter.service.home.consul:9115
-
-  - job_name: blackbox-ping
-    metrics_path: "/probe"
-    params:
-      module: [icmp]
-    # 1m for ICMP -- more frequent than this tends to cause alert flapping
-    # on transient packet loss.
-    scrape_interval: 1m
-    static_configs:
-      - targets:
-        - picluster5
-        - hedwig
-        - rabbitseason
-        - duckseason
-        - donkeh
-        - tings
-        - bebop
-        - rocksteady
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: prom-blackbox-exporter.service.home.consul:9115
-
 alerting:
   alertmanagers:
     - static_configs:
       - targets:
         - prom-alertmanager.service.home.consul:9093
 
+scrape_configs:
+
+  # Self-scrape.
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Physical hosts -- node_exporter on port 9100.
+  # 1m interval: node metrics don't need to be fresher than this.
+  # Host list is anchored here and reused by blackbox-ping below.
+  - job_name: node_exporter
+    scrape_interval: 1m
+    scrape_timeout: 1m
+    static_configs:
+      - targets: &physical_hosts
+          - hedwig
+          - rabbitseason
+          - duckseason
+          - donkeh
+          - bebop
+          - rocksteady
+          - picluster5
+          - tings
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.+)
+        target_label: __address__
+        replacement: $1:9100
+
+  # Consul cluster metrics.
+  - job_name: consul
+    scrape_interval: 1m
+    scrape_timeout: 1m
+    static_configs:
+      - targets: ['prom-consul-exporter.service.home.consul:9107']
+
+  # UPS stats via nut2mqtt.
+  - job_name: nut2mqtt
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['nut2mqtt.service.home.consul:3494']
+
+  # Blackbox exporter self-scrape.
+  - job_name: blackbox
+    static_configs:
+      - targets: ['prom-blackbox-exporter.service.home.consul:9115']
+
+  # HTTP availability probes for external URLs.
+  - job_name: blackbox-http-base
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - home.andvari.net/rss/
+          - www.sica.ie
+          - www.strategichopes.co
+          - www.andvari.net
+          - log.andvari.net
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prom-blackbox-exporter.service.home.consul:9115
+
+  # HTTP availability probes for known consul services.
+  - job_name: blackbox-consul-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - prometheus.service.home.consul:9090
+          - prom-alertmanager.service.home.consul:9093
+          - prom-blackbox-exporter.service.home.consul:9115
+          - prom-consul-exporter.service.home.consul:9107
+          - grafana.service.home.consul:3000
+          - nut2mqtt.service.home.consul:3494
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prom-blackbox-exporter.service.home.consul:9115
+
+  # ICMP ping probes for physical hosts.
+  # 1m interval: more frequent than this causes alert flapping on transient packet loss.
+  # Reuses the host list anchored in node_exporter above.
+  - job_name: blackbox-ping
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    scrape_interval: 1m
+    static_configs:
+      - targets: *physical_hosts
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prom-blackbox-exporter.service.home.consul:9115
