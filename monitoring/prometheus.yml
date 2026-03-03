@@ -26,18 +26,18 @@ scrape_configs:
     scrape_timeout: 1m
     metrics_path: "/metrics"
     static_configs:
-      - targets: ['prom-consul-exporter.home.nomad.andvari.net:9107']
+      - targets: ['prom-consul-exporter.service.home.consul:9107']
 
   - job_name: nut2mqtt
     scrape_interval: 5s
     metrics_path: "/metrics"
     static_configs:
-      - targets: ['nut2mqtt.home.nomad.andvari.net:3494']
+      - targets: ['nut2mqtt.service.home.consul:3494']
 
 
   - job_name: blackbox
     static_configs:
-      - targets: ['prom-blackbox-exporter.home.nomad.andvari.net:9115']
+      - targets: ['prom-blackbox-exporter.service.home.consul:9115']
 
   - job_name: blackbox-http-base
     metrics_path: "/probe"
@@ -56,7 +56,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: prom-blackbox-exporter.home.nomad.andvari.net:9115
+        replacement: prom-blackbox-exporter.service.home.consul:9115
 
   - job_name: blackbox-ping
     metrics_path: "/probe"
@@ -79,11 +79,11 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: prom-blackbox-exporter.home.nomad.andvari.net:9115
+        replacement: prom-blackbox-exporter.service.home.consul:9115
 
 alerting:
   alertmanagers:
     - static_configs:
       - targets:
-        - prom-alertmanager.home.nomad.andvari.net:9093
+        - prom-alertmanager.service.home.consul:9093
 
