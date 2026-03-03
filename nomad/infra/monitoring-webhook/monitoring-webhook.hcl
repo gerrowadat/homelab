@@ -28,6 +28,7 @@ job "monitoring-webhook" {
         args    = ["-c", "apk add --no-cache git && python /local/webhook.py"]
         ports   = ["monitoring-webhook"]
         dns_search_domains = ["home.andvari.net"]
+        user    = "nobody"
       }
 
       volume_mount {
