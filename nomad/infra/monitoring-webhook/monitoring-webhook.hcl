@@ -59,9 +59,9 @@ WEBHOOK_SECRET = os.environ["GITHUB_WEBHOOK_SECRET"].encode()
 PORT = 9111
 
 RELOAD_TARGETS = [
-    "http://prometheus.home.nomad.andvari.net:9090/-/reload",
-    "http://prom-alertmanager.home.nomad.andvari.net:9093/-/reload",
-    "http://prom-blackbox-exporter.home.nomad.andvari.net:9115/-/reload",
+    "http://prometheus.service.home.consul:9090/-/reload",
+    "http://prom-alertmanager.service.home.consul:9093/-/reload",
+    "http://prom-blackbox-exporter.service.home.consul:9115/-/reload",
 ]
 
 
