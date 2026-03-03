@@ -2,32 +2,44 @@ job "newt" {
   datacenters = ["home"]
   group "newt_servers" {
     count = 1
-     constraint {
+    constraint {
       distinct_hosts = true
-    }  
+    }
     task "newt" {
-      driver = "docker" 
+      service {
+        name = "newt"
+        port = "metrics"
+      }
+      driver = "docker"
       config {
         image = "fosrl/newt"
         labels {
           group = "newt"
         }
+        ports = ["metrics"]
       }
-     template {
-       data = <<EOH
+      template {
+        data = <<EOH
 {{- with nomadVar "nomad/jobs/newt" -}}
 PANGOLIN_ENDPOINT={{ .endpoint }}
 NEWT_ID={{ .id }}
 NEWT_SECRET={{ .secret }}
 {{- end -}}
 EOH
-      destination = "secrets/newt.txt"
-      env = true
+        destination = "secrets/newt.txt"
+        env = true
+      }
+      env {
+        TZ                              = "Europe/Dublin"
+        NEWT_METRICS_PROMETHEUS_ENABLED = "true"
+        NEWT_ADMIN_ADDR                 = "0.0.0.0:2112"
+      }
     }
-     env {
-       TZ = "Europe/Dublin"
-     }
+
+    network {
+      port "metrics" {
+        static = "2112"
+      }
     }
   }
 }
-

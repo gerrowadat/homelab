@@ -80,11 +80,11 @@ scrape_configs:
       - target_label: __address__
         replacement: prom-blackbox-exporter.service.home.consul:9115
 
-  # HTTP availability probes for known consul services.
+  # HTTP availability probes for internal consul services (plain HTTP).
   - job_name: blackbox-consul-http
     metrics_path: /probe
     params:
-      module: [http_2xx]
+      module: [http_2xx_internal]
     static_configs:
       - targets:
           - prometheus.service.home.consul:9090
@@ -93,6 +93,8 @@ scrape_configs:
           - prom-consul-exporter.service.home.consul:9107
           - grafana.service.home.consul:3000
           - nut2mqtt.service.home.consul:3494
+          - miniflux.service.home.consul:8822
+          - z2m.service.home.consul:8081
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -100,6 +102,29 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: prom-blackbox-exporter.service.home.consul:9115
+
+  # TCP availability probes for non-HTTP consul services.
+  - job_name: blackbox-consul-tcp
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]
+    static_configs:
+      - targets:
+          - mosquitto.service.home.consul:1883
+          - mysql.service.home.consul:3306
+          - postgres.service.home.consul:5432
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prom-blackbox-exporter.service.home.consul:9115
+
+  # Newt tunnel client metrics (built-in Prometheus endpoint).
+  - job_name: newt
+    static_configs:
+      - targets: ['newt.service.home.consul:2112']
 
   # ICMP ping probes for physical hosts.
   # 1m interval: more frequent than this causes alert flapping on transient packet loss.

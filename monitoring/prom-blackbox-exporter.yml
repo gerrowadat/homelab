@@ -1,16 +1,34 @@
-modules: 
-  http_2xx: 
-    http: 
-      fail_if_not_ssl: true
-      ip_protocol_fallback: false
-      method: GET
-      no_follow_redirects: false
-      preferred_ip_protocol: ip4
-      valid_http_versions: 
-        - HTTP/1.1
-        - HTTP/2.0
+modules:
+  # For external HTTPS URLs -- fails if not SSL.
+  http_2xx:
     prober: http
     timeout: 15s
+    http:
+      method: GET
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
+      no_follow_redirects: false
+      valid_http_versions:
+        - HTTP/1.1
+        - HTTP/2.0
+      fail_if_not_ssl: true
+
+  # For internal plain-HTTP services.
+  http_2xx_internal:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
+      valid_http_versions:
+        - HTTP/1.1
+        - HTTP/2.0
+
+  # For non-HTTP TCP services (MQTT, MySQL, PostgreSQL, etc.)
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
 
   icmp:
     prober: icmp
