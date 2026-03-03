@@ -27,7 +27,7 @@ job "prom-alertmanager" {
 
       config {
         image = "prom/alertmanager"
-        args = ["--config.file=/config/monitoring/alertmanager.yml",
+        args = ["--config.file=/config/monitoring/prom-alertmanager.yml",
                 "--web.external-url=http://prom-alertmanager.home.nomad.andvari.net:9093/",
                 "--storage.path=/data/prom-alertmanager"]
         labels {
