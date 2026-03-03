@@ -91,7 +91,7 @@ scrape_configs:
           - prom-alertmanager.service.home.consul:9093
           - prom-blackbox-exporter.service.home.consul:9115
           - prom-consul-exporter.service.home.consul:9107
-          - grafana.service.home.consul:3000
+
           - nut2mqtt.service.home.consul:3494
           - miniflux.service.home.consul:8822
           - z2m.service.home.consul:8081
