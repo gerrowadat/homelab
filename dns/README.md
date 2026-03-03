@@ -31,15 +31,10 @@ The serial is in the SOA record — increment it by 1:
 
 ### 2. Apply via Ansible
 
-The `dns_server` Ansible role rsyncs `dns/etc-bind/` to `/etc/bind/` on all DNS servers
-and restarts bind9 if anything changed. It reads from `/things/homelab/` (the NFS-mounted
-git clone on duckseason), so pull there first:
+The `dns_server` Ansible role rsyncs `dns/etc-bind/` from the local repo to `/etc/bind/`
+on all DNS servers and restarts bind9 if anything changed:
 
 ```bash
-# On duckseason (or wherever /things/homelab is checked out):
-cd /things/homelab && git pull
-
-# Then from your workstation, run the playbook against dns_server hosts only:
 cd ansible
 ansible-playbook -i inventory.yml site.yml --limit dns_server
 ```
