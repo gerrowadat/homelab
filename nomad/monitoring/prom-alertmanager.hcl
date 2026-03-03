@@ -19,7 +19,11 @@ job "prom-alertmanager" {
     }
 
     task "prom-alertmanager_server" {
-      driver = "docker" 
+      service {
+        name = "prom-alertmanager"
+        port = "prom-alertmanager"
+      }
+      driver = "docker"
 
       config {
         image = "prom/alertmanager"
