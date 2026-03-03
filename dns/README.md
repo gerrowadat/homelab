@@ -8,8 +8,6 @@ BIND9 configuration for the `home.andvari.net` zone, served by hedwig, donkeh, a
 | `etc-bind/named.conf.local` | Zone definitions (forward, reverse, consul forwarding) |
 | `etc-bind/db.home.andvari.net` | Forward zone: A records, CNAMEs |
 | `etc-bind/db.100.168.192` | Reverse zone: PTR records for 192.168.100.x |
-| `home.andvari.net.zone` | Canonical zone file (source of truth for external DNS) |
-| `upload_home.sh` | Script to push zone to external DNS provider |
 
 ## Making DNS changes
 
