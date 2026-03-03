@@ -25,7 +25,7 @@ job "monitoring-webhook" {
       config {
         image   = "python:3.12-alpine"
         command = "/bin/sh"
-        args    = ["-c", "apk add --no-cache git && python /local/webhook.py"]
+        args    = ["-c", "apk add --no-cache git su-exec && exec su-exec nobody python /local/webhook.py"]
         ports   = ["monitoring-webhook"]
         dns_search_domains = ["home.andvari.net"]
       }
