@@ -1,7 +1,6 @@
 # traefik
 
-Traefik is the ingress and SSL termination layer for the cluster. It replaces
-the previous nginx + certbot + letsencrypt-to-nomad-vars setup.
+Traefik is the ingress and SSL termination layer for the cluster.
 
 It uses the native Nomad service provider, so any job can opt into routing just
 by adding tags to its `service` block — no separate nginx config or cert plumbing.

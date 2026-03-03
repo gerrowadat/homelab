@@ -4,7 +4,7 @@ Infrastructure services that apps depend on.
 
 | Job | What it is | Notes |
 |---|---|---|
-| `traefik` | Reverse proxy, SSL termination, ACME cert management | Replaces nginx + certbot + letsencrypt-to-nomad-vars |
+| `traefik` | Reverse proxy, SSL termination, ACME cert management | |
 | `postgres` | PostgreSQL database | Backed by CSI NFS volume |
 | `mysql` | MySQL database | Backed by CSI NFS volume |
 | `mosquitto` | MQTT broker | Used by Home Assistant, GivTCP, Z2M |
