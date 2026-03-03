@@ -45,7 +45,7 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - home.andvari.net
+        - home.andvari.net/rss/
         - www.sica.ie
         - www.strategichopes.co
         - www.andvari.net
