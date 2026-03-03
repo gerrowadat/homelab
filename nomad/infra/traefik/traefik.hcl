@@ -133,6 +133,11 @@ http:
         certResolver: le
       middlewares: [internal-only]
       service: miniflux
+    monitoring-webhook:
+      rule: "Host(`home.andvari.net`) && PathPrefix(`/webhooks/monitoring-reload`)"
+      tls:
+        certResolver: le
+      service: monitoring-webhook
 
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -148,6 +153,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://miniflux.service.home.consul:8822"
+    monitoring-webhook:
+      loadBalancer:
+        servers:
+          - url: "http://monitoring-webhook.service.home.consul:9111"
 EOH
         destination = "local/dynamic.yml"
       }
