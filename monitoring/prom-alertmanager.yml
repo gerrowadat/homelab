@@ -1,5 +1,5 @@
 global:
-  smtp_smarthost: 'smtp:25'
+  smtp_smarthost: 'postfix-andvari-smarthost.service.home.consul:25'
   smtp_from: 'alerts@mail.andvari.net'
 
 
