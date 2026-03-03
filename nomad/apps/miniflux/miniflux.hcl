@@ -5,6 +5,8 @@ job "miniflux" {
       service {
         name = "miniflux"
         port = "miniflux"
+        # Routing for /rss is defined in nomad/infra/traefik/traefik.hcl
+        # (dynamic.yml file provider) alongside the other path-based routes.
         check {
           name = "HTTP Connection Check"
           type = "http"
