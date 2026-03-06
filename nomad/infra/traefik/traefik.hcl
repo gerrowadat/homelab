@@ -110,15 +110,7 @@ api:
 ping: {}
 
 log:
-  level: DEBUG
-
-accessLog:
-  fields:
-    headers:
-      defaultMode: drop
-      names:
-        X-Forwarded-For: keep
-        X-Real-Ip: keep
+  level: INFO
 EOH
         destination = "local/traefik.yml"
       }
