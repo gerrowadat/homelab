@@ -137,7 +137,8 @@ http:
         # should not be reachable from the internet.
         sourceRange:
           - "192.168.100.0/24"
-        ipStrategy:
+{{ with nomadVar "nomad/jobs/traefik" }}{{ with .home_ip }}          - "{{ . }}/32"
+{{ end }}{{ end }}        ipStrategy:
           # Use the real client IP from X-Forwarded-For (depth=1 = leftmost,
           # i.e. the original client as seen by the first proxy -- Pangolin).
           # Without this, ipAllowList checks RemoteAddr (172.17.0.1 via Newt)
