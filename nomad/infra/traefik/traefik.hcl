@@ -137,6 +137,12 @@ http:
         # should not be reachable from the internet.
         sourceRange:
           - "192.168.100.0/24"
+        ipStrategy:
+          # Use the real client IP from X-Forwarded-For (depth=1 = leftmost,
+          # i.e. the original client as seen by the first proxy -- Pangolin).
+          # Without this, ipAllowList checks RemoteAddr (172.17.0.1 via Newt)
+          # rather than the forwarded IP.
+          depth: 1
 
   routers:
     sonarr:
