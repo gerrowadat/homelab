@@ -56,16 +56,19 @@ entryPoints:
           scheme: https
     forwardedHeaders:
       trustedIPs:
-        # Newt (Pangolin tunnel agent) runs in Docker bridge mode on the same
-        # host as Traefik. Connections arrive from 172.17.0.1 (the Docker bridge
-        # gateway) carrying the real client IP in X-Forwarded-For.
+        # Newt (Pangolin tunnel agent) runs in Docker bridge mode somewhere in
+        # the Nomad cluster. If on the same host as Traefik, connections arrive
+        # from the Docker bridge (172.17.0.1). If on a different host, Docker
+        # NATs through that host's LAN IP, so we trust the whole homelab LAN.
         - "172.17.0.0/16"
+        - "192.168.100.0/24"
         - "127.0.0.1/32"
   websecure:
     address: ":443"
     forwardedHeaders:
       trustedIPs:
         - "172.17.0.0/16"
+        - "192.168.100.0/24"
         - "127.0.0.1/32"
   traefik:
     address: ":8888"
