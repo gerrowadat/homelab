@@ -152,7 +152,7 @@ http:
     miniflux:
       loadBalancer:
         servers:
-          - url: "http://miniflux.service.home.consul:8822"
+          - url: "http://miniflux.service.home.consul:8080"
     monitoring-webhook:
       loadBalancer:
         servers:
