@@ -54,18 +54,19 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
-    forwardedHeaders:
+    proxyProtocol:
       trustedIPs:
         # Newt (Pangolin tunnel agent) runs in Docker bridge mode somewhere in
         # the Nomad cluster. If on the same host as Traefik, connections arrive
         # from the Docker bridge (172.17.0.1). If on a different host, Docker
         # NATs through that host's LAN IP, so we trust the whole homelab LAN.
+        # Proxy Protocol must also be enabled per-resource in the Pangolin dashboard.
         - "172.17.0.0/16"
         - "192.168.100.0/24"
         - "127.0.0.1/32"
   websecure:
     address: ":443"
-    forwardedHeaders:
+    proxyProtocol:
       trustedIPs:
         - "172.17.0.0/16"
         - "192.168.100.0/24"
