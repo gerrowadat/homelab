@@ -54,8 +54,24 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
+    forwardedHeaders:
+      trustedIPs:
+        # Newt (Pangolin tunnel agent) runs in Docker bridge mode somewhere in
+        # the Nomad cluster. Pangolin terminates SSL and re-proxies HTTP with
+        # X-Forwarded-For set to the real client IP. If Newt is on the same
+        # host as Traefik the connection arrives from the Docker bridge
+        # (172.17.0.1); if on a different host, Docker NATs through that
+        # host's LAN IP, so we trust the whole homelab LAN.
+        - "172.17.0.0/16"
+        - "192.168.100.0/24"
+        - "127.0.0.1/32"
   websecure:
     address: ":443"
+    forwardedHeaders:
+      trustedIPs:
+        - "172.17.0.0/16"
+        - "192.168.100.0/24"
+        - "127.0.0.1/32"
   traefik:
     address: ":8888"
 
@@ -95,6 +111,14 @@ ping: {}
 
 log:
   level: DEBUG
+
+accessLog:
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        X-Forwarded-For: keep
+        X-Real-Ip: keep
 EOH
         destination = "local/traefik.yml"
       }
@@ -113,6 +137,13 @@ http:
         # should not be reachable from the internet.
         sourceRange:
           - "192.168.100.0/24"
+{{ with nomadVar "nomad/jobs/traefik" }}{{ with .home_ip }}          - "{{ . }}/32"
+{{ end }}{{ end }}        ipStrategy:
+          # Use the real client IP from X-Forwarded-For (depth=1 = leftmost,
+          # i.e. the original client as seen by the first proxy -- Pangolin).
+          # Without this, ipAllowList checks RemoteAddr (172.17.0.1 via Newt)
+          # rather than the forwarded IP.
+          depth: 1
 
   routers:
     sonarr:
@@ -131,7 +162,6 @@ http:
       rule: "Host(`home.andvari.net`) && PathPrefix(`/rss`)"
       tls:
         certResolver: le
-      middlewares: [internal-only]
       service: miniflux
     monitoring-webhook:
       rule: "Host(`home.andvari.net`) && PathPrefix(`/webhooks/monitoring-reload`)"
