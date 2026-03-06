@@ -161,6 +161,16 @@ certs from scratch and you may hit Let's Encrypt rate limits.
 
 ## IP restriction
 
-The `internal-only@file` middleware restricts access to `192.168.100.0/24`.
-Apply it to any router that should not be reachable from the internet.
-To make a route fully public, omit the `middlewares` tag/key entirely.
+The `internal-only@file` middleware restricts access to `192.168.100.0/24`
+plus an optional home IP read from the `home_ip` key in the `nomad/jobs/traefik`
+Nomad variable (stored as a `/32`, kept out of the public config).
+
+The middleware uses `ipStrategy.depth: 1` to evaluate the leftmost
+`X-Forwarded-For` IP rather than the raw connection address. This is required
+because traffic arriving via Pangolin/Newt (the remote access tunnel) appears
+to originate from the Docker bridge or a Nomad host LAN IP rather than the
+actual client. Traefik's entrypoints trust `X-Forwarded-For` from
+`172.17.0.0/16` and `192.168.100.0/24` via `forwardedHeaders.trustedIPs`.
+
+Apply `internal-only` to any router that should not be reachable from the
+internet. To make a route fully public, omit the `middlewares` tag/key entirely.
