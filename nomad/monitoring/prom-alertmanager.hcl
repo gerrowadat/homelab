@@ -28,7 +28,8 @@ job "prom-alertmanager" {
       config {
         image = "prom/alertmanager"
         args = ["--config.file=/config/monitoring/prom-alertmanager.yml",
-                "--storage.path=/data/prom-alertmanager"]
+                "--storage.path=/data/prom-alertmanager",
+                "--web.external-url=http://prom-alertmanager.service.home.consul:9093/"]
         labels {
           group = "prom-alertmanager"
         }

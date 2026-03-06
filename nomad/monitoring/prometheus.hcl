@@ -30,7 +30,7 @@ job "prometheus" {
         args = ["--config.file=/config/monitoring/prometheus.yml",
                 "--storage.tsdb.path=/data/prometheus/prom-tsdb/",
                 # URL to pass to alertmanager etc.
-                "--web.external-url=http://prometheus.home.nomad.andvari.net:9090/",
+                "--web.external-url=http://prometheus.service.home.consul:9090/",
                 # Enable reload via web
                 "--web.enable-lifecycle"]
         labels {
