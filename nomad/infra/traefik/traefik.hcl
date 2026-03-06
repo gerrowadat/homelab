@@ -162,7 +162,6 @@ http:
       rule: "Host(`home.andvari.net`) && PathPrefix(`/rss`)"
       tls:
         certResolver: le
-      middlewares: [internal-only]
       service: miniflux
     monitoring-webhook:
       rule: "Host(`home.andvari.net`) && PathPrefix(`/webhooks/monitoring-reload`)"
