@@ -1,7 +1,7 @@
 # monitoring
 
-Prometheus configuration files, bind-mounted into the prometheus container by
-the Nomad job in `nomad/monitoring/prometheus.hcl`.
+Prometheus configuration files, mounted into the prometheus container via the
+`gitrepo` CSI volume by the Nomad job in `nomad/monitoring/prometheus.hcl`.
 
 | File | Purpose |
 |---|---|

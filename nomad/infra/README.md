@@ -19,7 +19,7 @@ Traefik handles the full certificate lifecycle automatically:
 
 ```
 Traefik (runs on hedwig, port 80/443)
-  → DNS-01 ACME challenge via GCP Cloud DNS (cloud_dns_key Nomad variable)
+  → DNS-01 ACME challenge via GCP Cloud DNS (gcp_credentials_json in nomad/jobs/traefik Nomad variable)
     → Certificates stored in /localssd/traefik/acme.json on hedwig
       → Served directly by Traefik; renewed automatically before expiry
 ```

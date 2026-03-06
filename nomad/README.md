@@ -8,7 +8,7 @@ Nomad job definitions for everything running on the cluster.
 |---|---|
 | `apps/` | User-facing applications |
 | `infra/` | Infrastructure services (databases, web, MQTT, DNS, certs, email) |
-| `monitoring/` | Prometheus, Grafana, Alertmanager, and exporters |
+| `monitoring/` | Prometheus, Alertmanager, and exporters |
 | `storage/` | CSI plugin (NFS) and volume definitions |
 | `cron/` | Periodic batch jobs |
 | `acl/` | Nomad ACL policies |
