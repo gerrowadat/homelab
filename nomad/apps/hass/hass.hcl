@@ -3,6 +3,9 @@ job "hass" {
   priority = 100
   group "hass_servers" {
 
+    # Disable for now.
+    count = 0
+
     constraint {
       attribute = "${attr.unique.hostname}"
       value = "hedwig"
