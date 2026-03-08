@@ -47,6 +47,7 @@ EOF
         destination = "local/webhook.py"
         data        = <<PYEOF
 #!/usr/bin/env python3
+import datetime
 import hashlib
 import hmac
 import http.server
@@ -54,6 +55,10 @@ import json
 import os
 import subprocess
 import urllib.request
+
+
+def log(msg):
+    print(f"{datetime.datetime.now().isoformat()} {msg}", flush=True)
 
 WEBHOOK_SECRET = os.environ["GITHUB_WEBHOOK_SECRET"].encode()
 PORT = 9111
@@ -94,7 +99,7 @@ def reload_services():
 
 class WebhookHandler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
-        print(format % args, flush=True)
+        log(format % args)
 
     def do_POST(self):
         if self.path != "/webhooks/monitoring-reload":
@@ -107,7 +112,7 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
 
         signature = self.headers.get("X-Hub-Signature-256", "")
         if not verify_signature(body, signature):
-            print("Invalid signature", flush=True)
+            log("Invalid signature")
             self.send_response(401)
             self.end_headers()
             self.wfile.write(b"Invalid signature")
@@ -137,14 +142,14 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
 
         try:
             out = git_pull()
-            print(f"git pull: {out}", flush=True)
+            log(f"git pull: {out}")
             reload_services()
-            print("Reloaded all monitoring services", flush=True)
+            log("Reloaded all monitoring services")
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b"OK")
         except Exception as e:
-            print(f"Error: {e}", flush=True)
+            log(f"Error: {e}")
             self.send_response(500)
             self.end_headers()
             self.wfile.write(str(e).encode())
@@ -152,7 +157,7 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     server = http.server.HTTPServer(("0.0.0.0", PORT), WebhookHandler)
-    print(f"Listening on port {PORT}", flush=True)
+    log(f"Listening on port {PORT}")
     server.serve_forever()
 PYEOF
       }
