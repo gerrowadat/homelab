@@ -15,13 +15,13 @@ Prometheus configuration files, mounted into the prometheus container via the
 ## Config reload workflow
 
 Config changes are applied by pushing to `main`. A GitHub webhook triggers
-`monitoring-webhook` (a Nomad service job at `nomad/infra/monitoring-webhook/`),
+`homelab-webhook` (a Nomad service job at `nomad/infra/homelab-webhook/`),
 which pulls the latest git repo onto the `gitrepo` CSI volume and POSTs
 `/-/reload` to prometheus, alertmanager, and blackbox-exporter.
 
 ```
 git push → GitHub webhook → hooks.andvari.net (Traefik)
-  → monitoring-webhook Nomad job → git pull on CSI volume
+  → homelab-webhook Nomad job → git pull on CSI volume
   → POST /-/reload to prometheus, alertmanager, blackbox-exporter
 ```
 
@@ -44,14 +44,14 @@ touch `monitoring/**` (`.github/workflows/monitoring-validate.yml`).
 ### 1. Create the webhook secret in Nomad
 
 ```bash
-nomad var put nomad/jobs/monitoring-webhook \
+nomad var put nomad/jobs/homelab-webhook \
   github_webhook_secret="<random-secret>"
 ```
 
 ### 2. Deploy the webhook receiver
 
 ```bash
-nomad run nomad/infra/monitoring-webhook/monitoring-webhook.hcl
+nomad run nomad/infra/homelab-webhook/homelab-webhook.hcl
 ```
 
 ### 3. Configure the GitHub webhook

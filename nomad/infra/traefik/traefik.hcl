@@ -155,11 +155,11 @@ http:
       tls:
         certResolver: le
       service: miniflux
-    monitoring-webhook:
+    homelab-webhook:
       rule: "Host(`home.andvari.net`) && PathPrefix(`/webhooks/monitoring-reload`)"
       tls:
         certResolver: le
-      service: monitoring-webhook
+      service: homelab-webhook
 
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -175,10 +175,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://miniflux.service.home.consul:8080"
-    monitoring-webhook:
+    homelab-webhook:
       loadBalancer:
         servers:
-          - url: "http://monitoring-webhook.service.home.consul:9111"
+          - url: "http://homelab-webhook.service.home.consul:9111"
 EOH
         destination = "local/dynamic.yml"
       }

@@ -12,6 +12,7 @@ Infrastructure services that apps depend on.
 | `nut2mqtt` | UPS stats → MQTT | Reads from NUT daemons on UPS-attached hosts |
 | `postfix-andvari-smarthost` | Internal Postfix smarthost | Relays outbound mail |
 | `dns` | Consul-aware DNS | BIND9 forwarding `.consul` to local Consul agent |
+| `homelab-webhook` | GitHub webhook receiver | Pulls gitrepo and reloads monitoring services on push to main |
 
 ## SSL certificate pipeline
 

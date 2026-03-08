@@ -67,7 +67,7 @@ Use these addresses (not `*.home.nomad.andvari.net`) everywhere — in prometheu
 ## CSI volumes
 
 Key volumes:
-- `gitrepo` — git clone of this repo, served read-only to most jobs, read-write to `monitoring-webhook`. Mounted at `/config` by monitoring jobs; configs are under `/config/monitoring/`.
+- `gitrepo` — git clone of this repo, served read-only to most jobs, read-write to `homelab-webhook`. Mounted at `/config` by monitoring jobs; configs are under `/config/monitoring/`.
 - `monitoring` — persistent data for prometheus TSDB and alertmanager state.
 - `birdnet`, `jellyfin`, etc. — app-specific data volumes.
 
@@ -75,7 +75,7 @@ Key volumes:
 
 Config files live in `monitoring/` and are mounted into prometheus/alertmanager/blackbox-exporter via the `gitrepo` CSI volume.
 
-On push to main, the `monitoring-webhook` Nomad job (at `nomad/infra/monitoring-webhook/`) pulls the repo and POSTs `/-/reload` to prometheus (9090), alertmanager (9093), and blackbox-exporter (9115).
+On push to main, the `homelab-webhook` Nomad job (at `nomad/infra/homelab-webhook/`) pulls the repo and POSTs `/-/reload` to prometheus (9090), alertmanager (9093), and blackbox-exporter (9115).
 
 Prometheus requires `--web.enable-lifecycle` to enable `/-/reload`. Alertmanager and blackbox-exporter enable it by default.
 
