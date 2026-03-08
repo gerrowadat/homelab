@@ -93,7 +93,7 @@ scrape_configs:
           - prom-consul-exporter.service.home.consul:9107
 
           - nut2mqtt.service.home.consul:3494
-          - miniflux.service.home.consul:8822
+          - miniflux.service.home.consul:8080
           - z2m.service.home.consul:8081
     relabel_configs:
       - source_labels: [__address__]
