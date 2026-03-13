@@ -24,6 +24,7 @@ job "postfix-andvari-smarthost" {
        POSTFIX_mydestination = "home.andvari.net"
        POSTFIX_relayhost = "mx.andvari.net"
        POSTFIX_mynetworks = "192.168.100.0/24,172.17.0.0/24"
+       POSTFIX_inet_protocols = "ipv4"
      }
     }
 
