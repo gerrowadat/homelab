@@ -1,19 +1,18 @@
-job "storage-node" {
+job "rabbitseason-mix-nfs-controller" {
   datacenters = ["home"]
-  type        = "system"
-  priority    = 100
+  type        = "service"
 
-  group "node" {
-    task "node" {
+  group "controller" {
+    task "controller" {
       driver = "docker"
 
       config {
         image = "registry.gitlab.com/rocketduck/csi-plugin-nfs:1.1.0"
 
         args = [
-          "--type=node",
+          "--type=controller",
           "--node-id=${attr.unique.hostname}",
-          "--nfs-server=tings:/srv",
+          "--nfs-server=rabbitseason:/mix",
           "--mount-options=defaults",
         ]
 
@@ -23,8 +22,8 @@ job "storage-node" {
       }
 
       csi_plugin {
-        id        = "tings-srv-nfs" # Whatever you like, but node & controller config needs to match
-        type      = "node"
+        id        = "rabbitseason-mix-nfs"
+        type      = "controller"
         mount_dir = "/csi"
       }
 
@@ -36,4 +35,3 @@ job "storage-node" {
     }
   }
 }
-

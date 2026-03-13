@@ -1,4 +1,4 @@
-job "storage-node" {
+job "rabbitseason-mix-nfs-node" {
   datacenters = ["home"]
   type        = "system"
   priority    = 100
@@ -13,7 +13,7 @@ job "storage-node" {
         args = [
           "--type=node",
           "--node-id=${attr.unique.hostname}",
-          "--nfs-server=tings:/srv",
+          "--nfs-server=rabbitseason:/mix",
           "--mount-options=defaults",
         ]
 
@@ -23,7 +23,7 @@ job "storage-node" {
       }
 
       csi_plugin {
-        id        = "tings-srv-nfs" # Whatever you like, but node & controller config needs to match
+        id        = "rabbitseason-mix-nfs"
         type      = "node"
         mount_dir = "/csi"
       }
@@ -36,4 +36,3 @@ job "storage-node" {
     }
   }
 }
-
