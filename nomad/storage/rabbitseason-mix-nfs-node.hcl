@@ -1,6 +1,7 @@
 job "rabbitseason-mix-nfs-node" {
   datacenters = ["home"]
   type        = "system"
+  priority    = 100
 
   group "node" {
     task "node" {
