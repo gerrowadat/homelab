@@ -1,0 +1,17 @@
+- name: Create bind mount target directories
+  ansible.builtin.file:
+    path: "{{ item.dest }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ nfs_server_bindmounts | default([]) }}"
+
+- name: Bind mount source paths to export paths
+  ansible.posix.mount:
+    path: "{{ item.dest }}"
+    src: "{{ item.src }}"
+    opts: bind
+    fstype: none
+    boot: true
+    state: mounted
+  loop: "{{ nfs_server_bindmounts | default([]) }}"
+  ignore_errors: true

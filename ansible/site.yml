@@ -15,6 +15,7 @@
   become_user: root
   roles:
     - role: ansible-nfs-server
+    - role: nfs_server
 
 - name: dns servers
   hosts: dns_server
