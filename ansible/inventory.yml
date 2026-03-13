@@ -57,8 +57,6 @@ login:
 
 nomadconsul:
         hosts:
-                picluster2:
-                picluster4:
                 picluster5:
                         nomad_server: false
                 duckseason:
