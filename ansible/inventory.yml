@@ -1,21 +1,49 @@
 nfs_server:
         hosts:
                 duckseason:
-        vars:
-                nfs_server_exports:
-                        - export:
-                          access:
-                                  - hostname: '192.168.100.240/28'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                                  - hostname: 'localhost'
-                                    options:
-                                        - 'rw'
-                                        - 'sync'
-                                        - 'no_subtree_check'
-                          path: /export/things
+                        nfs_server_exports:
+                                - export:
+                                  access:
+                                          - hostname: '192.168.100.240/28'
+                                            options:
+                                                - 'rw'
+                                                - 'sync'
+                                                - 'no_subtree_check'
+                                          - hostname: 'localhost'
+                                            options:
+                                                - 'rw'
+                                                - 'sync'
+                                                - 'no_subtree_check'
+                                  path: /export/things
+                rabbitseason:
+                        ansible_user: doc
+                        nfs_server_exports:
+                                - export:
+                                  access:
+                                          - hostname: '192.168.100.240/28'
+                                            options:
+                                                - 'rw'
+                                                - 'sync'
+                                                - 'no_subtree_check'
+                                          - hostname: 'localhost'
+                                            options:
+                                                - 'rw'
+                                                - 'sync'
+                                                - 'no_subtree_check'
+                                  path: /localssd/srv
+                                - export:
+                                  access:
+                                          - hostname: '192.168.100.240/28'
+                                            options:
+                                                - 'rw'
+                                                - 'sync'
+                                                - 'no_subtree_check'
+                                          - hostname: 'localhost'
+                                            options:
+                                                - 'rw'
+                                                - 'sync'
+                                                - 'no_subtree_check'
+                                  path: /localdisk/mix
 
 login:
         hosts:
