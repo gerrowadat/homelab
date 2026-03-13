@@ -14,3 +14,4 @@
     boot: true
     state: mounted
   loop: "{{ nfs_server_bindmounts | default([]) }}"
+  ignore_errors: true
