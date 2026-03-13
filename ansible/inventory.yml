@@ -17,6 +17,11 @@ nfs_server:
                                   path: /export/things
                 rabbitseason:
                         ansible_user: doc
+                        nfs_server_bindmounts:
+                                - src: /localssd/srv
+                                  dest: /srv
+                                - src: /localdisk/mix
+                                  dest: /mix
                         nfs_server_exports:
                                 - export:
                                   access:
@@ -30,7 +35,7 @@ nfs_server:
                                                 - 'rw'
                                                 - 'sync'
                                                 - 'no_subtree_check'
-                                  path: /localssd/srv
+                                  path: /srv
                                 - export:
                                   access:
                                           - hostname: '192.168.100.240/28'
@@ -43,7 +48,7 @@ nfs_server:
                                                 - 'rw'
                                                 - 'sync'
                                                 - 'no_subtree_check'
-                                  path: /localdisk/mix
+                                  path: /mix
 
 login:
         hosts:
