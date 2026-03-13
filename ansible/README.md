@@ -20,7 +20,7 @@ encrypt Consul cluster gossip traffic and must match across all nodes.
 | Group | Hosts | Purpose |
 |---|---|---|
 | `nomadconsul` | picluster2/4/5, duckseason, hedwig, donkeh, bebop, rocksteady | Nomad clients+servers and Consul agents |
-| `nfs_server` | duckseason | Exports `/export/things` over NFS |
+| `nfs_server` | duckseason, rabbitseason | NFS servers: duckseason exports `/export/things`; rabbitseason exports `/srv` (from `/localssd/srv`) and `/mix` (from `/localdisk/mix`) |
 | `dns_server` | hedwig, donkeh, duckseason | BIND9 with Consul forwarding for `.consul` queries |
 | `ups` | hedwig, duckseason | NUT for UPS monitoring |
 | `login` | rabbitseason | Public-facing SSH login node |
@@ -40,6 +40,7 @@ encrypt Consul cluster gossip traffic and must match across all nodes.
 | `remove_k8s` | Strips Kubernetes packages and data dirs from a host being converted to Nomad |
 | `linux_aptlike` | Common baseline packages for apt-based hosts |
 | `login` | SSH hardening and user config for the login node |
+| `nfs_server` | Bind-mounts source paths to NFS export paths (runs after `ansible-nfs-server`); configured via `nfs_server_bindmounts` host var |
 | `ups` | NUT client config for hosts with a locally attached UPS |
 | `publicsmtp` | Postfix + OpenDKIM for the public-facing mail relay |
 | `publicweb` | nginx config for static public web hosting |
