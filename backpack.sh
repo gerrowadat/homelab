@@ -69,10 +69,6 @@ echo "Starting periodic tasks..."
 
 nomad job run nomad/cron/git-pull-homelab.hcl
 
-echo "Scheduling backups..."
-
-nomad job run nomad/backups/resticrunner-docker.hcl
-
 echo "Starting Monitoring services..."
 
 nomad job run nomad/monitoring/prom-blackbox-exporter.hcl

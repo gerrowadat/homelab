@@ -48,8 +48,8 @@ Each database produces one file on the `pgbackup` CSI volume
 ```
 
 The file is the output of `pg_dump | openssl enc -aes-256-cbc -pbkdf2`,
-overwritten on each run. Version history is kept by restic, which backs up
-the NFS volume separately.
+overwritten on each run. Version history is kept by whatever backs up the
+NFS volume externally.
 
 The backup script lives at `nomad/infra/postgres/pgbackup.sh` in this repo
 and is executed directly from the `gitrepo` CSI volume mount — no rebuild
@@ -61,10 +61,10 @@ needed when the script changes.
 
 ```bash
 # List snapshots to find the one you want
-bash scripts/restic-env.sh restic snapshots
+restic snapshots
 
-# Restore a specific snapshot to a local directory
-bash scripts/restic-env.sh restic restore <snapshot-id> \
+# Restore a specific file from a snapshot
+restic restore <snapshot-id> \
   --target /tmp/pgrestore \
   --include '<mount-path>/backup/<dbname>.sql.enc'
 ```
