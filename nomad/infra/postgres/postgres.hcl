@@ -17,7 +17,7 @@ job "postgres" {
         attribute = "${attr.unique.hostname}"
         value = "hedwig"
       }
-      driver = "docker" 
+      driver = "docker"
       config {
         image = "postgres:16.13"
         volumes = [
@@ -46,6 +46,57 @@ EOH
        TZ = "Europe/Dublin"
        PGDATA = "/var/lib/postgresql/data"
      }
+    }
+
+    task "pgbackup" {
+      driver = "docker"
+      config {
+        image   = "postgres:16.13"
+        command = "bash"
+        args    = ["/gitrepo/nomad/infra/postgres/pgbackup.sh"]
+      }
+
+      volume_mount {
+        volume      = "gitrepo"
+        destination = "/gitrepo"
+        read_only   = true
+      }
+
+      volume_mount {
+        volume      = "pgbackup"
+        destination = "/backup"
+      }
+
+      template {
+        data = <<EOH
+{{- with nomadVar "nomad/jobs/postgres" -}}
+PGPASSWORD={{ .pgpassword }}
+PGBACKUP_KEY={{ .pgbackup_key }}
+{{- end -}}
+EOH
+        destination = "secrets/pgbackup_env"
+        env         = true
+      }
+
+      resources {
+        cpu    = 200
+        memory = 256
+      }
+    }
+
+    volume "gitrepo" {
+      type            = "csi"
+      source          = "gitrepo"
+      read_only       = true
+      attachment_mode = "file-system"
+      access_mode     = "multi-node-multi-writer"
+    }
+
+    volume "pgbackup" {
+      type            = "csi"
+      source          = "pgbackup"
+      access_mode     = "single-node-writer"
+      attachment_mode = "file-system"
     }
 
     network {
