@@ -64,6 +64,8 @@ All Nomad services with a `service` stanza register in Consul and are resolvable
 
 Use these addresses (not `*.home.nomad.andvari.net`) everywhere — in prometheus scrape targets, reload URLs, inter-service references, and Traefik backend definitions.
 
+**Inter-task communication**: Docker tasks in the same Nomad group have separate network namespaces. Never use `127.0.0.1` to reach a sibling task — use its Consul DNS address instead.
+
 ## CSI volumes
 
 Key volumes:
