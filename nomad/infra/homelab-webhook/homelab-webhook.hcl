@@ -70,13 +70,8 @@ EOF
 
   group "nomad-botherer" {
 
-    // Must run on a Nomad server node so it can talk to the local Nomad API.
-    // Set meta { nomad_server = "true" } in the client config on server nodes.
-    constraint {
-      attribute = "${meta.nomad_server}"
-      value     = "true"
-    }
-
+    // amd64 constraint also ensures this runs on a Nomad server node --
+    // the only non-server in the cluster is the Raspberry Pi (arm64).
     constraint {
       attribute = "${attr.cpu.arch}"
       operator  = "="

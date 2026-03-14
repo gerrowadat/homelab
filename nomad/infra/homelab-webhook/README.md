@@ -35,8 +35,9 @@ On a webhook push (or on its polling interval), it:
 Listens on port **9112**. Traefik routes `POST /webhooks/nomad-botherer` to
 this service (no `internal-only` middleware — GitHub must be able to reach it).
 
-Must run on a Nomad **server** node so it can talk to the local Nomad API at
-`http://127.0.0.1:4646`.
+Must run on a Nomad **server** node so it can talk to the local Nomad API.
+Constrained to amd64 — the only non-server node in the cluster is the
+Raspberry Pi (arm64).
 
 ---
 
@@ -55,30 +56,6 @@ nomad var put nomad/jobs/homelab-webhook \
 |------------------------|----------|----------------------------------------------------------|
 | `github_webhook_secret` | yes     | HMAC secret configured in the GitHub webhook settings    |
 | `nomad_token`           | no      | Nomad ACL token for nomad-botherer (omit if ACL disabled) |
-
----
-
-## Node requirements for nomad-botherer
-
-The `nomad-botherer` group is constrained to nodes with:
-
-```hcl
-meta {
-  nomad_server = "true"
-}
-```
-
-Add this to the `client` stanza of the Nomad agent config on every server node,
-then restart the agent:
-
-```hcl
-# /etc/nomad.d/client.hcl (server nodes only)
-client {
-  meta {
-    nomad_server = "true"
-  }
-}
-```
 
 ---
 
