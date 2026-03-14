@@ -55,7 +55,7 @@ nomad var put nomad/jobs/homelab-webhook \
 | Key                    | Required | Description                                              |
 |------------------------|----------|----------------------------------------------------------|
 | `github_webhook_secret` | yes     | HMAC secret configured in the GitHub webhook settings    |
-| `nomad_token`           | no      | Nomad ACL token for nomad-botherer (omit if ACL disabled) |
+| `nomad_token`           | no      | Nomad ACL token for nomad-botherer (omit if ACL disabled) — see `nomad/acl/` |
 
 ---
 

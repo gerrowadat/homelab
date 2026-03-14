@@ -7,6 +7,7 @@ Nomad ACL policy definitions.
 | `variable-admin-policy.hcl` | Read/write access to all Nomad variables in all namespaces |
 | `traefik-policy.hcl` | Read access to the default namespace service catalog for Traefik routing |
 | `traefik-vars-policy.hcl` | Read access to `cloud_dns_key` for Traefik's workload identity |
+| `nomad-botherer-policy.hcl` | List, read, and plan jobs in the default namespace (for nomad-botherer drift detection) |
 
 ## Applying policies and creating tokens
 
@@ -19,6 +20,13 @@ nomad acl token create -name="variable reader/writer" -policy=variable-admin
 nomad acl policy apply -description "Traefik service catalog reader" traefik traefik-policy.hcl
 nomad acl token create -name="traefik" -policy=traefik
 # Store the Secret ID in: nomad var put nomad/jobs/traefik nomad_token=<id>
+
+# nomad-botherer: list, read, and plan jobs for drift detection
+# Note: Nomad has no plan-only capability -- submit-job covers both planning
+# and submitting. nomad-botherer only plans, but the token technically could submit.
+nomad acl policy apply -description "nomad-botherer job drift detector" nomad-botherer nomad-botherer-policy.hcl
+nomad acl token create -name="nomad-botherer" -policy=nomad-botherer
+# Store the Secret ID in: nomad var put nomad/jobs/homelab-webhook nomad_token=<id>
 ```
 
 See `backpack.sh` for the bootstrap sequence that runs these on a fresh cluster.
