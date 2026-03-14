@@ -82,7 +82,7 @@ EOF
       driver = "docker"
 
       config {
-        image = "ghcr.io/gerrowadat/nomad-botherer:latest"
+        image = "ghcr.io/gerrowadat/nomad-botherer:0.0.2"
         ports = ["nomad-botherer"]
       }
 

@@ -27,3 +27,16 @@
     "for": "0m"
     "labels":
       "severity": "warning"
+
+  # Fires if more than 3 jobs have a modified diff (definition in HCL differs
+  # from what's running in Nomad). Missing jobs are excluded -- use diff_type
+  # "missing_from_nomad" or "missing_from_hcl" to alert on those separately.
+  - "alert": "NomadJobDrift"
+    "annotations":
+      "summary": "{{ $value | humanize }} Nomad jobs have drifted from HCL"
+      "description": "{{ $value | humanize }} jobs are modified (running config differs from HCL). Run `curl nomad-botherer.service.home.consul:9112/diffs` for details."
+    "expr": |
+      nomad_botherer_drifted_jobs{diff_type="modified"} > 3
+    "for": "10m"
+    "labels":
+      "severity": "warning"
