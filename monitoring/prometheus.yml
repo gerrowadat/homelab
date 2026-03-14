@@ -6,6 +6,7 @@ rule_files:
   - "blackbox_alerting_rules.yml"
   - "node_exporter_recording_rules.yml"
   - "node_exporter_alerting_rules.yml"
+  - "nomad_botherer_alerting_rules.yml"
 
 alerting:
   alertmanagers:
@@ -95,6 +96,7 @@ scrape_configs:
           - nut2mqtt.service.home.consul:3494
           - http://miniflux.service.home.consul:8080/rss
           - z2m.service.home.consul:8081
+          - nomad-botherer.service.home.consul:9112
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -120,6 +122,11 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: prom-blackbox-exporter.service.home.consul:9115
+
+  # nomad-botherer job drift detector.
+  - job_name: nomad-botherer
+    static_configs:
+      - targets: ['nomad-botherer.service.home.consul:9112']
 
   # Newt tunnel client metrics (built-in Prometheus endpoint).
   - job_name: newt

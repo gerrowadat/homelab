@@ -1,0 +1,29 @@
+"groups":
+- "name": "nomad-botherer"
+  "rules":
+
+  # Fires if Prometheus can't scrape nomad-botherer's metrics endpoint.
+  # Distinct from ConsulServiceDown: that checks HTTP reachability via blackbox;
+  # this catches cases where the service is up but metrics are broken.
+  - "alert": "NomadBothererDown"
+    "annotations":
+      "summary": "nomad-botherer is not reachable"
+      "description": "nomad-botherer metrics endpoint has been unscrapeable for 5 minutes. Job drift detection is not running."
+    "expr": |
+      up{job="nomad-botherer"} == 0
+    "for": "5m"
+    "labels":
+      "severity": "warning"
+
+  # Fires if nomad-botherer has seen webhook signature or parse errors in the
+  # last hour. Errors here mean GitHub pushes are not being processed and drift
+  # detection will fall back to polling only.
+  - "alert": "NomadBothererWebhookErrors"
+    "annotations":
+      "summary": "nomad-botherer webhook errors"
+      "description": "nomad-botherer has received {{ $value | humanize }} webhook error(s) in the last hour. Check WEBHOOK_SECRET and payload format."
+    "expr": |
+      increase(nomad_botherer_webhook_events_total{event="error"}[1h]) > 0
+    "for": "0m"
+    "labels":
+      "severity": "warning"
