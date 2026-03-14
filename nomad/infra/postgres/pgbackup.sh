@@ -6,7 +6,7 @@
 #   PGBACKUP_KEY  - passphrase for openssl encryption
 set -euo pipefail
 
-PGHOST=127.0.0.1
+PGHOST=postgres.service.home.consul
 PGUSER=postgres
 BACKUP_DIR=/backup
 
