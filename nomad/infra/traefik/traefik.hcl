@@ -160,6 +160,11 @@ http:
       tls:
         certResolver: le
       service: homelab-webhook
+    nomad-botherer:
+      rule: "Host(`home.andvari.net`) && PathPrefix(`/webhooks/nomad-botherer`)"
+      tls:
+        certResolver: le
+      service: nomad-botherer
 
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -179,6 +184,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://homelab-webhook.service.home.consul:9111"
+    nomad-botherer:
+      loadBalancer:
+        servers:
+          - url: "http://nomad-botherer.service.home.consul:9112"
 EOH
         destination = "local/dynamic.yml"
       }
