@@ -67,4 +67,69 @@ EOF
       }
     }
   }
+
+  group "nomad-botherer" {
+
+    // Must run on a Nomad server node so it can talk to the local Nomad API.
+    // Set meta { nomad_server = "true" } in the client config on server nodes.
+    constraint {
+      attribute = "${meta.nomad_server}"
+      value     = "true"
+    }
+
+    constraint {
+      attribute = "${attr.cpu.arch}"
+      operator  = "="
+      value     = "amd64"
+    }
+
+    task "nomad-botherer" {
+      driver = "docker"
+
+      config {
+        image = "ghcr.io/gerrowadat/nomad-botherer:latest"
+        ports = ["nomad-botherer"]
+      }
+
+      template {
+        destination = "secrets/env"
+        env         = true
+        data        = <<EOF
+GIT_REPO_URL=https://github.com/gerrowadat/homelab
+GIT_BRANCH=main
+HCL_DIR=nomad
+LISTEN_ADDR=:9112
+WEBHOOK_PATH=/webhooks/nomad-botherer
+NOMAD_ADDR=http://127.0.0.1:4646
+LOG_LEVEL=debug
+WEBHOOK_SECRET={{ with nomadVar "nomad/jobs/homelab-webhook" }}{{ .github_webhook_secret }}{{ end }}
+NOMAD_TOKEN={{ with nomadVar "nomad/jobs/homelab-webhook" }}{{ .nomad_token }}{{ end }}
+EOF
+      }
+
+      service {
+        name = "nomad-botherer"
+        port = "nomad-botherer"
+        check {
+          name     = "HTTP health check"
+          type     = "http"
+          path     = "/healthz"
+          interval = "30s"
+          timeout  = "5s"
+        }
+      }
+
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+
+    network {
+      mode = "host"
+      port "nomad-botherer" {
+        static = "9112"
+      }
+    }
+  }
 }
