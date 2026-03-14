@@ -53,47 +53,18 @@ EOH
       config {
         image   = "postgres:16.13"
         command = "bash"
-        args    = ["/local/backup.sh"]
+        args    = ["/gitrepo/nomad/infra/postgres/pgbackup.sh"]
       }
 
-      template {
-        data        = <<-EOH
-          #!/usr/bin/env bash
-          set -euo pipefail
+      volume_mount {
+        volume      = "gitrepo"
+        destination = "/gitrepo"
+        read_only   = true
+      }
 
-          PGHOST=127.0.0.1
-          PGUSER=postgres
-          BACKUP_DIR=/backup
-
-          until pg_isready -h "$PGHOST" -U "$PGUSER" -q; do
-            echo "Waiting for postgres..."
-            sleep 5
-          done
-
-          while true; do
-            DATE=$(date +%Y%m%d_%H%M%S)
-            echo "Starting backup at $DATE"
-
-            DATABASES=$(psql -h "$PGHOST" -U "$PGUSER" -t -A \
-              -c "SELECT datname FROM pg_database WHERE datistemplate = false")
-
-            for db in $DATABASES; do
-              echo "Backing up $db..."
-              pg_dump -h "$PGHOST" -U "$PGUSER" "$db" \
-                | openssl enc -aes-256-cbc -pbkdf2 -pass env:PGBACKUP_KEY \
-                > "$BACKUP_DIR/${db}_${DATE}.sql.enc"
-              pg_dump -h "$PGHOST" -U "$PGUSER" --schema-only "$db" \
-                | openssl enc -aes-256-cbc -pbkdf2 -pass env:PGBACKUP_KEY \
-                > "$BACKUP_DIR/${db}_${DATE}_schema.sql.enc"
-              echo "Done backing up $db"
-            done
-
-            echo "Backup complete. Sleeping 24h."
-            sleep 86400
-          done
-        EOH
-        destination = "local/backup.sh"
-        perms       = "755"
+      volume_mount {
+        volume      = "pgbackup"
+        destination = "/backup"
       }
 
       template {
@@ -107,15 +78,18 @@ EOH
         env         = true
       }
 
-      volume_mount {
-        volume      = "pgbackup"
-        destination = "/backup"
-      }
-
       resources {
         cpu    = 200
         memory = 256
       }
+    }
+
+    volume "gitrepo" {
+      type            = "csi"
+      source          = "gitrepo"
+      read_only       = true
+      attachment_mode = "file-system"
+      access_mode     = "multi-node-multi-writer"
     }
 
     volume "pgbackup" {
