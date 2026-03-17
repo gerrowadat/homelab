@@ -11,6 +11,7 @@ User-facing applications.
 | `birdnet` | BirdNET-Pi bird call detection | Backed by CSI NFS volume |
 | `giv_tcp` | GivEnergy solar inverter monitoring | Talks to inverter at fixed LAN IP |
 | `cringesweeper` | Sweeps old posts from Bluesky and Mastodon | Secrets in `nomad/jobs/cringesweeper` |
+| `kutt` | URL shortener at go.home.andvari.net | Backed by postgres and CSI NFS volume; secrets in `nomad/jobs/kutt` |
 
 ## Hardware-pinned jobs
 
