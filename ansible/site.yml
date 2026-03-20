@@ -37,3 +37,11 @@
   become_user: root
   roles:
     - role: ups
+
+- name: all physical hosts
+  hosts: node_exporter
+  any_errors_fatal: false
+  become: true
+  become_user: root
+  roles:
+    - role: node_exporter

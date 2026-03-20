@@ -22,11 +22,11 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   # Physical hosts -- node_exporter on port 9100.
-  # 1m interval: node metrics don't need to be fresher than this.
+  # 60s interval is sufficient resolution for host metrics.
   # Host list is anchored here and reused by blackbox-ping below.
   - job_name: node_exporter
-    scrape_interval: 1m
-    scrape_timeout: 1m
+    scrape_interval: 60s
+    scrape_timeout: 55s
     static_configs:
       - targets: &physical_hosts
           - hedwig
