@@ -40,6 +40,8 @@ job "homelab-webhook" {
         env         = true
         data        = <<EOF
 GITHUB_WEBHOOK_SECRET={{ with nomadVar "nomad/jobs/homelab-webhook" }}{{ .github_webhook_secret }}{{ end }}
+GRAFANA_ADMIN_USER={{ with nomadVar "nomad/jobs/homelab-webhook" }}{{ .grafana_admin_user }}{{ end }}
+GRAFANA_ADMIN_PASSWORD={{ with nomadVar "nomad/jobs/homelab-webhook" }}{{ .grafana_admin_password }}{{ end }}
 EOF
       }
 

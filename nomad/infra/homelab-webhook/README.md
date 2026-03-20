@@ -13,7 +13,11 @@ A lightweight Python webhook server (`webhook.py`) that watches for changes to
 `monitoring/` files. On a matching push to `main`:
 
 1. Runs `git pull` on the `gitrepo` CSI volume (shared read-write mount).
-2. POSTs `/-/reload` to Prometheus, Alertmanager, and Blackbox Exporter.
+2. If any `monitoring/` files changed (excluding `monitoring/grafana/`): POSTs
+   `/-/reload` to Prometheus, Alertmanager, and Blackbox Exporter.
+3. If any `monitoring/grafana/` files changed: POSTs the Grafana provisioning
+   reload API (`/api/admin/provisioning/datasources/reload` and
+   `/api/admin/provisioning/dashboards/reload`) using Basic auth.
 
 Listens on port **9111**. Traefik routes `POST /webhooks/monitoring-reload` to
 this service.
@@ -49,13 +53,17 @@ variable before deploying:
 ```bash
 nomad var put nomad/jobs/homelab-webhook \
   github_webhook_secret=<secret> \
+  grafana_admin_user=<grafana-admin-username> \
+  grafana_admin_password=<grafana-admin-password> \
   nomad_token=<optional-acl-token>
 ```
 
-| Key                    | Required | Description                                              |
-|------------------------|----------|----------------------------------------------------------|
-| `github_webhook_secret` | yes     | HMAC secret configured in the GitHub webhook settings    |
-| `nomad_token`           | no      | Nomad ACL token for nomad-botherer (omit if ACL disabled) — see `nomad/acl/` |
+| Key                      | Required | Description                                              |
+|--------------------------|----------|----------------------------------------------------------|
+| `github_webhook_secret`  | yes      | HMAC secret configured in the GitHub webhook settings    |
+| `grafana_admin_user`     | yes      | Grafana admin username (must match `nomad/jobs/grafana`) |
+| `grafana_admin_password` | yes      | Grafana admin password (must match `nomad/jobs/grafana`) |
+| `nomad_token`            | no       | Nomad ACL token for nomad-botherer (omit if ACL disabled) — see `nomad/acl/` |
 
 ---
 

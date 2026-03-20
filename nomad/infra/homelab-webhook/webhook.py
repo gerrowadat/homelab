@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import base64
 import datetime
 import hashlib
 import hmac
@@ -20,6 +21,14 @@ RELOAD_TARGETS = [
     "http://prometheus.service.home.consul:9090/-/reload",
     "http://prom-alertmanager.service.home.consul:9093/-/reload",
     "http://prom-blackbox-exporter.service.home.consul:9115/-/reload",
+]
+
+GRAFANA_ADMIN_USER = os.environ.get("GRAFANA_ADMIN_USER", "admin")
+GRAFANA_ADMIN_PASSWORD = os.environ.get("GRAFANA_ADMIN_PASSWORD", "")
+
+GRAFANA_RELOAD_TARGETS = [
+    "http://grafana.service.home.consul:3000/api/admin/provisioning/datasources/reload",
+    "http://grafana.service.home.consul:3000/api/admin/provisioning/dashboards/reload",
 ]
 
 
@@ -48,16 +57,32 @@ def git_pull():
 
 
 def touches_monitoring(payload):
+    """Returns True if any prometheus/alertmanager/blackbox config files changed."""
     changed = []
     for commit in payload.get("commits", []):
         for key in ("added", "removed", "modified"):
             for path in commit.get(key, []):
-                if path.startswith("monitoring/"):
+                if path.startswith("monitoring/") and not path.startswith("monitoring/grafana/"):
                     changed.append(f"{key}: {path}")
     if changed:
         log(f"Monitoring files changed ({len(changed)}): {', '.join(changed)}")
     else:
-        log("No monitoring/ files changed — skipping reload")
+        log("No prometheus/alertmanager/blackbox files changed — skipping prometheus reload")
+    return bool(changed)
+
+
+def touches_grafana_config(payload):
+    """Returns True if any Grafana provisioning files changed."""
+    changed = []
+    for commit in payload.get("commits", []):
+        for key in ("added", "removed", "modified"):
+            for path in commit.get(key, []):
+                if path.startswith("monitoring/grafana/"):
+                    changed.append(f"{key}: {path}")
+    if changed:
+        log(f"Grafana config files changed ({len(changed)}): {', '.join(changed)}")
+    else:
+        log("No monitoring/grafana/ files changed — skipping grafana reload")
     return bool(changed)
 
 
@@ -72,6 +97,25 @@ def reload_services():
                 log(f"  -> OK (HTTP {resp.status})")
         except Exception as e:
             raise RuntimeError(f"Reload failed for {url}: {e}")
+
+
+def reload_grafana():
+    if not GRAFANA_ADMIN_PASSWORD:
+        raise RuntimeError("GRAFANA_ADMIN_PASSWORD not set — cannot reload Grafana provisioning")
+    credentials = base64.b64encode(
+        f"{GRAFANA_ADMIN_USER}:{GRAFANA_ADMIN_PASSWORD}".encode()
+    ).decode()
+    for url in GRAFANA_RELOAD_TARGETS:
+        log(f"Sending POST to {url}")
+        req = urllib.request.Request(url, method="POST", data=b"")
+        req.add_header("Authorization", f"Basic {credentials}")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status not in (200, 204):
+                    raise RuntimeError(f"HTTP {resp.status}")
+                log(f"  -> OK (HTTP {resp.status})")
+        except Exception as e:
+            raise RuntimeError(f"Grafana reload failed for {url}: {e}")
 
 
 class WebhookHandler(http.server.BaseHTTPRequestHandler):
@@ -155,9 +199,13 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
         try:
             git_pull()
             if touches_monitoring(payload):
-                log("Triggering reload of monitoring services")
+                log("Triggering reload of prometheus/alertmanager/blackbox")
                 reload_services()
-                log("All monitoring service reloads complete")
+                log("All prometheus service reloads complete")
+            if touches_grafana_config(payload):
+                log("Triggering reload of Grafana provisioning")
+                reload_grafana()
+                log("Grafana provisioning reload complete")
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b"OK")
