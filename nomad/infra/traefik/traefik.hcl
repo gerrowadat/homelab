@@ -165,6 +165,12 @@ http:
       tls:
         certResolver: le
       service: nomad-botherer
+    grafana:
+      rule: "Host(`home.andvari.net`) && PathPrefix(`/graphs`)"
+      tls:
+        certResolver: le
+      middlewares: [internal-only]
+      service: grafana
 
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -188,6 +194,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://nomad-botherer.service.home.consul:9112"
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://grafana.service.home.consul:3000"
 EOH
         destination = "local/dynamic.yml"
       }

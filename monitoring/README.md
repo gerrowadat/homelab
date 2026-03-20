@@ -3,7 +3,7 @@
 Prometheus configuration files, mounted into the prometheus container via the
 `gitrepo` CSI volume by the Nomad job in `nomad/monitoring/prometheus.hcl`.
 
-| File | Purpose |
+| File / Directory | Purpose |
 |---|---|
 | `prometheus.yml` | Main config: scrape jobs, alertmanager address, rule files |
 | `node_exporter_alerting_rules.yml` | Alerts for host-level metrics (disk, memory, load) |
@@ -11,19 +11,31 @@ Prometheus configuration files, mounted into the prometheus container via the
 | `blackbox_alerting_rules.yml` | Alerts for failed HTTP/ICMP probes |
 | `prom-alertmanager.yml` | Alert routing and email notification config |
 | `prom-blackbox-exporter.yml` | Probe module definitions (http_2xx, icmp) |
+| `grafana/` | Grafana provisioning config and dashboard JSON files |
+| `grafana/provisioning/datasources/` | Datasource definitions (Prometheus pre-configured) |
+| `grafana/provisioning/dashboards/` | Dashboard provider config |
+| `grafana/dashboards/` | Dashboard JSON files — add `.json` exports here |
+
+See `docs/grafana.md` for the Grafana setup guide and playbook.
 
 ## Config reload workflow
 
 Config changes are applied by pushing to `main`. A GitHub webhook triggers
 `homelab-webhook` (a Nomad service job at `nomad/infra/homelab-webhook/`),
-which pulls the latest git repo onto the `gitrepo` CSI volume and POSTs
-`/-/reload` to prometheus, alertmanager, and blackbox-exporter.
+which pulls the latest git repo onto the `gitrepo` CSI volume.
 
 ```
-git push → GitHub webhook → hooks.andvari.net (Traefik)
+git push → GitHub webhook → home.andvari.net/webhooks/monitoring-reload (Traefik)
   → homelab-webhook Nomad job → git pull on CSI volume
-  → POST /-/reload to prometheus, alertmanager, blackbox-exporter
+  → if monitoring/ changed (excl. grafana/):
+      POST /-/reload to prometheus, alertmanager, blackbox-exporter
+  → if monitoring/grafana/ changed:
+      POST /api/admin/provisioning/datasources/reload to Grafana
+      POST /api/admin/provisioning/dashboards/reload to Grafana
 ```
+
+Grafana also polls `monitoring/grafana/dashboards/` every 30 seconds, so
+dashboard JSON changes propagate even without a webhook push.
 
 ## Validating configs before pushing
 
