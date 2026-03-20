@@ -1,29 +1,59 @@
-- name: Install required packages.
-  ansible.builtin.apt:
+# --- Hashicorp apt repo setup ---
+# The repo is also set up by the consul role; apt_key/apt_repository are
+# idempotent so running this twice in the same play is harmless.
+
+- name: Add Hashicorp apt signing key
+  ansible.builtin.apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+
+- name: Add Hashicorp apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ download_arch }}] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    state: present
+    filename: hashicorp
     update_cache: yes
-    cache_valid_time: 3600
-    pkg:
-      - unzip
 
-- name: Make dir to tidy up downloads for install
-  become: true
-  become_user: '{{ ansible_user }}'
+- name: Install nomad at pinned version
+  ansible.builtin.apt:
+    name: "nomad={{ nomad_version }}-1"
+    state: present
+
+- name: Hold nomad package at current version
+  ansible.builtin.dpkg_selections:
+    name: nomad
+    selection: hold
+
+# --- One-time migration: clean up artifacts from the old binary-download install ---
+# These tasks are idempotent -- safe to re-run once the files are already gone.
+
+- name: Check for old nomad binary
+  ansible.builtin.stat:
+    path: /usr/local/bin/nomad
+  register: old_nomad_binary
+
+- name: Stop nomad before migration cleanup
+  ansible.builtin.systemd:
+    name: nomad
+    state: stopped
+  when: old_nomad_binary.stat.exists
+  failed_when: false
+
+- name: Remove old nomad binary
   ansible.builtin.file:
-    path: '/home/{{ ansible_user }}/download'
-    state: directory
+    path: /usr/local/bin/nomad
+    state: absent
 
-- name: Grab the latest nomad binary.
-  become: true
-  become_user : '{{ ansible_user }}'
-  ansible.builtin.get_url:
-    url: 'https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_{{ download_arch }}.zip'
-    dest: '/home/{{ ansible_user }}/download/'
+- name: Remove old custom nomad systemd unit
+  ansible.builtin.file:
+    path: /etc/systemd/system/nomad.service
+    state: absent
+  notify: Reload systemd daemon
 
-- name: Unzip nomad binary.
-  ansible.builtin.unarchive:
-    remote_src: yes
-    src: '/home/{{ ansible_user }}/download/nomad_{{ nomad_version }}_linux_{{ download_arch }}.zip'
-    dest: '/usr/local/bin/'
+- name: Flush handlers (ensure daemon-reload runs before service management)
+  ansible.builtin.meta: flush_handlers
+
+# --- Config and data directories (unchanged from before) ---
 
 - name: Create /opt/nomad
   ansible.builtin.file:
@@ -35,12 +65,6 @@
     path: '/local'
     state: directory
 
-
-- name: Create nomad rc file
-  ansible.builtin.copy:
-    src: nomad.service
-    dest: '/etc/systemd/system/nomad.service'
-
 - name: Create /etc/nomad.d
   ansible.builtin.file:
     path: '/etc/nomad.d'
@@ -51,22 +75,23 @@
   ansible.builtin.copy:
     src: nomad.hcl
     dest: '/etc/nomad.d/'
+  notify: Restart nomad
 
 - name: Copy server.hcl
   ansible.builtin.copy:
     src: server.hcl
     dest: '/etc/nomad.d/'
   when: nomad_server
+  notify: Restart nomad
 
 - name: Copy client.hcl
   ansible.builtin.copy:
     src: client.hcl
     dest: '/etc/nomad.d/'
+  notify: Restart nomad
 
-- name: Enable nomad on boot.
+- name: Enable nomad on boot
   ansible.builtin.systemd:
     name: nomad
     enabled: yes
     state: started
-
-
