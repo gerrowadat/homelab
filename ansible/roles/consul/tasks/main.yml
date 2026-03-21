@@ -1,22 +1,57 @@
-- name: Make dir to tidy up downloads for install
-  become: true
-  become_user: '{{ ansible_user }}'
+# --- Hashicorp apt repo setup ---
+
+- name: Add Hashicorp apt signing key
+  ansible.builtin.apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+
+- name: Add Hashicorp apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ download_arch }}] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    state: present
+    filename: hashicorp
+    update_cache: yes
+
+- name: Install consul at pinned version
+  ansible.builtin.apt:
+    name: "consul={{ consul_version }}-1"
+    state: present
+
+- name: Hold consul package at current version
+  ansible.builtin.dpkg_selections:
+    name: consul
+    selection: hold
+
+# --- One-time migration: clean up artifacts from the old binary-download install ---
+# These tasks are idempotent -- safe to re-run once the files are already gone.
+
+- name: Check for old consul binary
+  ansible.builtin.stat:
+    path: /usr/local/bin/consul
+  register: old_consul_binary
+
+- name: Stop consul before migration cleanup
+  ansible.builtin.systemd:
+    name: consul
+    state: stopped
+  when: old_consul_binary.stat.exists
+  failed_when: false
+
+- name: Remove old consul binary
   ansible.builtin.file:
-    path: '/home/{{ ansible_user }}/download'
-    state: directory
+    path: /usr/local/bin/consul
+    state: absent
 
-- name: Grab the latest consul binary.
-  become: true
-  become_user : '{{ ansible_user }}'
-  ansible.builtin.get_url:
-    url: 'https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_{{ download_arch }}.zip'
-    dest: '/home/{{ ansible_user }}/download/'
+- name: Remove old custom consul systemd unit
+  ansible.builtin.file:
+    path: /etc/systemd/system/consul.service
+    state: absent
+  notify: Reload systemd daemon
 
-- name: Unzip consul binary.
-  ansible.builtin.unarchive:
-    remote_src: yes
-    src: '/home/{{ ansible_user }}/download/consul_{{ consul_version }}_linux_{{ download_arch }}.zip'
-    dest: '/usr/local/bin/'
+- name: Flush handlers (ensure daemon-reload runs before service management)
+  ansible.builtin.meta: flush_handlers
+
+# --- Config and data directories (unchanged from before) ---
 
 - name: Create consul user
   ansible.builtin.user:
@@ -46,6 +81,7 @@
     dest: '/etc/consul.d/consul.hcl'
     owner: consul
     group: consul
+  notify: Restart consul
 
 - name: Generate server.hcl
   ansible.builtin.template:
@@ -53,14 +89,9 @@
     dest: '/etc/consul.d/server.hcl'
     owner: consul
     group: consul
+  notify: Restart consul
 
-- name: Create consul rc file
-  ansible.builtin.copy:
-    src: consul.service
-    dest: '/etc/systemd/system/consul.service'
-  when: consul_enabled
-
-- name: Enable consul on boot.
+- name: Enable consul on boot
   ansible.builtin.systemd:
     name: consul
     enabled: yes
