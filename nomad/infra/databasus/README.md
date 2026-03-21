@@ -22,35 +22,14 @@ Accessible at `https://home.andvari.net/databasus` (internal-only).
 
 ### Nomad variables
 
-Create the Nomad variable path for databasus itself (leave empty if no extra config needed):
-
-```
-nomad var put nomad/jobs/databasus placeholder=true
-```
-
-The databasus job reads admin credentials from the existing postgres and mysql
-variable paths via a workload-identity ACL policy (see below). No extra
-variables need to be created — just ensure these already exist:
-
-- `nomad/jobs/postgres` (key: `pgpassword`)
-- `nomad/jobs/mysql` (key: `root_password`)
-
-### ACL policy and binding rule
-
-The job template injects the database passwords as env vars. This requires the
-`databasus-vars` ACL policy to be applied and bound:
+The databasus job reads database credentials from its own variable path
+(`nomad/jobs/databasus`). Copy the passwords from the existing postgres and
+mysql variables:
 
 ```bash
-nomad acl policy apply \
-  -description "Databasus variable access" \
-  databasus-vars \
-  nomad/acl/databasus-vars-policy.hcl
-
-nomad acl binding-rule create \
-  -auth-method=nomad-workloads \
-  -bind-type=policy \
-  -bind-name=databasus-vars \
-  -selector='value.nomad_job_id == "databasus"'
+nomad var put nomad/jobs/databasus \
+  postgres_password=$(nomad var get -out json nomad/jobs/postgres | jq -r '.Items.pgpassword') \
+  mysql_root_password=$(nomad var get -out json nomad/jobs/mysql | jq -r '.Items.root_password')
 ```
 
 ### CSI volumes

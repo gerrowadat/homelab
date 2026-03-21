@@ -65,16 +65,13 @@ job "databasus" {
         destination = "/mysqlbackup"
       }
 
-      # Injects postgres and mysql admin passwords from Nomad variables.
-      # Requires the databasus-vars ACL policy + binding rule.
-      # Use these values when configuring database connections in the web UI.
+      # Injects database credentials from the databasus Nomad variable.
+      # See README for how to populate nomad/jobs/databasus.
       template {
         data = <<EOH
-{{- with nomadVar "nomad/jobs/postgres" -}}
-POSTGRES_ADMIN_PASSWORD={{ .pgpassword }}
-{{- end }}
-{{- with nomadVar "nomad/jobs/mysql" -}}
-MYSQL_ROOT_PASSWORD={{ .root_password }}
+{{- with nomadVar "nomad/jobs/databasus" -}}
+POSTGRES_ADMIN_PASSWORD={{ .postgres_password }}
+MYSQL_ROOT_PASSWORD={{ .mysql_root_password }}
 {{- end -}}
 EOH
         destination = "secrets/env"
