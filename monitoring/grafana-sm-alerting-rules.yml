@@ -1,0 +1,31 @@
+"groups":
+- "name": "grafana_synthetic_monitoring"
+  "rules":
+
+  # Fires when all probes for a "must be up" check report failure.
+  # Uses min() so a single flaky probe location does not page — all must fail.
+  - "alert": "SyntheticCheckDown"
+    "annotations":
+      "description": "{{ $labels.job }} ({{ $labels.instance }}) is unreachable from all Grafana Cloud probes."
+      "summary": "Public endpoint {{ $labels.job }} is down."
+    "expr": |
+      min by (job, instance) (
+        probe_success{source="grafana-sm", alert_if_up="false"}
+      ) == 0
+    "for": "5m"
+    "labels":
+      "severity": "critical"
+
+  # Fires when any probe can reach an endpoint that must NOT be publicly accessible.
+  # Uses max() so a single successful probe is enough to page.
+  - "alert": "InternalEndpointExposed"
+    "annotations":
+      "description": "{{ $labels.job }} ({{ $labels.instance }}) is reachable from Grafana Cloud probe {{ $labels.probe }} — it should not be publicly accessible."
+      "summary": "Internal endpoint {{ $labels.job }} is exposed to the internet."
+    "expr": |
+      max by (job, instance, probe) (
+        probe_success{source="grafana-sm", alert_if_up="true"}
+      ) == 1
+    "for": "5m"
+    "labels":
+      "severity": "critical"

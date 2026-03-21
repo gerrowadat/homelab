@@ -32,7 +32,9 @@ job "prometheus" {
                 # URL to pass to alertmanager etc.
                 "--web.external-url=http://prometheus.service.home.consul:9090/",
                 # Enable reload via web
-                "--web.enable-lifecycle"]
+                "--web.enable-lifecycle",
+                # Enable remote_write receiver so grafana-alloy can push SM metrics
+                "--web.enable-remote-write-receiver"]
         labels {
           group = "prometheus"
         }
