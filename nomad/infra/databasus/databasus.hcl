@@ -11,20 +11,6 @@ job "databasus" {
       attachment_mode = "file-system"
     }
 
-    volume "pgbackup" {
-      type            = "csi"
-      source          = "pgbackup"
-      access_mode     = "single-node-writer"
-      attachment_mode = "file-system"
-    }
-
-    volume "mysqlbackup" {
-      type            = "csi"
-      source          = "mysqlbackup"
-      access_mode     = "single-node-writer"
-      attachment_mode = "file-system"
-    }
-
     network {
       port "http" {
         static = 4005
@@ -53,16 +39,6 @@ job "databasus" {
       volume_mount {
         volume      = "databasus"
         destination = "/databasus-data"
-      }
-
-      volume_mount {
-        volume      = "pgbackup"
-        destination = "/pgbackup"
-      }
-
-      volume_mount {
-        volume      = "mysqlbackup"
-        destination = "/mysqlbackup"
       }
 
       resources {

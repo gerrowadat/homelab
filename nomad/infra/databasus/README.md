@@ -14,9 +14,7 @@ Accessible at `https://home.andvari.net/databasus` (internal-only).
 
 | Volume | CSI plugin | Mount | Purpose |
 |---|---|---|---|
-| `databasus` | `rabbitseason-srv-nfs` | `/databasus-data` | Databasus app state (config, schedules, audit log) |
-| `pgbackup` | `rabbitseason-mix-nfs` | `/pgbackup` | Postgres backup destination (backed up by restic) |
-| `mysqlbackup` | `rabbitseason-mix-nfs` | `/mysqlbackup` | MySQL backup destination (backed up by restic) |
+| `databasus` | `rabbitseason-srv-nfs` | `/databasus-data` | All databasus state: app config, schedules, and local backups (`/databasus-data/backups`) |
 
 ## Prerequisites
 
@@ -34,12 +32,8 @@ sudo chown -R 100:102 /srv/databasus
 
 ### CSI volumes
 
-Create all three volumes before first deploy:
-
 ```bash
 nomad volume create nomad/storage/volumes/databasus.hcl
-nomad volume create nomad/storage/volumes/pgbackup.hcl     # already exists
-nomad volume create nomad/storage/volumes/mysqlbackup.hcl
 ```
 
 ## Initial setup
@@ -50,12 +44,12 @@ After deploying, open `https://home.andvari.net/databasus` and configure:
 - Host: `postgres.service.home.consul`, port `5432`
 - User: `postgres`
 - Password: from `nomad var get nomad/jobs/postgres` (key: `pgpassword`)
-- Backup destination: local path `/pgbackup`
+- Backup destination: local path `/databasus-data/backups`
 
 **MySQL:**
 - Host: `mysql.service.home.consul`, port `3306`
 - User: `root`
 - Password: from `nomad var get nomad/jobs/mysql` (key: `root_password`)
-- Backup destination: local path `/mysqlbackup`
+- Backup destination: local path `/databasus-data/backups`
 
 Set up a rotation schedule (daily/weekly/monthly) to keep backup storage bounded.
