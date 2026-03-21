@@ -8,10 +8,19 @@ Nomad ACL policy definitions.
 | `traefik-policy.hcl` | Read access to the default namespace service catalog for Traefik routing |
 | `traefik-vars-policy.hcl` | Read access to `cloud_dns_key` for Traefik's workload identity |
 | `nomad-botherer-policy.hcl` | List, read, and plan jobs in the default namespace (for nomad-botherer drift detection) |
+| `databasus-vars-policy.hcl` | Read access to `nomad/jobs/postgres` and `nomad/jobs/mysql` for Databasus's workload identity |
 
 ## Applying policies and creating tokens
 
 ```bash
+# databasus-vars: allows databasus workload identity to read postgres/mysql credentials
+nomad acl policy apply -description "Databasus variable access" databasus-vars nomad/acl/databasus-vars-policy.hcl
+nomad acl binding-rule create \
+  -auth-method=nomad-workloads \
+  -bind-type=policy \
+  -bind-name=databasus-vars \
+  "-selector=${value.nomad_job_id} == \"databasus\""
+
 # variable-admin: used for bootstrapping/managing Nomad variables
 nomad acl policy apply -description "variable admin" variable-admin variable-admin-policy.hcl
 nomad acl token create -name="variable reader/writer" -policy=variable-admin
