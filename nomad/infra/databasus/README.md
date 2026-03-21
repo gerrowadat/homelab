@@ -2,7 +2,7 @@
 
 [Databasus](https://databasus.com) is a self-hosted database backup tool with a web UI, rotation policies, and support for multiple storage destinations. It replaces the hand-rolled `pgbackup.sh` sidecar.
 
-Accessible at `https://databasus.home.andvari.net` (internal-only).
+Accessible at `https://home.andvari.net/databasus` (internal-only).
 
 ## Jobs / tasks
 

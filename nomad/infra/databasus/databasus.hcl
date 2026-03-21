@@ -42,13 +42,6 @@ job "databasus" {
       service {
         name = "databasus"
         port = "http"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.databasus.rule=Host(`databasus.home.andvari.net`)",
-          "traefik.http.routers.databasus.tls=true",
-          "traefik.http.routers.databasus.tls.certresolver=le",
-          "traefik.http.routers.databasus.middlewares=internal-only@file",
-        ]
         check {
           name     = "TCP Connection Check"
           type     = "tcp"
