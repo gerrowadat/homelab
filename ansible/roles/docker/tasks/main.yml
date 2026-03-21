@@ -1,6 +1,9 @@
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: apt
+
 - name: Remove incompatible business.
   ansible.builtin.apt:
-    update-cache: yes
     state: absent
     pkg:
       - docker
@@ -8,35 +11,40 @@
       - docker.io
       - containerd
       - runc
+  when: "'docker-ce' not in ansible_facts.packages"
 
 - name: Install pre-requisites.
   ansible.builtin.apt:
-    update-cache: yes
+    update_cache: yes
+    cache_valid_time: 3600
     pkg:
       - apt-transport-https
       - ca-certificates
       - curl
       - gnupg
       - lsb-release
+  when: "'docker-ce' not in ansible_facts.packages"
 
 - name: Add Docker apt key
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
+  when: "'docker-ce' not in ansible_facts.packages"
 
 - name: Add Docker stable repository.
   apt_repository:
     repo: "deb [arch={{ download_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
+  when: "'docker-ce' not in ansible_facts.packages"
 
 - name: Install Docker.
   ansible.builtin.apt:
-    update-cache: yes
     pkg:
       - docker-ce
       - docker-ce-cli
       - containerd.io
+  when: "'docker-ce' not in ansible_facts.packages"
 
 - name: Deploy Docker daemon configuration.
   ansible.builtin.template:
