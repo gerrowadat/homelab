@@ -2,6 +2,12 @@
   ansible.builtin.systemd:
     daemon_reload: yes
 
+- name: Restart consul
+  ansible.builtin.systemd:
+    name: consul
+    state: restarted
+  when: consul_enabled
+
 - name: Restart nomad
   ansible.builtin.systemd:
     name: nomad

@@ -4,9 +4,7 @@
   become: true
   become_user: root
   roles:
-    - nfs_client
-    - nomad
-    - consul
+    - hashicorp
 
 - name: nfs servers
   hosts: nfs_server

@@ -1,6 +1,4 @@
 # --- Hashicorp apt repo setup ---
-# The repo is also set up by the consul role; apt_key/apt_repository are
-# idempotent so running this twice in the same play is harmless.
 
 - name: Add Hashicorp apt signing key
   ansible.builtin.apt_key:
@@ -14,6 +12,65 @@
     filename: hashicorp
     update_cache: yes
 
+# --- Consul ---
+
+- name: Install consul at pinned version
+  ansible.builtin.apt:
+    name: "consul={{ consul_version }}-1"
+    state: present
+
+- name: Hold consul package at current version
+  ansible.builtin.dpkg_selections:
+    name: consul
+    selection: hold
+
+- name: Create consul user
+  ansible.builtin.user:
+    name: consul
+    create_home: no
+    home: /etc/consul.d
+    shell: /bin/false
+
+- name: Create /opt/consul
+  ansible.builtin.file:
+    path: '/opt/consul'
+    state: directory
+    owner: consul
+    group: consul
+
+- name: Create /etc/consul.d
+  ansible.builtin.file:
+    path: '/etc/consul.d'
+    mode: '700'
+    state: directory
+    owner: consul
+    group: consul
+
+- name: Generate consul.hcl
+  ansible.builtin.template:
+    src: consul.hcl.j2
+    dest: '/etc/consul.d/consul.hcl'
+    owner: consul
+    group: consul
+  notify: Restart consul
+
+- name: Generate server.hcl
+  ansible.builtin.template:
+    src: server.hcl.j2
+    dest: '/etc/consul.d/server.hcl'
+    owner: consul
+    group: consul
+  notify: Restart consul
+
+- name: Enable consul on boot
+  ansible.builtin.systemd:
+    name: consul
+    enabled: yes
+    state: started
+  when: consul_enabled
+
+# --- Nomad ---
+
 - name: Install nomad at pinned version
   ansible.builtin.apt:
     name: "nomad={{ nomad_version }}-1"
@@ -23,37 +80,6 @@
   ansible.builtin.dpkg_selections:
     name: nomad
     selection: hold
-
-# --- One-time migration: clean up artifacts from the old binary-download install ---
-# These tasks are idempotent -- safe to re-run once the files are already gone.
-
-- name: Check for old nomad binary
-  ansible.builtin.stat:
-    path: /usr/local/bin/nomad
-  register: old_nomad_binary
-
-- name: Stop nomad before migration cleanup
-  ansible.builtin.systemd:
-    name: nomad
-    state: stopped
-  when: old_nomad_binary.stat.exists
-  failed_when: false
-
-- name: Remove old nomad binary
-  ansible.builtin.file:
-    path: /usr/local/bin/nomad
-    state: absent
-
-- name: Remove old custom nomad systemd unit
-  ansible.builtin.file:
-    path: /etc/systemd/system/nomad.service
-    state: absent
-  notify: Reload systemd daemon
-
-- name: Flush handlers (ensure daemon-reload runs before service management)
-  ansible.builtin.meta: flush_handlers
-
-# --- Config and data directories (unchanged from before) ---
 
 - name: Create /opt/nomad
   ansible.builtin.file:
