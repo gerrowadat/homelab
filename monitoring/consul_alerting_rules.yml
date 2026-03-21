@@ -1,0 +1,39 @@
+"groups":
+- "name": "consul"
+  "rules":
+  - "alert": "ConsulExporterDown"
+    "annotations":
+      "description": "The Consul exporter cannot reach the Consul API at {{ $labels.instance }}."
+      "summary": "Consul API is unreachable."
+    "expr": |
+      consul_up{job="consul"} == 0
+    "for": "2m"
+    "labels":
+      "severity": "critical"
+  - "alert": "ConsulRaftPeersLow"
+    "annotations":
+      "description": "Consul raft peer count is {{ $value }}. Cluster may have lost quorum."
+      "summary": "Consul raft peer count is low."
+    "expr": |
+      consul_raft_peers{job="consul"} < 2
+    "for": "1m"
+    "labels":
+      "severity": "critical"
+  - "alert": "ConsulMemberCountLow"
+    "annotations":
+      "description": "Consul LAN member count is {{ $value }}. Nodes may have left the cluster."
+      "summary": "Consul cluster member count has dropped."
+    "expr": |
+      consul_serf_lan_members{job="consul"} < 4
+    "for": "5m"
+    "labels":
+      "severity": "warning"
+  - "alert": "ConsulServiceCheckCritical"
+    "annotations":
+      "description": "Consul service {{ $labels.service_name }} (check: {{ $labels.check }}) on node {{ $labels.node }} has been critical for 5 minutes."
+      "summary": "Consul service health check is critical."
+    "expr": |
+      consul_health_service_status{job="consul", status="critical"} == 1
+    "for": "5m"
+    "labels":
+      "severity": "warning"
