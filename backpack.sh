@@ -29,6 +29,23 @@ ansible-playbook -i ansible/inventory.yml ansible/site-dns.yml
 
 echo "Applying Nomad ACLs"
 
+# Create the JWT auth method for workload identities.
+# Required before any binding rules (traefik-vars, databasus-vars, etc.) can be applied.
+nomad acl auth-method create \
+  -name=nomad-workloads \
+  -type=JWT \
+  -max-token-ttl=30m \
+  -token-locality=local \
+  -config='{
+    "JWKSURL": "http://127.0.0.1:4646/.well-known/jwks.json",
+    "BoundAudiences": ["nomad.io"],
+    "ClaimMappings": {
+      "nomad_job_id": "nomad_job_id",
+      "nomad_namespace": "nomad_namespace",
+      "nomad_task": "nomad_task"
+    }
+  }'
+
 # Create a variable-admin policy we can generate tokens from.
 nomad acl policy apply -description "Variable reader/writer" variable-admin acl/variable-admin-policy.hcl
 
