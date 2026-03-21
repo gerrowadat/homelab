@@ -1,0 +1,11 @@
+galaxy_info:
+  author: Dave O'Connor
+  description: Hashicorp (Consul + Nomad) install and configuration role.
+
+  license: BSD-3-Clause
+
+  min_ansible_version: 2.9
+
+dependencies:
+  - docker
+  - nfs_client
