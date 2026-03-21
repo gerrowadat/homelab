@@ -30,11 +30,13 @@ nfs_server:
                                                 - 'rw'
                                                 - 'sync'
                                                 - 'no_subtree_check'
+                                                - 'no_root_squash'
                                           - hostname: 'localhost'
                                             options:
                                                 - 'rw'
                                                 - 'sync'
                                                 - 'no_subtree_check'
+                                                - 'no_root_squash'
                                   path: /srv
                                 - export:
                                   access:
@@ -43,11 +45,13 @@ nfs_server:
                                                 - 'rw'
                                                 - 'sync'
                                                 - 'no_subtree_check'
+                                                - 'no_root_squash'
                                           - hostname: 'localhost'
                                             options:
                                                 - 'rw'
                                                 - 'sync'
                                                 - 'no_subtree_check'
+                                                - 'no_root_squash'
                                   path: /mix
 
 login:
