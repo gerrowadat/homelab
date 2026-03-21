@@ -9,6 +9,28 @@ Nomad ACL policy definitions.
 | `traefik-vars-policy.hcl` | Read access to `cloud_dns_key` for Traefik's workload identity |
 | `nomad-botherer-policy.hcl` | List, read, and plan jobs in the default namespace (for nomad-botherer drift detection) |
 
+## Prerequisites: workload identity auth method
+
+Binding rules (used by workload identities) require a JWT auth method named
+`nomad-workloads` to exist. Create it once per cluster:
+
+```bash
+nomad acl auth-method create \
+  -name=nomad-workloads \
+  -type=JWT \
+  -max-token-ttl=30m \
+  -token-locality=local \
+  -config='{
+    "JWKSURL": "http://127.0.0.1:4646/.well-known/jwks.json",
+    "BoundAudiences": ["nomad.io"],
+    "ClaimMappings": {
+      "nomad_job_id": "nomad_job_id",
+      "nomad_namespace": "nomad_namespace",
+      "nomad_task": "nomad_task"
+    }
+  }'
+```
+
 ## Applying policies and creating tokens
 
 ```bash

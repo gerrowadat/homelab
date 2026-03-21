@@ -9,7 +9,7 @@
 //     -auth-method=nomad-workloads \
 //     -bind-type=policy \
 //     -bind-name=traefik-vars \
-//     "-selector=${value.nomad_job_id} == \"traefik\""
+//     -selector='value.nomad_job_id == "traefik"'
 namespace "default" {
   variables {
     path "cloud_dns_key" {
