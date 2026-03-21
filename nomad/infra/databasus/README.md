@@ -50,7 +50,7 @@ nomad acl binding-rule create \
   -auth-method=nomad-workloads \
   -bind-type=policy \
   -bind-name=databasus-vars \
-  '-selector=${value.nomad_job_id} == "databasus"'
+  -selector='value.nomad_job_id == "databasus"'
 ```
 
 ### CSI volumes
