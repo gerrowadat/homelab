@@ -19,7 +19,7 @@ nomad acl binding-rule create \
   -auth-method=nomad-workloads \
   -bind-type=policy \
   -bind-name=databasus-vars \
-  "-selector=${value.nomad_job_id} == \"databasus\""
+  '-selector=${value.nomad_job_id} == "databasus"'
 
 # variable-admin: used for bootstrapping/managing Nomad variables
 nomad acl policy apply -description "variable admin" variable-admin variable-admin-policy.hcl

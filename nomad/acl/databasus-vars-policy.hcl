@@ -9,7 +9,7 @@
 //     -auth-method=nomad-workloads \
 //     -bind-type=policy \
 //     -bind-name=databasus-vars \
-//     "-selector=${value.nomad_job_id} == \"databasus\""
+//     '-selector=${value.nomad_job_id} == "databasus"'
 namespace "default" {
   variables {
     path "nomad/jobs/postgres" {
