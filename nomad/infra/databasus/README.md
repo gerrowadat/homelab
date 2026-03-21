@@ -32,6 +32,18 @@ nomad var put nomad/jobs/databasus \
   mysql_root_password=$(nomad var get -out json nomad/jobs/mysql | jq -r '.Items.root_password')
 ```
 
+### NFS directory ownership (one-time, on rabbitseason)
+
+The databasus container's entrypoint runs `chown -R postgres:postgres /databasus-data`
+where postgres is uid=100, gid=102. With root_squash on the NFS export the
+container can't chown the directory unless it's already owned correctly. Run
+once on rabbitseason before first deploy:
+
+```bash
+sudo mkdir -p /srv/databasus
+sudo chown -R 100:102 /srv/databasus
+```
+
 ### CSI volumes
 
 Create all three volumes before first deploy:
@@ -44,7 +56,7 @@ nomad volume create nomad/storage/volumes/mysqlbackup.hcl
 
 ## Initial setup
 
-After deploying, open `https://databasus.home.andvari.net` and configure:
+After deploying, open `https://home.andvari.net/databasus` and configure:
 
 **PostgreSQL:**
 - Host: `postgres.service.home.consul`, port `5432`
