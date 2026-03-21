@@ -65,19 +65,6 @@ job "databasus" {
         destination = "/mysqlbackup"
       }
 
-      # Injects database credentials from the databasus Nomad variable.
-      # See README for how to populate nomad/jobs/databasus.
-      template {
-        data = <<EOH
-{{- with nomadVar "nomad/jobs/databasus" -}}
-POSTGRES_ADMIN_PASSWORD={{ .postgres_password }}
-MYSQL_ROOT_PASSWORD={{ .mysql_root_password }}
-{{- end -}}
-EOH
-        destination = "secrets/env"
-        env         = true
-      }
-
       resources {
         cpu    = 500
         memory = 512

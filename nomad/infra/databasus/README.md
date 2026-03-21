@@ -20,18 +20,6 @@ Accessible at `https://home.andvari.net/databasus` (internal-only).
 
 ## Prerequisites
 
-### Nomad variables
-
-The databasus job reads database credentials from its own variable path
-(`nomad/jobs/databasus`). Copy the passwords from the existing postgres and
-mysql variables:
-
-```bash
-nomad var put nomad/jobs/databasus \
-  postgres_password=$(nomad var get -out json nomad/jobs/postgres | jq -r '.Items.pgpassword') \
-  mysql_root_password=$(nomad var get -out json nomad/jobs/mysql | jq -r '.Items.root_password')
-```
-
 ### NFS directory ownership (one-time, on rabbitseason)
 
 The databasus container's entrypoint runs `chown -R postgres:postgres /databasus-data`
@@ -61,13 +49,13 @@ After deploying, open `https://home.andvari.net/databasus` and configure:
 **PostgreSQL:**
 - Host: `postgres.service.home.consul`, port `5432`
 - User: `postgres`
-- Password: from `POSTGRES_ADMIN_PASSWORD` env var (injected at runtime)
+- Password: from `nomad var get nomad/jobs/postgres` (key: `pgpassword`)
 - Backup destination: local path `/pgbackup`
 
 **MySQL:**
 - Host: `mysql.service.home.consul`, port `3306`
 - User: `root`
-- Password: from `MYSQL_ROOT_PASSWORD` env var (injected at runtime)
+- Password: from `nomad var get nomad/jobs/mysql` (key: `root_password`)
 - Backup destination: local path `/mysqlbackup`
 
 Set up a rotation schedule (daily/weekly/monthly) to keep backup storage bounded.
