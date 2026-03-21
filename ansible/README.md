@@ -37,7 +37,6 @@ encrypt Consul cluster gossip traffic and must match across all nodes.
 | `docker` | Installs docker-ce + containerd (Nomad's container runtime) |
 | `nfs_client` | Mounts `/things` from duckseason |
 | `dns_server` | Configures BIND9 with Consul DNS forwarding |
-| `remove_k8s` | Strips Kubernetes packages and data dirs from a host being converted to Nomad |
 | `linux_aptlike` | Common baseline packages for apt-based hosts |
 | `login` | SSH hardening and user config for the login node |
 | `nfs_server` | Bind-mounts source paths to NFS export paths (runs after `ansible-nfs-server`); configured via `nfs_server_bindmounts` host var |
