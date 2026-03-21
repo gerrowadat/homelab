@@ -244,8 +244,8 @@ SELECT name FROM data_source;
 
 ### Restore from backup
 
-Grafana's state is in the `grafana` Postgres database, backed up daily by the
-`pgbackup` sidecar. Follow the restore procedure in
+Grafana's state is in the `grafana` Postgres database, backed up by databasus.
+Follow the restore procedure in
 `nomad/infra/postgres/README.md`, restoring the `grafana` database.
 
 After restoring, restart the Grafana job to clear any in-memory cache:
