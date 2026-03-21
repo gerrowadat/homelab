@@ -1,9 +1,22 @@
 # --- Hashicorp apt repo setup ---
 
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Set fact — hashicorp packages need installing or upgrading
+  ansible.builtin.set_fact:
+    hashicorp_needs_install: >-
+      {{ 'consul' not in ansible_facts.packages or
+         ansible_facts.packages['consul'][0].version != consul_version + '-1' or
+         'nomad' not in ansible_facts.packages or
+         ansible_facts.packages['nomad'][0].version != nomad_version + '-1' }}
+
 - name: Add Hashicorp apt signing key
   ansible.builtin.apt_key:
     url: https://apt.releases.hashicorp.com/gpg
     state: present
+  when: hashicorp_needs_install
 
 - name: Add Hashicorp apt repository
   ansible.builtin.apt_repository:
@@ -11,6 +24,7 @@
     state: present
     filename: hashicorp
     update_cache: yes
+  when: hashicorp_needs_install
 
 # --- Consul ---
 
