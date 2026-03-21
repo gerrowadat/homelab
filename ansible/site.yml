@@ -4,7 +4,6 @@
   become: true
   become_user: root
   roles:
-    - remove_k8s
     - nfs_client
     - nomad
     - consul
