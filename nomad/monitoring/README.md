@@ -9,7 +9,6 @@ Prometheus-based monitoring stack with Grafana dashboards.
 | `prom-blackbox-exporter` | HTTP and ICMP probes |
 | `prom-consul-exporter` | Consul cluster metrics |
 | `grafana` | Dashboards and visualisation at `home.andvari.net/graphs` |
-| `grafana-alloy` | Federates Grafana Cloud SM metrics into local Prometheus via remote_write |
 
 Prometheus config files (scrape targets, alert rules, recording rules) live in
 `monitoring/` at the repo root — mounted into the prometheus container via the

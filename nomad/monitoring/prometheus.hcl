@@ -23,18 +23,49 @@ job "prometheus" {
 	      name = "prometheus"
 	      port = "prometheus"
       }
-      driver = "docker" 
+      driver = "docker"
+
+      # Grafana Cloud remote_read credentials from nomad/jobs/prometheus.
+      # Written to /local/remote_read.yml and concatenated with the gitrepo
+      # prometheus.yml at startup by /local/start.sh.
+      # change_mode=restart ensures Prometheus picks up credential rotations.
+      template {
+        data = <<EOH
+remote_read:
+  - url: "https://{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_host }}{{ end }}/api/prom/api/v1/read"
+    basic_auth:
+      username: "{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_stack_id }}{{ end }}"
+      password: "{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_read_token }}{{ end }}"
+    required_matchers:
+      source: "grafana-sm"
+    read_recent: true
+EOH
+        destination = "local/remote_read.yml"
+        change_mode = "restart"
+      }
+
+      # Startup script: concatenate the gitrepo prometheus.yml with the
+      # remote_read section, then exec Prometheus against the combined file.
+      # Alert rule files are loaded from /config/monitoring/ (gitrepo) so
+      # /-/reload still picks up rule changes pushed via the webhook.
+      template {
+        data = <<EOH
+#!/bin/sh
+set -e
+cat /config/monitoring/prometheus.yml /local/remote_read.yml > /local/prometheus.yml
+exec /bin/prometheus \
+  --config.file=/local/prometheus.yml \
+  --storage.tsdb.path=/data/prometheus/prom-tsdb/ \
+  --web.external-url=http://prometheus.service.home.consul:9090/ \
+  --web.enable-lifecycle
+EOH
+        destination = "local/start.sh"
+        change_mode = "noop"
+      }
 
       config {
-        image = "prom/prometheus:v3.10.0"
-        args = ["--config.file=/config/monitoring/prometheus.yml",
-                "--storage.tsdb.path=/data/prometheus/prom-tsdb/",
-                # URL to pass to alertmanager etc.
-                "--web.external-url=http://prometheus.service.home.consul:9090/",
-                # Enable reload via web
-                "--web.enable-lifecycle",
-                # Enable remote_write receiver so grafana-alloy can push SM metrics
-                "--web.enable-remote-write-receiver"]
+        image      = "prom/prometheus:v3.10.0"
+        entrypoint = ["/bin/sh", "/local/start.sh"]
         labels {
           group = "prometheus"
         }

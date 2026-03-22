@@ -8,17 +8,25 @@ with results feeding into the existing Prometheus alerting stack.
 
 ```
 Grafana Cloud
-  ├── Public probes (Atlanta, London, Singapore, …)
+  ├── Public probes (regional locations)
   │     └── run checks defined in terraform/grafana-sm/
-  └── Metrics backend (Grafana Cloud hosted Prometheus)
+  └── Metrics backend (Grafana Cloud hosted Prometheus / Mimir)
         ↑ results written here by probes
 
-grafana-alloy (Nomad job)
-  └── federates probe_* metrics from Grafana Cloud → remote_write → local Prometheus
-
 Local Prometheus
+  ├── remote_read → Grafana Cloud metrics API (credentials in nomad/jobs/prometheus)
+  │     └── fetches probe_* metrics on demand during rule evaluation
   └── evaluates grafana-sm-alerting-rules.yml → Alertmanager → you
 ```
+
+The `remote_read` section is injected into the running Prometheus config at startup via
+Nomad template — it is not present in the committed `prometheus.yml` so that account
+identifiers stay out of git. Alert rule files (`monitoring/*.yml`) still load from the
+gitrepo and are picked up by `/-/reload` as normal.
+
+**Note:** Changes to `prometheus.yml` scrape targets require `nomad job run
+nomad/monitoring/prometheus.hcl` to take effect (not just `/-/reload`), because
+Prometheus runs against the template-generated combined config.
 
 ## One-time setup
 
@@ -34,8 +42,6 @@ In your Grafana Cloud instance:
 - Follow the initialisation wizard — it provisions the SM plugin and creates the metrics data source.
 
 ### 3. Collect the values you'll need
-
-You need four values. Find them as follows:
 
 **`grafana_cloud_url`**
 Your Grafana Cloud instance URL. Format: `https://<your-org>.grafana.net`
@@ -55,16 +61,23 @@ The SM API endpoint for your region.
 - In your Grafana Cloud instance: **Synthetic Monitoring → Config**
 - It's shown as the "Backend address". Usually `https://synthetic-monitoring-api.grafana.net`.
 
-**`grafana_metrics_host`** (for the Nomad variable — see section 5)
+**`grafana_metrics_host`**
 The hostname of your Grafana Cloud Prometheus instance — no `https://`, no path.
-- In Grafana Cloud: **Connections → Data sources → grafanacloud-<org>-prom → Settings**
+- In Grafana Cloud: **Connections → Data sources → grafanacloud-\<org\>-prom → Settings**
 - The URL field contains something like `https://prometheus-prod-01-prod-us-east-0.grafana.net`
 - Extract just the hostname: `prometheus-prod-01-prod-us-east-0.grafana.net`
 
-**`grafana_stack_id`** (for the Nomad variable)
+**`grafana_stack_id`**
 Your numeric stack ID, used as the basic auth username for the metrics API.
 - Found on the same Connections → Data sources screen, in the "User" field.
 - It's a number, e.g. `123456`.
+
+**`grafana_metrics_read_token`**
+A Cloud Access Policy token with `metrics:read` scope. This is separate from the service
+account token — it's used to authenticate the Prometheus remote_read against Grafana Cloud Mimir.
+- Go to **grafana.com → top-right account menu → My Account → Security → Access Policies**
+- Create an access policy with `metrics:read` scope for your stack
+- Generate a token and copy it.
 
 ### 4. Configure and apply Terraform
 
@@ -90,12 +103,12 @@ terraform console
 
 to see available probe names for your account, then update `terraform.tfvars` accordingly.
 
-### 5. Create the Nomad variable
+### 5. Create the Nomad variables
 
-The Nomad variable at `nomad/jobs/grafana-alloy` is the single durable store for all
-Grafana Cloud credentials. It serves two purposes: supplying Grafana Alloy with the
-credentials it needs to federate metrics, and allowing `scripts/grafana-sm-export-tfvars.py`
-to reconstruct `terraform.tfvars` if it's ever lost.
+Two Nomad variables are used. `nomad/jobs/grafana-alloy` holds credentials for managing
+and exporting checks. `nomad/jobs/prometheus` holds credentials for metrics read access.
+
+**`nomad/jobs/grafana-alloy`** — SM API credentials and export script source of truth:
 
 ```bash
 nomad var put nomad/jobs/grafana-alloy \
@@ -107,40 +120,29 @@ nomad var put nomad/jobs/grafana-alloy \
   grafana_stack_id="123456"
 ```
 
-| Key | Value |
-|---|---|
-| `grafana_cloud_url` | Your Grafana Cloud instance URL |
-| `grafana_api_key` | Service account token (same as in `terraform.tfvars`) |
-| `sm_access_token` | SM API token (same as in `terraform.tfvars`) |
-| `sm_url` | SM API base URL (same as in `terraform.tfvars`) |
-| `grafana_metrics_host` | Hostname only from the Prometheus data source URL |
-| `grafana_stack_id` | Numeric stack ID from the Prometheus data source "User" field |
+**`nomad/jobs/prometheus`** — metrics read credentials for remote_read:
+
+```bash
+nomad var put nomad/jobs/prometheus \
+  grafana_metrics_host="prometheus-prod-01-prod-us-east-0.grafana.net" \
+  grafana_stack_id="123456" \
+  grafana_metrics_read_token="<cloud-access-policy-token>"
+```
 
 ### 6. Deploy the updated Prometheus job
 
-The Prometheus Nomad job now includes `--web.enable-remote-write-receiver`, which lets
-Grafana Alloy push metrics into it. Redeploy if Prometheus is already running:
+The Prometheus job now generates its config at startup by combining the gitrepo
+`prometheus.yml` with a `remote_read` section built from `nomad/jobs/prometheus`.
 
 ```bash
 nomad job run nomad/monitoring/prometheus.hcl
 ```
 
-### 7. Deploy the Grafana Alloy job
+### 7. Verify in Prometheus
 
-```bash
-nomad job run nomad/monitoring/grafana-alloy.hcl
-```
+After Prometheus starts, query in the Prometheus UI (remote_read is on-demand so no
+waiting for a scrape interval):
 
-Check it's scraping successfully:
-```bash
-nomad alloc logs -f <alloc-id>
-```
-
-You should see log lines confirming the scrape and remote_write succeeded.
-
-### 8. Verify in Prometheus
-
-After one scrape interval (~60s), query in the Prometheus UI:
 ```
 probe_success{source="grafana-sm"}
 ```
