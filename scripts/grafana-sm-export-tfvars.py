@@ -78,10 +78,10 @@ def fmt_int_list(items):
 
 def render_tfvars(creds, checks, probe_id_to_name):
     lines = []
-    lines.append(f'grafana_cloud_url = "{creds["grafana_cloud_url"]}"')
-    lines.append(f'grafana_api_key   = "{creds["grafana_api_key"]}"')
-    lines.append(f'sm_access_token   = "{creds["sm_access_token"]}"')
-    lines.append(f'sm_url            = "{creds["sm_url"]}"')
+    lines.append(f'grafana_cloud_url = "{creds["grafana_cloud_url"].strip()}"')
+    lines.append(f'grafana_api_key   = "{creds["grafana_api_key"].strip()}"')
+    lines.append(f'sm_access_token   = "{creds["sm_access_token"].strip()}"')
+    lines.append(f'sm_url            = "{creds["sm_url"].strip()}"')
     lines.append("")
     lines.append("http_checks = {")
 
@@ -146,8 +146,10 @@ def main():
         print(f"Add them with: nomad var put {NOMAD_VAR_PATH} key=value ...", file=sys.stderr)
         sys.exit(1)
 
-    sm_url = creds["sm_url"].rstrip("/")
-    sm_token = creds["sm_access_token"]
+    sm_url = creds["sm_url"].strip().rstrip("/")
+    if not sm_url.startswith("http"):
+        sm_url = "https://" + sm_url
+    sm_token = creds["sm_access_token"].strip()
 
     print(f"Fetching probe list from {sm_url} ...")
     probes = api_get(f"{sm_url}/api/v1/probe/list", sm_token)
