@@ -9,6 +9,7 @@ rule_files:
   - "nomad_botherer_alerting_rules.yml"
   - "consul_alerting_rules.yml"
   - "grafana-sm-alerting-rules.yml"
+  - "newt_alerting_rules.yml"
 
 alerting:
   alertmanagers:
@@ -99,6 +100,7 @@ scrape_configs:
           - http://miniflux.service.home.consul:8080/rss
           - z2m.service.home.consul:8081
           - nomad-botherer.service.home.consul:9112
+          - newt.service.home.consul:2112
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
