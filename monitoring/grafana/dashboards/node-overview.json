@@ -3,7 +3,7 @@
   "uid": "node-overview",
   "tags": ["nodes", "node-exporter"],
   "schemaVersion": 40,
-  "version": 1,
+  "version": 2,
   "refresh": "1m",
   "time": { "from": "now-3h", "to": "now" },
   "timezone": "browser",
@@ -16,7 +16,7 @@
         "label": "Host",
         "type": "query",
         "datasource": { "type": "prometheus", "uid": "prometheus" },
-        "query": "label_values(node_uname_info{job=\"node_exporter\"}, instance)",
+        "query": "label_values(node_cpu_seconds_total{job=\"node_exporter\"}, instance)",
         "refresh": 2,
         "sort": 1,
         "includeAll": false,
@@ -35,7 +35,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "instance:node_cpu_utilisation:rate1m{job=\"node_exporter\", instance=~\"$instance\"}",
+          "expr": "1 - avg without(cpu, mode)(rate(node_cpu_seconds_total{job=\"node_exporter\", mode=\"idle\", instance=~\"$instance\"}[5m]))",
           "legendFormat": "cpu used",
           "refId": "A"
         }
@@ -63,7 +63,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "instance:node_load1_per_cpu:ratio{job=\"node_exporter\", instance=~\"$instance\"}",
+          "expr": "node_load1{job=\"node_exporter\", instance=~\"$instance\"} / instance:node_num_cpu:sum{job=\"node_exporter\", instance=~\"$instance\"}",
           "legendFormat": "load1 / cpu",
           "refId": "A"
         },
@@ -102,7 +102,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "instance:node_memory_utilisation:ratio{job=\"node_exporter\", instance=~\"$instance\"}",
+          "expr": "1 - (node_memory_MemAvailable_bytes{job=\"node_exporter\", instance=~\"$instance\"} / node_memory_MemTotal_bytes{job=\"node_exporter\", instance=~\"$instance\"})",
           "legendFormat": "used",
           "refId": "A"
         }
@@ -169,7 +169,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "instance_device:node_disk_io_time_seconds:rate1m{job=\"node_exporter\", instance=~\"$instance\", device!~\"loop.*\"}",
+          "expr": "rate(node_disk_io_time_seconds_total{job=\"node_exporter\", instance=~\"$instance\", device!~\"loop.*\"}[5m])",
           "legendFormat": "{{device}}",
           "refId": "A"
         }
@@ -238,7 +238,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "instance:node_network_receive_bytes_excluding_lo:rate1m{job=\"node_exporter\", instance=~\"$instance\"}",
+          "expr": "sum without(device)(rate(node_network_receive_bytes_total{job=\"node_exporter\", instance=~\"$instance\", device!=\"lo\"}[5m]))",
           "legendFormat": "rx",
           "refId": "A"
         }
@@ -265,7 +265,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "instance:node_network_transmit_bytes_excluding_lo:rate1m{job=\"node_exporter\", instance=~\"$instance\"}",
+          "expr": "sum without(device)(rate(node_network_transmit_bytes_total{job=\"node_exporter\", instance=~\"$instance\", device!=\"lo\"}[5m]))",
           "legendFormat": "tx",
           "refId": "A"
         }
