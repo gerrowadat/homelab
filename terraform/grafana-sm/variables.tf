@@ -43,6 +43,10 @@ EOT
     # fail_if_body_matches_regexp, or if it doesn't match any in fail_if_body_not_matches_regexp.
     fail_if_body_matches_regexp     = optional(list(string), [])
     fail_if_body_not_matches_regexp = optional(list(string), [])
+
+    # Set to true to treat redirects as a probe result rather than following them.
+    # Useful when the expected response IS a redirect (e.g. valid_status_codes = [302]).
+    no_follow_redirects = optional(bool, false)
   }))
   default = {}
 }

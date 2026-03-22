@@ -27,6 +27,15 @@ http_checks = {
     fail_if_body_not_matches_regexp = ["ok"]
   }
 
+  # Example: endpoint that redirects on login — check the redirect itself, not the destination.
+  # no_follow_redirects stops the probe from following the 302 so valid_status_codes = [302] works.
+  "my-redirect-check" = {
+    target              = "https://example.com/login"
+    probes              = ["London"]
+    valid_status_codes  = [302]
+    no_follow_redirects = true
+  }
+
   # Example: internal admin UI that must NOT be reachable from the internet.
   # Prefix the job name with "internal-" — the alert rule fires if any probe
   # can reach it (probe_success == 1 for 5 minutes).

@@ -21,8 +21,9 @@ resource "grafana_synthetic_monitoring_check" "http" {
 
   settings {
     http {
-      ip_version         = "V4"
-      valid_status_codes = each.value.valid_status_codes
+      ip_version          = "V4"
+      valid_status_codes  = each.value.valid_status_codes
+      no_follow_redirects = each.value.no_follow_redirects
 
       fail_if_body_matches_regexp     = each.value.fail_if_body_matches_regexp
       fail_if_body_not_matches_regexp = each.value.fail_if_body_not_matches_regexp
