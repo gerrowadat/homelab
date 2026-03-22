@@ -8,13 +8,11 @@ See docs/grafana-synthetic-monitoring.md for context.
 
 Requirements: Python 3.6+, nomad CLI in PATH, network access to Grafana Cloud.
 
-The Nomad variable at nomad/jobs/grafana-alloy must contain:
+The Nomad variable at nomad/jobs/grafana-cloud must contain:
   grafana_cloud_url   — e.g. https://yourorg.grafana.net
   grafana_api_key     — service account token (Editor/Admin role)
   sm_access_token     — Synthetic Monitoring API token
   sm_url              — SM API base URL, e.g. https://synthetic-monitoring-api.grafana.net
-  grafana_metrics_host — for Alloy, e.g. prometheus-prod-01-prod-us-east-0.grafana.net
-  grafana_stack_id    — numeric stack ID
 """
 
 import argparse
@@ -25,7 +23,7 @@ import sys
 import urllib.error
 import urllib.request
 
-NOMAD_VAR_PATH = "nomad/jobs/grafana-alloy"
+NOMAD_VAR_PATH = "nomad/jobs/grafana-cloud"
 
 # Path relative to this script's location
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
