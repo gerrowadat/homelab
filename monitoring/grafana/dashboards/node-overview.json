@@ -63,19 +63,19 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "node_load1{job=\"node_exporter\", instance=~\"$instance\"} / count without(cpu)(count without(mode)(node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$instance\"}))",
+          "expr": "node_load1{job=\"node_exporter\", instance=~\"$instance\"} / instance:node_num_cpu:sum{job=\"node_exporter\", instance=~\"$instance\"}",
           "legendFormat": "load1 / cpu",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "node_load5{job=\"node_exporter\", instance=~\"$instance\"} / count without(cpu)(count without(mode)(node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$instance\"}))",
+          "expr": "node_load5{job=\"node_exporter\", instance=~\"$instance\"} / instance:node_num_cpu:sum{job=\"node_exporter\", instance=~\"$instance\"}",
           "legendFormat": "load5 / cpu",
           "refId": "B"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "node_load15{job=\"node_exporter\", instance=~\"$instance\"} / count without(cpu)(count without(mode)(node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$instance\"}))",
+          "expr": "node_load15{job=\"node_exporter\", instance=~\"$instance\"} / instance:node_num_cpu:sum{job=\"node_exporter\", instance=~\"$instance\"}",
           "legendFormat": "load15 / cpu",
           "refId": "C"
         }

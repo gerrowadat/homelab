@@ -47,7 +47,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "node_load1{job=\"node_exporter\"} / count without(cpu)(count without(mode)(node_cpu_seconds_total{job=\"node_exporter\"}))",
+          "expr": "node_load1{job=\"node_exporter\"} / instance:node_num_cpu:sum{job=\"node_exporter\"}",
           "legendFormat": "{{instance}}",
           "refId": "A"
         }
