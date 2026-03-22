@@ -146,6 +146,9 @@ scrape_configs:
     params:
       format: [prometheus]
     scrape_interval: 30s
+    # Nomad metrics carry their own 'job' label (the Nomad job name).
+    # honor_labels preserves it instead of overwriting with "nomad".
+    honor_labels: true
     static_configs:
       - targets:
           - bebop:4646
