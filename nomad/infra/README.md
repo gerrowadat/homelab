@@ -9,6 +9,7 @@ Infrastructure services that apps depend on.
 | `mysql` | MySQL database | Backed by CSI NFS volume |
 | `databasus` | Database backup UI | Backs up postgres and mysql; stores dumps in its own CSI volume |
 | `mosquitto` | MQTT broker | Used by Home Assistant, GivTCP, Z2M |
+| `z2m` | Zigbee2MQTT | Pinned to `picluster5` (ConBee II USB stick attached there) |
 | `newt` | Pangolin tunnel client | Connects to external Pangolin server for remote access |
 | `nut2mqtt` | UPS stats → MQTT | Reads from NUT daemons on UPS-attached hosts |
 | `postfix-andvari-smarthost` | Internal Postfix smarthost | Relays outbound mail |

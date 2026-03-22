@@ -86,3 +86,78 @@ Run `bash scripts/check-monitoring-configs.sh` to validate configs locally befor
 ## CI
 
 `.github/workflows/monitoring-validate.yml` runs on PRs and pushes to main that touch `monitoring/**`. Uses Docker to run `promtool`, `amtool`, and blackbox-exporter `--config.check`. Always use `--entrypoint promtool` when running `prom/prometheus` — its default entrypoint is `prometheus`, not `promtool`.
+
+## Quick operational reference
+
+**Deploy / redeploy a job:**
+```bash
+nomad job run nomad/<category>/<jobname>/<jobname>.hcl
+```
+
+**Check job status and recent allocation:**
+```bash
+nomad job status <jobname>
+nomad alloc status <allocid>
+```
+
+**View task logs:**
+```bash
+nomad alloc logs <allocid> [task-name]
+nomad alloc logs -stderr <allocid> [task-name]
+```
+
+**Read/write a Nomad variable:**
+```bash
+nomad var get nomad/jobs/<jobname>
+nomad var put nomad/jobs/<jobname> key=value key2=value2
+```
+
+**Open a postgres session:**
+```bash
+bash scripts/pg-connect.sh
+```
+
+**Validate monitoring configs before pushing:**
+```bash
+bash scripts/check-monitoring-configs.sh
+```
+
+**Reload Prometheus/Blackbox config (no restart needed):**
+```bash
+bash scripts/reload_prometheus.sh
+bash scripts/reload_prometheus_blackbox.sh
+```
+
+## Key service URLs (internal network)
+
+| Service | URL |
+|---|---|
+| Grafana | `http://grafana.service.home.consul:3000` or `https://home.andvari.net/graphs` |
+| Prometheus | `http://prometheus.service.home.consul:9090` |
+| Alertmanager | `http://prom-alertmanager.service.home.consul:9093` |
+| Consul UI | `http://hedwig:8500` |
+| Nomad UI | `http://hedwig:4646` |
+| Traefik dashboard | `http://hedwig:8080` |
+
+## Host inventory
+
+| Host | Arch | Notable roles |
+|---|---|---|
+| `picluster1`–`picluster4` | arm64 | General cluster nodes |
+| `picluster5` | arm64 | 3D printer (octoprint), Zigbee stick (z2m) |
+| `hedwig` | amd64 | Traefik (ports 80/443), Home Assistant, on UPS |
+| `rabbitseason` | amd64 | NFS server (CSI volumes) |
+| `duckseason` | amd64 | On networking UPS; NUT daemon for UPS monitoring |
+
+amd64-only images need: `constraint { attribute = "${attr.cpu.arch}" value = "amd64" }`
+
+## Nomad variable paths (common jobs)
+
+| Variable path | Used by |
+|---|---|
+| `nomad/jobs/prometheus` | `grafana_metrics_host`, `grafana_stack_id`, `grafana_metrics_read_token` |
+| `nomad/jobs/grafana-cloud` | `grafana_cloud_url`, `grafana_api_key`, `sm_access_token`, `sm_url` |
+| `nomad/jobs/traefik` | `gcp_credentials_json` (for DNS-01 ACME) |
+| `nomad/jobs/grafana` | `grafana_admin_user`, `grafana_admin_password`, `grafana_db_password` |
+| `nomad/jobs/postgres` | `postgres_password` |
+| `nomad/jobs/mysql` | `root_password` |
