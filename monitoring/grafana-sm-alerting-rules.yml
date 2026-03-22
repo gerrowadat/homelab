@@ -2,21 +2,26 @@
 - "name": "grafana_synthetic_monitoring"
   "rules":
 
-  # Fires when all probes for a "must be up" check report failure.
+  # Fires when all probes for a public-facing check report failure.
+  # Selects SM metrics via probe!="" (the probe label, e.g. "London", is only
+  # present on SM metrics — local blackbox-exporter metrics don't have it).
   # Uses min() so a single flaky probe location does not page — all must fail.
+  # Excludes checks whose job name starts with "internal-" (those are expected
+  # to be unreachable and are covered by InternalEndpointExposed below).
   - "alert": "SyntheticCheckDown"
     "annotations":
       "description": "{{ $labels.job }} ({{ $labels.instance }}) is unreachable from all Grafana Cloud probes."
       "summary": "Public endpoint {{ $labels.job }} is down."
     "expr": |
       min by (job, instance) (
-        probe_success{source="grafana-sm", alert_if_up="false"}
+        probe_success{probe!="", job!~"internal-.*"}
       ) == 0
     "for": "5m"
     "labels":
       "severity": "critical"
 
-  # Fires when any probe can reach an endpoint that must NOT be publicly accessible.
+  # Fires when any probe can reach an endpoint whose job name starts with "internal-".
+  # These are endpoints that must NOT be publicly accessible.
   # Uses max() so a single successful probe is enough to page.
   - "alert": "InternalEndpointExposed"
     "annotations":
@@ -24,7 +29,7 @@
       "summary": "Internal endpoint {{ $labels.job }} is exposed to the internet."
     "expr": |
       max by (job, instance, probe) (
-        probe_success{source="grafana-sm", alert_if_up="true"}
+        probe_success{probe!="", job=~"internal-.*"}
       ) == 1
     "for": "5m"
     "labels":

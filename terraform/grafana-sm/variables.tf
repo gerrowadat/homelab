@@ -26,11 +26,13 @@ variable "http_checks" {
 Map of HTTP synthetic monitoring checks. Key is the check job name (shown in Grafana and used
 as the Prometheus `job` label). Each check runs from the specified public probe locations.
 
-Set alert_if_up = true for endpoints that must NOT be reachable from the public internet
-(e.g. internal admin UIs). The Prometheus alert rule will fire if any probe can reach them.
+Alerting behaviour is driven by the job name convention:
+  - Default: alert fires if all probes fail for 5m (endpoint should be reachable).
+  - Prefix the job name with "internal-" for endpoints that must NOT be reachable from the
+    internet. The alert fires if any probe succeeds for 5m.
 
-Set alert_if_up = false (default) for endpoints that must be reachable. The alert fires if
-all probes report failure for 5 minutes.
+Note: Grafana Cloud SM check labels do NOT appear in Prometheus metric labels, so alerting
+logic cannot be driven by label values — only by the job name.
 EOT
   type = map(object({
     target             = string
@@ -41,10 +43,6 @@ EOT
     # fail_if_body_matches_regexp, or if it doesn't match any in fail_if_body_not_matches_regexp.
     fail_if_body_matches_regexp     = optional(list(string), [])
     fail_if_body_not_matches_regexp = optional(list(string), [])
-
-    # true  → this endpoint should NOT be reachable from the internet; alert if probe_success == 1
-    # false → this endpoint should be reachable; alert if probe_success == 0
-    alert_if_up = optional(bool, false)
   }))
   default = {}
 }

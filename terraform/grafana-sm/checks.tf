@@ -15,13 +15,9 @@ resource "grafana_synthetic_monitoring_check" "http" {
     if contains(keys(local.probe_ids), name)
   ]
 
-  # source label lets Prometheus alert rules select SM checks specifically,
-  # distinguishing them from local blackbox-exporter metrics.
-  # alert_if_up flows through to Prometheus and drives the alert rule logic.
-  labels = {
-    source      = "grafana-sm"
-    alert_if_up = tostring(each.value.alert_if_up)
-  }
+  # Note: check labels are UI metadata only — they do NOT appear in Prometheus
+  # metric labels. Alerting behaviour is driven by the job name convention:
+  # prefix job names with "internal-" for endpoints that must not be reachable.
 
   settings {
     http {

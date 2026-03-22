@@ -36,8 +36,6 @@ remote_read:
     basic_auth:
       username: "{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_stack_id }}{{ end }}"
       password: "{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_read_token }}{{ end }}"
-    required_matchers:
-      source: "grafana-sm"
     read_recent: true
 EOH
         destination = "local/remote_read.yml"

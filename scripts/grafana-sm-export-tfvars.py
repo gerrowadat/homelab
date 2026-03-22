@@ -91,9 +91,7 @@ def render_tfvars(creds, checks, probe_id_to_name):
             continue
 
         http = check["settings"]["http"]
-        labels = labels_to_dict(check.get("labels", []))
         probes = [probe_id_to_name[pid] for pid in check.get("probes", []) if pid in probe_id_to_name]
-        alert_if_up = labels.get("alert_if_up", "false")
         valid_codes = http.get("validStatusCodes") or [200]
         fail_if_matches = http.get("failIfBodyMatchesRegexp") or []
         fail_if_not_matches = http.get("failIfBodyNotMatchesRegexp") or []
@@ -106,7 +104,6 @@ def render_tfvars(creds, checks, probe_id_to_name):
             lines.append(f'    fail_if_body_matches_regexp     = {fmt_str_list(fail_if_matches)}')
         if fail_if_not_matches:
             lines.append(f'    fail_if_body_not_matches_regexp = {fmt_str_list(fail_if_not_matches)}')
-        lines.append(f'    alert_if_up        = {alert_if_up}')
         lines.append(f'  }}')
 
     lines.append("}")

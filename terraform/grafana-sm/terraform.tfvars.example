@@ -17,7 +17,6 @@ http_checks = {
     target             = "https://example.com"
     probes             = ["Atlanta", "London", "Singapore"]
     valid_status_codes = [200]
-    alert_if_up        = false
   }
 
   # Example: endpoint that must return 200 and contain specific text in the body.
@@ -26,15 +25,14 @@ http_checks = {
     probes                          = ["Atlanta", "London"]
     valid_status_codes              = [200]
     fail_if_body_not_matches_regexp = ["ok"]
-    alert_if_up                     = false
   }
 
   # Example: internal admin UI that must NOT be reachable from the internet.
-  # Alert fires if any probe can reach it (probe_success == 1).
+  # Prefix the job name with "internal-" — the alert rule fires if any probe
+  # can reach it (probe_success == 1 for 5 minutes).
   "internal-admin-ui" = {
     target             = "https://admin.example.com"
     probes             = ["Atlanta", "London", "Singapore"]
     valid_status_codes = [200, 401, 403]
-    alert_if_up        = true
   }
 }
