@@ -32,9 +32,11 @@ prometheus.scrape "grafana_cloud_sm" {
   scheme       = "https"
   metrics_path = "/api/prom/federate"
 
-  // Fetch all probe_* metrics — these are the synthetic monitoring check results.
+  // Fetch all probe_* metrics from Grafana Cloud SM.
+  // The source label is added via relabel below rather than filtered here,
+  // so this works regardless of how checks were originally created.
   params = {
-    "match[]" = ["{__name__=~\"probe_.*\",source=\"grafana-sm\"}"],
+    "match[]" = ["{__name__=~\"probe_.*\"}"],
   }
 
   basic_auth {
@@ -44,6 +46,17 @@ prometheus.scrape "grafana_cloud_sm" {
 
   scrape_interval = "60s"
   scrape_timeout  = "30s"
+
+  forward_to = [prometheus.relabel.add_source.receiver]
+}
+
+// Stamp source="grafana-sm" on every metric so Prometheus alert rules can
+// distinguish these from local blackbox-exporter probe_* metrics.
+prometheus.relabel "add_source" {
+  rule {
+    target_label = "source"
+    replacement  = "grafana-sm"
+  }
 
   forward_to = [prometheus.remote_write.local_prometheus.receiver]
 }
