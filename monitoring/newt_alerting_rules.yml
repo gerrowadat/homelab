@@ -1,0 +1,20 @@
+groups:
+- name: newt
+  rules:
+
+  # Fire when a lot of new proxy connections are accepted in a short window.
+  # newt_proxy_accept_total counts every connection accepted through the tunnel,
+  # so a spike here means something is hammering the exposed services.
+  # Threshold: >20 new connections in 5 minutes (sustained for 2m) is unusual
+  # for a personal homelab tunnel — tune this down if you add high-traffic services.
+  - alert: NewtConnectionSpike
+    expr: |
+      sum(increase(newt_proxy_accept_total[5m])) > 20
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Newt: high rate of new tunnel connections"
+      description: >
+        {{ $value | humanize }} new proxy connections accepted in the last 5 minutes.
+        Something may be hammering a tunnelled service.
