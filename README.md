@@ -1,56 +1,58 @@
 # homelab
-Live config for my homelab
 
-Some of this will be either depending on stuff in [nomad-homelab](https://www.github.com/gerrowadat/nomad-homelab/) 
-or otherwise incomplete because of secrets or something, I'll try to comment where this is true.
+Live config for my homelab — a Nomad/Consul cluster running at home.
 
-Is it a bad idea? Maybe. But I figured this might be fun in case anyone has better ideas, might learn something,
-or just wants to point and laugh. I will apply the general principle of #worksonmycluster here; this isn't how I'd do
-things in production, but it's good enough for a close to zero-consequences cluster I can rebuild in an afternoon
-at close to zero cost :-)
+Secrets and account-specific values are kept out of git via Nomad variables
+and gitignored local files. Some things reference external resources that only
+exist on my LAN, but the structure should be readable and reusable.
 
-Basic 'Design'
-==============
+## Hardware
 
-The 'lab' part of my home network is actually the bit that runs 'infrastructure' and apps above the basic network level.
-My network kit runs DHCP, but I run DNS directly (with a fallback to the router that just defers everything to Google's DNS)
+| Host | Type | Role |
+|---|---|---|
+| `picluster1`–`picluster4` | Raspberry Pi 4 8GB | Nomad/Consul cluster nodes |
+| `picluster5` | Raspberry Pi 4 8GB | Nomad/Consul node; has 3D printer and Zigbee USB stick attached |
+| `hedwig` | Intel NUC | Nomad/Consul node; runs Traefik (ports 80/443); on UPS |
+| `rabbitseason` | NUC-class | Nomad/Consul node; NFS server for CSI volumes; doubles as desktop |
+| `duckseason` | Odroid | Nomad/Consul node; on UPS with networking kit |
 
-There's a QNAP NAS called `tings` that has about 4TB of storage, and is creaky and old. I'd like to get rid of it maybe at
-some point if I ever pull the trigger on something that will take a bunch of 4TB drives and DTRT.
+All nodes run Ubuntu LTS, provisioned via `ansible/`.
 
-There are 2 main types of host:
+## Architecture
 
- - pi cluster nodes - These are Raspberry Pi Model 4 B 8GB nodes, in a cluster enclosue with their own switch and uplink. They're powered via PoE HATs so only the switch needs a wallwart. `picluster1...4` are in this enclosure, `picluster5` is attached to the 3d printer and mainly runs octoprint.
- 
- - More Powerful nodes. These generally have m.2 onboard root disks and separate 1TB SSDs.
-     - `hedwig` is an older intel NUC. It shares a UPS with the QNAP NAS (`tings`) that I'm trying to get rid of.
-     - `rabbitseason` is a newer-generation NUC; it also doubles as a desktop machine in the office. Power not protected.
-     - `duckseason` is an odroid of some kind, I think. It shares a UPS with the networking kit/router.
+```
+Consul + Nomad cluster (all hosts)
+  ├── Traefik (hedwig) — reverse proxy, TLS via Let's Encrypt
+  ├── NFS CSI volumes (served from rabbitseason)
+  ├── Monitoring stack — Prometheus, Alertmanager, Grafana, Blackbox Exporter
+  ├── Infrastructure services — postgres, mysql, mosquitto, postfix, …
+  └── Applications — Home Assistant, Miniflux, BirdNET, Octoprint, …
+```
 
-All the above run either raspbian or whatever the most up to date Ubuntu LTS was the last time I reinstalled them.
+DNS is split-horizon BIND9 (`dns/`): `home.andvari.net` resolves locally to
+internal IPs. All services register in Consul and are reachable at
+`<service>.service.home.consul` from within the cluster.
 
-Anything else on the network is going to get a dynamic IP and move around.
+## Repo layout
 
-Base Images and assumptions
-===========================
+```
+ansible/          Host provisioning (Consul, Nomad, Docker, DNS, NFS, etc.)
+dns/              BIND9 zone files for home.andvari.net (split-horizon)
+docs/             Setup guides and operational documentation
+monitoring/       Prometheus, Alertmanager, and Blackbox Exporter config
+nomad/
+  acl/            Nomad ACL policies
+  apps/           User-facing application jobs
+  infra/          Infrastructure service jobs
+  monitoring/     Monitoring stack jobs
+  storage/        CSI plugin and volume definitions
+scripts/          Utility scripts (validation, reload helpers, export tools)
+terraform/        Terraform configs for external services
+  grafana-sm/     Grafana Cloud Synthetic Monitoring checks
+.github/workflows/  CI (monitoring config validation)
+```
 
-See the 'ansible' directory for who gets what. All the above hosts are nomad clients and servers, as well as running consul.
+## Development
 
-It's assumed all these hosts will have the following mounts:
-
-  - /mnt/docker - NFS shared from `tings` that has docker configs and probably other stuff that shouldn't be there.
-  - /mnt/media - uh, linux ISOs. NFS share from `tings`.
-  - /things - NFS share from `duckseason` that's a helluva lot faster than /mnt/docker and that I'll probably move stuff to.
-
-There may be one or two things that use local storage because either it needs to be fast, or software that doesn't like talking to
-NFS or fuse (home assistant occasionally corrupts its database for this reason). I also have an awful hack for nomad to get around that
--- but we're getting ahead of ourselves.
-
-This Repo
-=========
-
-I'll try to keep stuff commented and documented, but a lot of this stuff should be self-explanatory.
-
-[playbook.md](playbook.md) is a simple playbook for doing various things.
-
-[backpack.sh](backpack.sh) is a script/playbook for restoring from scratch.
+See [CLAUDE.md](CLAUDE.md) for working conventions, Nomad job patterns,
+Traefik routing, and other repo-specific guidance.

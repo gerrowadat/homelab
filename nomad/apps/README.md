@@ -4,12 +4,10 @@ User-facing applications.
 
 | Job | What it is | Notes |
 |---|---|---|
-| `hass` | Home Assistant | Pinned to `hedwig` (local SSD, Zigbee coordinator) |
-| `z2m` | Zigbee2MQTT | Pinned to `picluster5` (Conbee USB stick attached there) |
+| `hass` | Home Assistant | Pinned to `hedwig` (local SSD); currently disabled (count=0) |
 | `octoprint` | 3D printer web UI + webcam streamer | Pinned to `picluster5` (printer USB attached there) |
-| `miniflux` | RSS reader | Backed by postgres |
-| `birdnet` | BirdNET-Pi bird call detection | Backed by CSI NFS volume |
-| `giv_tcp` | GivEnergy solar inverter monitoring | Talks to inverter at fixed LAN IP |
+| `miniflux` | RSS reader | Backed by postgres; path-based route at `/rss` |
+| `birdnet` | BirdNET-Go bird call detection | Backed by CSI NFS volume; at `birbs.home.andvari.net` |
 | `cringesweeper` | Sweeps old posts from Bluesky and Mastodon | Secrets in `nomad/jobs/cringesweeper` |
 | `kutt` | URL shortener at go.home.andvari.net | Backed by postgres and CSI NFS volume; secrets in `nomad/jobs/kutt` |
 
