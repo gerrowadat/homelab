@@ -128,7 +128,7 @@ nomad job run nomad/monitoring/prometheus.hcl
 ### 7. Deploy the Grafana Alloy job
 
 ```bash
-nomad job run nomad/infra/grafana-alloy/grafana-alloy.hcl
+nomad job run nomad/monitoring/grafana-alloy.hcl
 ```
 
 Check it's scraping successfully:
