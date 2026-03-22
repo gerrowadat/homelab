@@ -8,7 +8,6 @@ User-facing applications.
 | `octoprint` | 3D printer web UI + webcam streamer | Pinned to `picluster5` (printer USB attached there) |
 | `miniflux` | RSS reader | Backed by postgres; path-based route at `/rss` |
 | `birdnet` | BirdNET-Go bird call detection | Backed by CSI NFS volume; at `birbs.home.andvari.net` |
-| `giv_tcp` | GivEnergy solar inverter monitoring | Talks to inverter at fixed LAN IP; no job file yet |
 | `cringesweeper` | Sweeps old posts from Bluesky and Mastodon | Secrets in `nomad/jobs/cringesweeper` |
 | `kutt` | URL shortener at go.home.andvari.net | Backed by postgres and CSI NFS volume; secrets in `nomad/jobs/kutt` |
 
