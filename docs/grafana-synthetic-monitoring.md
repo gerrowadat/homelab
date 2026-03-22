@@ -105,19 +105,17 @@ to see available probe names for your account, then update `terraform.tfvars` ac
 
 ### 5. Create the Nomad variables
 
-Two Nomad variables are used. `nomad/jobs/grafana-alloy` holds credentials for managing
+Two Nomad variables are used. `nomad/jobs/grafana-cloud` holds credentials for managing
 and exporting checks. `nomad/jobs/prometheus` holds credentials for metrics read access.
 
-**`nomad/jobs/grafana-alloy`** — SM API credentials and export script source of truth:
+**`nomad/jobs/grafana-cloud`** — SM API credentials and export script source of truth:
 
 ```bash
-nomad var put nomad/jobs/grafana-alloy \
+nomad var put nomad/jobs/grafana-cloud \
   grafana_cloud_url="https://yourorg.grafana.net" \
   grafana_api_key="glsa_xxxxxxxxxxxx" \
   sm_access_token="eyJrIjoixxxxxxxx" \
-  sm_url="https://synthetic-monitoring-api.grafana.net" \
-  grafana_metrics_host="prometheus-prod-01-prod-us-east-0.grafana.net" \
-  grafana_stack_id="123456"
+  sm_url="https://synthetic-monitoring-api.grafana.net"
 ```
 
 **`nomad/jobs/prometheus`** — metrics read credentials for remote_read:
@@ -158,7 +156,7 @@ If you lose it, reconstruct it from the live SM API using the credentials in the
 python3 scripts/grafana-sm-export-tfvars.py
 ```
 
-This reads `nomad/jobs/grafana-alloy`, queries the SM API for the current probe list and
+This reads `nomad/jobs/grafana-cloud`, queries the SM API for the current probe list and
 check list, and writes `terraform/grafana-sm/terraform.tfvars`. If the file already exists,
 pass `--force` to overwrite it. You can also specify a different output path with `-o`.
 
