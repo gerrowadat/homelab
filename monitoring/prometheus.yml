@@ -137,6 +137,29 @@ scrape_configs:
     static_configs:
       - targets: ['newt.service.home.consul:2112']
 
+  # Nomad client metrics — per-allocation CPU and memory usage.
+  # Each client only publishes metrics for allocations running on it, so all
+  # clients must be scraped. Requires prometheus_metrics=true in nomad.hcl
+  # (applied via ansible/roles/hashicorp/files/nomad.hcl).
+  - job_name: nomad
+    metrics_path: /v1/metrics
+    params:
+      format: [prometheus]
+    scrape_interval: 30s
+    static_configs:
+      - targets:
+          - bebop:4646
+          - donkeh:4646
+          - duckseason:4646
+          - hedwig:4646
+          - picluster5:4646
+          - rocksteady:4646
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([^:]+):\d+'
+        target_label: instance
+        replacement: '$1'
+
   # ICMP ping probes for physical hosts.
   # 1m interval: more frequent than this causes alert flapping on transient packet loss.
   # Reuses the host list anchored in node_exporter above.

@@ -1,0 +1,194 @@
+{
+  "uid": "nomad-resources",
+  "title": "Nomad Job Resources",
+  "description": "Per-job CPU and memory usage across the Nomad cluster",
+  "schemaVersion": 40,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-3h", "to": "now" },
+  "tags": ["nomad"],
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU Usage by Job (MHz)",
+      "description": "Actual CPU consumption per job (sum across all tasks and nodes). nomad_client_allocs_cpu_total_ticks reports MHz.",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "lineWidth": 1, "fillOpacity": 5 },
+          "displayName": "${__field.labels.job}"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (job) (nomad_client_allocs_cpu_total_ticks{job!=\"\"})",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memory RSS by Job",
+      "description": "Resident memory per job (sum across all tasks and nodes).",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes",
+          "custom": { "lineWidth": 1, "fillOpacity": 5 },
+          "displayName": "${__field.labels.job}"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (job) (nomad_client_allocs_memory_rss{job!=\"\"}) / 1024 / 1024",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "CPU Usage vs Reservation by Job (MHz)",
+      "description": "Solid line = actual usage, dashed line = reserved. Gap shows overprovisioning.",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 9 },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "lineWidth": 1, "fillOpacity": 0 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
+              { "id": "custom.lineWidth", "value": 1 }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "expr": "sum by (job) (nomad_client_allocs_cpu_total_ticks{job!=\"\"})",
+          "legendFormat": "{{job}} used",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (job) (nomad_client_allocs_cpu_allocated{job!=\"\"})",
+          "legendFormat": "{{job}} reserved",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Memory Usage vs Reservation by Job",
+      "description": "Solid line = actual RSS, dashed line = reserved. Gap shows overprovisioning.",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 18 },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes",
+          "custom": { "lineWidth": 1, "fillOpacity": 0 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
+              { "id": "custom.lineWidth", "value": 1 }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "expr": "sum by (job) (nomad_client_allocs_memory_rss{job!=\"\"}) / 1024 / 1024",
+          "legendFormat": "{{job}} rss",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (job) (nomad_client_allocs_memory_allocated{job!=\"\"})",
+          "legendFormat": "{{job}} reserved",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "CPU Throttle Time by Job",
+      "description": "Non-zero throttle means the job is hitting its CPU reservation ceiling. Consider raising the reservation or enabling CPU oversubscription.",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 27 },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ns",
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1000000 },
+              { "color": "red", "value": 100000000 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (job) (nomad_client_allocs_cpu_throttled_time{job!=\"\"}) > 0",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Memory Swap Usage by Job",
+      "description": "Swap usage indicates memory pressure — the job is exceeding its RSS and spilling to swap.",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 27 },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes",
+          "custom": { "lineWidth": 1, "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (job) (nomad_client_allocs_memory_swap{job!=\"\"}) / 1024 / 1024 > 0",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}
