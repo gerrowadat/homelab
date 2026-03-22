@@ -1,0 +1,10 @@
+# Local variable values — contain secrets and real URLs, never commit
+terraform.tfvars
+
+# Terraform working directory
+.terraform/
+.terraform.lock.hcl
+
+# State files — use remote state or keep locally only
+*.tfstate
+*.tfstate.backup

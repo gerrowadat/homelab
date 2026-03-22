@@ -8,6 +8,7 @@ rule_files:
   - "node_exporter_alerting_rules.yml"
   - "nomad_botherer_alerting_rules.yml"
   - "consul_alerting_rules.yml"
+  - "grafana-sm-alerting-rules.yml"
 
 alerting:
   alertmanagers:

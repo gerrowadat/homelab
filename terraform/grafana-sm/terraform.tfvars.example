@@ -1,0 +1,40 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — do not commit it.
+
+grafana_cloud_url = "https://yourorg.grafana.net"
+grafana_api_key   = "glsa_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+sm_access_token   = "eyJrIjoixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Find your SM URL in Grafana Cloud → Synthetic Monitoring → Settings.
+# The default below is correct for most accounts.
+sm_url = "https://synthetic-monitoring-api.grafana.net"
+
+http_checks = {
+
+  # Example: public-facing site that must be reachable from the internet.
+  # Alert fires if all probes report failure for 5 minutes.
+  "my-public-site" = {
+    target             = "https://example.com"
+    probes             = ["Atlanta", "London", "Singapore"]
+    valid_status_codes = [200]
+    alert_if_up        = false
+  }
+
+  # Example: endpoint that must return 200 and contain specific text in the body.
+  "my-public-site-content-check" = {
+    target                          = "https://example.com/health"
+    probes                          = ["Atlanta", "London"]
+    valid_status_codes              = [200]
+    fail_if_body_not_matches_regexp = ["ok"]
+    alert_if_up                     = false
+  }
+
+  # Example: internal admin UI that must NOT be reachable from the internet.
+  # Alert fires if any probe can reach it (probe_success == 1).
+  "internal-admin-ui" = {
+    target             = "https://admin.example.com"
+    probes             = ["Atlanta", "London", "Singapore"]
+    valid_status_codes = [200, 401, 403]
+    alert_if_up        = true
+  }
+}
