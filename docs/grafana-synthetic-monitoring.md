@@ -92,17 +92,29 @@ to see available probe names for your account, then update `terraform.tfvars` ac
 
 ### 5. Create the Nomad variable
 
-Grafana Alloy needs credentials to federate metrics from Grafana Cloud.
-Create the Nomad variable at path `nomad/jobs/grafana-alloy`:
+The Nomad variable at `nomad/jobs/grafana-alloy` is the single durable store for all
+Grafana Cloud credentials. It serves two purposes: supplying Grafana Alloy with the
+credentials it needs to federate metrics, and allowing `scripts/grafana-sm-export-tfvars.py`
+to reconstruct `terraform.tfvars` if it's ever lost.
 
 ```bash
 nomad var put nomad/jobs/grafana-alloy \
+  grafana_cloud_url="https://yourorg.grafana.net" \
+  grafana_api_key="glsa_xxxxxxxxxxxx" \
+  sm_access_token="eyJrIjoixxxxxxxx" \
+  sm_url="https://synthetic-monitoring-api.grafana.net" \
   grafana_metrics_host="prometheus-prod-01-prod-us-east-0.grafana.net" \
-  grafana_stack_id="123456" \
-  grafana_api_key="glsa_xxxxxxxxxxxx"
+  grafana_stack_id="123456"
 ```
 
-The `grafana_api_key` here is the same service account token used in `terraform.tfvars`.
+| Key | Value |
+|---|---|
+| `grafana_cloud_url` | Your Grafana Cloud instance URL |
+| `grafana_api_key` | Service account token (same as in `terraform.tfvars`) |
+| `sm_access_token` | SM API token (same as in `terraform.tfvars`) |
+| `sm_url` | SM API base URL (same as in `terraform.tfvars`) |
+| `grafana_metrics_host` | Hostname only from the Prometheus data source URL |
+| `grafana_stack_id` | Numeric stack ID from the Prometheus data source "User" field |
 
 ### 6. Deploy the updated Prometheus job
 
@@ -134,6 +146,27 @@ probe_success{source="grafana-sm"}
 ```
 
 You should see one series per probe per check.
+
+## Recovering a lost terraform.tfvars
+
+`terraform.tfvars` is gitignored and contains all your secrets and check definitions.
+If you lose it, reconstruct it from the live SM API using the credentials in the Nomad variable:
+
+```bash
+python3 scripts/grafana-sm-export-tfvars.py
+```
+
+This reads `nomad/jobs/grafana-alloy`, queries the SM API for the current probe list and
+check list, and writes `terraform/grafana-sm/terraform.tfvars`. If the file already exists,
+pass `--force` to overwrite it. You can also specify a different output path with `-o`.
+
+After recovery, verify it round-trips cleanly:
+
+```bash
+terraform -chdir=terraform/grafana-sm plan
+```
+
+A clean plan (no changes) means the recovered file matches what's deployed.
 
 ## Adding or modifying checks
 
