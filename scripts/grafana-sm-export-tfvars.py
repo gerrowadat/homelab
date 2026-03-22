@@ -23,7 +23,7 @@ import sys
 import urllib.error
 import urllib.request
 
-NOMAD_VAR_PATH = "nomad/jobs/grafana-cloud"
+NOMAD_VAR_PATH = "grafana_cloud"
 
 # Path relative to this script's location
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
