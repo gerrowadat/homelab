@@ -171,12 +171,6 @@ http:
         certResolver: le
       middlewares: [internal-only]
       service: grafana
-    databasus:
-      rule: "Host(`home.andvari.net`) && PathPrefix(`/databasus`)"
-      tls:
-        certResolver: le
-      middlewares: [internal-only]
-      service: databasus
 
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -204,10 +198,6 @@ http:
       loadBalancer:
         servers:
           - url: "http://grafana.service.home.consul:3000"
-    databasus:
-      loadBalancer:
-        servers:
-          - url: "http://databasus.service.home.consul:4005"
 EOH
         destination = "local/dynamic.yml"
       }
