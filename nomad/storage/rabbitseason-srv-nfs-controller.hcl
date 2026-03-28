@@ -28,8 +28,8 @@ job "rabbitseason-srv-nfs-controller" {
       }
 
       resources {
-        cpu    = 500
-        memory = 256
+        cpu    = 100
+        memory = 128
       }
 
     }

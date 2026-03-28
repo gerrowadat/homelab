@@ -29,8 +29,8 @@ job "z2m" {
         privileged = true
       }
       resources {
-        cpu = 2000
-        memory = 1024
+        cpu    = 100
+        memory = 256
      }
      env {
        TZ = "Europe/Dublin"

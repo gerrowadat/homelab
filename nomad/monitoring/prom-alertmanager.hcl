@@ -45,8 +45,8 @@ job "prom-alertmanager" {
         destination = "/config"
       }
       resources {
-        cpu = 1000
-        memory = 1000
+        cpu    = 100
+        memory = 64
      }
     }
 
