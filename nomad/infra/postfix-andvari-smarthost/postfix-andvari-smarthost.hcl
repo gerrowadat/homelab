@@ -17,8 +17,8 @@ job "postfix-andvari-smarthost" {
         ports = ["smtp"]
       }
       resources {
-        cpu = 1000
-        memory = 512
+        cpu    = 100
+        memory = 64
      }
      env {
        POSTFIX_mydestination = "home.andvari.net"

@@ -30,8 +30,8 @@ job "prom-blackbox-exporter" {
         destination = "/config"
       }
       resources {
-        cpu = 1000
-        memory = 1000
+        cpu    = 200
+        memory = 64
      }
     }
 

@@ -18,8 +18,8 @@ job "prom-consul-exporter" {
         ports = ["prom-consul-exporter"]
       }
       resources {
-        cpu = 500
-        memory = 500
+        cpu    = 100
+        memory = 64
      }
     }
 

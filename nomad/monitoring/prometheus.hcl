@@ -79,8 +79,8 @@ EOH
         destination = "/config"
       }
       resources {
-        cpu = 2000
-        memory = 2000
+        cpu    = 200
+        memory = 512
      }
     }
 

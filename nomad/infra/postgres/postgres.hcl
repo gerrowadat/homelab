@@ -29,8 +29,8 @@ job "postgres" {
         ports = ["postgres"]
       }
       resources {
-        cpu = 2000
-        memory = 1024
+        cpu    = 200
+        memory = 512
      }
 
      template {
