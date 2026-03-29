@@ -20,22 +20,22 @@ jobs:
         run: |
           docker run --rm \
             --entrypoint promtool \
-            -v "$GITHUB_WORKSPACE/monitoring:/monitoring:ro" \
+            -v "$GITHUB_WORKSPACE/config/monitoring:/config/monitoring:ro" \
             prom/prometheus:v3.10.0 \
-            check config /monitoring/prometheus.yml
+            check config /config/monitoring/prometheus.yml
 
       - name: Validate alertmanager config
         run: |
           docker run --rm \
             --entrypoint /bin/amtool \
-            -v "$GITHUB_WORKSPACE/monitoring:/monitoring:ro" \
+            -v "$GITHUB_WORKSPACE/config/monitoring:/config/monitoring:ro" \
             prom/alertmanager \
-            check-config /monitoring/prom-alertmanager.yml
+            check-config /config/monitoring/prom-alertmanager.yml
 
       - name: Validate blackbox-exporter config
         run: |
           docker run --rm \
-            -v "$GITHUB_WORKSPACE/monitoring:/monitoring:ro" \
+            -v "$GITHUB_WORKSPACE/config/monitoring:/config/monitoring:ro" \
             prom/blackbox-exporter \
-            --config.file=/monitoring/prom-blackbox-exporter.yml \
+            --config.file=/config/monitoring/prom-blackbox-exporter.yml \
             --config.check
