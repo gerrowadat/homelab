@@ -128,7 +128,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum by (job) (nomad_client_allocs_memory_allocated{job!=\"\"})",
+          "expr": "sum by (job) (nomad_client_allocs_memory_allocated{job!=\"\"}) / 1024 / 1024",
           "legendFormat": "{{job}} reserved",
           "refId": "B"
         }
