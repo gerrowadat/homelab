@@ -1,0 +1,32 @@
+"groups":
+- "name": "nomad-resources"
+  "rules":
+
+  # Fires when a task's RSS exceeds its memory reservation for 5 minutes.
+  # This means the task is over its soft limit; with oversubscription enabled
+  # it won't be OOM-killed until it hits memory_max, but it's a sign the
+  # reservation needs raising.
+  - "alert": "NomadJobMemoryOverReservation"
+    "annotations":
+      "summary": "{{ $labels.job }}/{{ $labels.task }} is over its memory reservation"
+      "description": "{{ $labels.job }}/{{ $labels.task }} on {{ $labels.host }} has been using {{ $value | humanize }}B above its reservation for 5 minutes. Consider raising the memory reservation."
+    "expr": |
+      (
+        nomad_client_allocs_memory_usage - nomad_client_allocs_memory_allocated
+      ) > 0
+    "for": "5m"
+    "labels":
+      "severity": "warning"
+
+  # Fires when a task is actively CPU-throttled for 5 minutes.
+  # Throttling means the task is hitting its cgroup CPU quota ceiling —
+  # the reservation is too low and the task is being starved.
+  - "alert": "NomadJobCPUThrottled"
+    "annotations":
+      "summary": "{{ $labels.job }}/{{ $labels.task }} is CPU throttled"
+      "description": "{{ $labels.job }}/{{ $labels.task }} on {{ $labels.host }} has been CPU throttled for 5 minutes. Consider raising the CPU reservation."
+    "expr": |
+      rate(nomad_client_allocs_cpu_throttled_time{job!=""}[5m]) > 0
+    "for": "5m"
+    "labels":
+      "severity": "warning"
