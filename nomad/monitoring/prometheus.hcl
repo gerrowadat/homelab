@@ -25,17 +25,12 @@ job "prometheus" {
       }
       driver = "docker"
 
-      # Render the complete Prometheus config by reading prometheus.yml from
-      # the gitrepo and appending Grafana Cloud remote_read credentials.
-      #
-      # Using {{ file }} causes Nomad to watch /config/monitoring/prometheus.yml
-      # for changes. When the webhook pulls new code, Nomad detects the change,
-      # re-renders this template, and sends SIGHUP to Prometheus — triggering a
-      # graceful reload automatically, with no container restart needed.
-      # Credential rotations (Nomad var changes) also trigger a graceful reload.
+      # Grafana Cloud remote_read credentials from nomad/jobs/prometheus.
+      # Written to /local/remote_read.yml and concatenated with the gitrepo
+      # prometheus.yml at startup by /local/start.sh.
+      # change_mode=signal sends SIGHUP for a graceful reload on credential rotation.
       template {
         data = <<EOH
-{{ file "/config/monitoring/prometheus.yml" }}
 remote_read:
   - url: "https://{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_host }}{{ end }}/api/prom/api/v1/read"
     basic_auth:
@@ -43,19 +38,33 @@ remote_read:
       password: "{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_read_token }}{{ end }}"
     read_recent: true
 EOH
-        destination = "local/prometheus.yml"
+        destination = "local/remote_read.yml"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
 
+      # Startup script: concatenate the gitrepo prometheus.yml with the
+      # remote_read section, then exec Prometheus against the combined file.
+      # Rule files use a glob (/config/monitoring/*_rules.yml) so new rule
+      # files are picked up by /-/reload without touching prometheus.yml.
+      template {
+        data = <<EOH
+#!/bin/sh
+set -e
+cat /config/monitoring/prometheus.yml /local/remote_read.yml > /local/prometheus.yml
+exec /bin/prometheus \
+  --config.file=/local/prometheus.yml \
+  --storage.tsdb.path=/data/prometheus/prom-tsdb/ \
+  --web.external-url=http://prometheus.service.home.consul:9090/ \
+  --web.enable-lifecycle
+EOH
+        destination = "local/start.sh"
+        change_mode = "noop"
+      }
+
       config {
-        image  = "prom/prometheus:v3.10.0"
-        args   = [
-          "--config.file=/local/prometheus.yml",
-          "--storage.tsdb.path=/data/prometheus/prom-tsdb/",
-          "--web.external-url=http://prometheus.service.home.consul:9090/",
-          "--web.enable-lifecycle",
-        ]
+        image      = "prom/prometheus:v3.10.0"
+        entrypoint = ["/bin/sh", "/local/start.sh"]
         labels {
           group = "prometheus"
         }

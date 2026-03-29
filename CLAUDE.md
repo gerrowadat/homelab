@@ -77,9 +77,9 @@ Key volumes:
 
 Config files live in `monitoring/` and are mounted into prometheus/alertmanager/blackbox-exporter via the `gitrepo` CSI volume.
 
-On push to main, the `homelab-webhook` Nomad job (at `nomad/infra/homelab-webhook/`) pulls the repo and POSTs `/-/reload` to alertmanager (9093) and blackbox-exporter (9115).
+On push to main, the `homelab-webhook` Nomad job (at `nomad/infra/homelab-webhook/`) pulls the repo and POSTs `/-/reload` to prometheus (9090), alertmanager (9093), and blackbox-exporter (9115).
 
-Prometheus reloads automatically: its Nomad template uses `{{ file "/config/monitoring/prometheus.yml" }}`, so Nomad watches the gitrepo file for changes and sends SIGHUP to Prometheus when it changes. No explicit `/-/reload` call is needed for Prometheus config changes. Credential rotations (Nomad var changes) also trigger a graceful reload via the same mechanism.
+Prometheus's startup script concatenates the gitrepo `prometheus.yml` with a Nomad-rendered `remote_read.yml` into `/local/prometheus.yml`. The `/-/reload` endpoint re-reads this file; rule files are loaded via a glob (`/config/monitoring/*_rules.yml`) so new rule files are picked up by `/-/reload` without modifying `prometheus.yml`. Credential rotations trigger a graceful SIGHUP reload via `change_mode=signal` on the remote_read template. Changes to `prometheus.yml` itself (e.g. new scrape jobs) require a `nomad job run` redeploy.
 
 Prometheus requires `--web.enable-lifecycle` to enable `/-/reload`. Alertmanager and blackbox-exporter enable it by default.
 
