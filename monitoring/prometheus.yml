@@ -3,13 +3,13 @@ global:
   evaluation_interval: 15s
 
 rule_files:
-  - "blackbox_alerting_rules.yml"
-  - "node_exporter_recording_rules.yml"
-  - "node_exporter_alerting_rules.yml"
-  - "nomad_botherer_alerting_rules.yml"
-  - "consul_alerting_rules.yml"
-  - "grafana-sm-alerting-rules.yml"
-  - "newt_alerting_rules.yml"
+  - "/config/monitoring/blackbox_alerting_rules.yml"
+  - "/config/monitoring/node_exporter_recording_rules.yml"
+  - "/config/monitoring/node_exporter_alerting_rules.yml"
+  - "/config/monitoring/nomad_botherer_alerting_rules.yml"
+  - "/config/monitoring/consul_alerting_rules.yml"
+  - "/config/monitoring/grafana-sm-alerting-rules.yml"
+  - "/config/monitoring/newt_alerting_rules.yml"
 
 alerting:
   alertmanagers:
