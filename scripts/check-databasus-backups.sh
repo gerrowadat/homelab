@@ -35,7 +35,7 @@ MYSQL_DBS=$(mysql -h mysql.service.home.consul -u root --batch --skip-column-nam
 
 # --- Find running databasus alloc ---
 echo "==> Finding databasus allocation..."
-ALLOC_ID=$(nomad alloc list -job databasus -json \
+ALLOC_ID=$(nomad job allocs -json databasus \
     | jq -r '[.[] | select(.ClientStatus == "running")] | .[0].ID')
 
 if [[ "$ALLOC_ID" == "null" || -z "$ALLOC_ID" ]]; then
