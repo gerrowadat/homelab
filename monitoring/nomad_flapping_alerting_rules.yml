@@ -1,0 +1,16 @@
+"groups":
+- "name": "nomad-flapping"
+  "rules":
+
+  # Fires when a task restarts more than once in a rolling 1-hour window.
+  # nomad_client_allocs_restarts is a per-allocation counter; increase() over
+  # 1h catches repeated crashes without firing on a single one-off restart.
+  - "alert": "NomadTaskFlapping"
+    "annotations":
+      "summary": "{{ $labels.job }}/{{ $labels.task }} is flapping"
+      "description": "{{ $labels.job }}/{{ $labels.task }} on {{ $labels.host }} has restarted {{ $value | humanize }} times in the last hour."
+    "expr": |
+      increase(nomad_client_allocs_restarts[1h]) > 1
+    "for": "5m"
+    "labels":
+      "severity": "warning"
