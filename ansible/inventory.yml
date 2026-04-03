@@ -63,25 +63,14 @@ nomadconsul:
         hosts:
                 picluster5:
                         nomad_server: false
+                        download_arch: arm64
+                        ansible_user: pi
                 duckseason:
-                        download_arch: amd64
-                        ansible_user: doc
                         nfs_primary: localhost
                 hedwig:
-                        download_arch: amd64
-                        ansible_user: doc
-                donkeh:
-                        download_arch: amd64
-                        ansible_user: doc
-                bebop:
-                        download_arch: amd64
-                        ansible_user: doc
-                rocksteady:
-                        download_arch: amd64
-                        ansible_user: doc
         vars:
-                download_arch: arm64
-                ansible_user: pi
+                download_arch: amd64
+                ansible_user: doc
                 consul_gossip_key: "{{ lookup('env', 'CONSUL_GOSSIP_KEY') }}"
                 existing_consul_server: 192.168.100.250 # hedwig
                 nomad_server: true
@@ -93,8 +82,8 @@ nomadconsul:
                 # DNS servers that forward .consul queries to the local consul agent.
                 # These are the nomad server nodes running bind9 with consul forwarding.
                 docker_dns_servers:
-                  - "192.168.100.249"
                   - "192.168.100.250"
+                  - "192.168.100.251"
                   - "192.168.100.253"
 
 # All physical hosts that should run node_exporter.
@@ -110,8 +99,6 @@ node_exporter:
 # Machines with a localy connected UPS.
 ups:
         hosts:
-                hedwig:
-                        ups_name: eaton5s
                 duckseason:
                         ups_name: eaton5p
         vars:
@@ -123,6 +110,6 @@ ups:
 dns_server:
         hosts:
                 hedwig:
-                donkeh:
+                rabbitseason:
                 duckseason:
 
