@@ -30,7 +30,6 @@ scrape_configs:
           - rabbitseason
           - duckseason
           - picluster5
-          - tings
     relabel_configs:
       - source_labels: [__address__]
         regex: (.+)
