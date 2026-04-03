@@ -11,11 +11,10 @@ The controller job runs as a single instance; the node job runs as `type = "syst
 (i.e. one instance on every Nomad client). Both need `network_mode = "host"` and
 `privileged = true` so that NFS mounts survive container lifecycle events.
 
-Three plugins are deployed, each backed by a different NFS server/export:
+Two plugins are deployed, each backed by a different NFS export on rabbitseason:
 
 | Plugin ID | Files | NFS server |
 |---|---|---|
-| `tings-srv-nfs` | `rocketduck-{controller,node}.hcl` | `tings:/srv` (QNAP NAS) |
 | `rabbitseason-srv-nfs` | `rabbitseason-srv-nfs-{controller,node}.hcl` | `rabbitseason:/srv` |
 | `rabbitseason-mix-nfs` | `rabbitseason-mix-nfs-{controller,node}.hcl` | `rabbitseason:/mix` |
 
