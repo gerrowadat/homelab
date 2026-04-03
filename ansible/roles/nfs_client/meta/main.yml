@@ -1,6 +1,6 @@
 galaxy_info:
   author: Dave O'Connor
-  description: NFS mounts to tings et. al.
+  description: NFS mounts for cluster nodes.
 
 
   license: BSD-3-Clause

@@ -87,8 +87,6 @@ nomadconsul:
                   - "192.168.100.253"
 
 # All physical hosts that should run node_exporter.
-# tings is scraped by prometheus but is not managed by ansible -- install
-# node_exporter there manually (see ansible/roles/node_exporter/README.md).
 node_exporter:
         children:
                 nomadconsul:
