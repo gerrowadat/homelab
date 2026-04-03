@@ -22,7 +22,7 @@ encrypt Consul cluster gossip traffic and must match across all nodes.
 | `nomadconsul` | picluster5, duckseason, hedwig | Nomad clients+servers and Consul agents |
 | `nfs_server` | duckseason, rabbitseason | NFS servers: duckseason exports `/export/things`; rabbitseason exports `/srv` (from `/localssd/srv`) and `/mix` (from `/localdisk/mix`) |
 | `dns_server` | hedwig, rabbitseason, duckseason | BIND9 with Consul forwarding for `.consul` queries |
-| `ups` | hedwig, duckseason | NUT for UPS monitoring |
+| `ups` | duckseason | NUT for UPS monitoring (duckseason has the locally connected UPS) |
 | `login` | rabbitseason | Public-facing SSH login node |
 
 `nomad_server: true` is set by default for nomadconsul hosts; set it explicitly to
