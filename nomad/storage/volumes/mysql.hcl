@@ -1,7 +1,7 @@
-id = "mysql" # ID as seen in nomad
-name = "MySQL" # Display name
+id = "mysql"
+name = "mysql"
 type = "csi"
-plugin_id = "tings-srv-nfs" # Needs to match the deployed plugin
+plugin_id = "rabbitseason-srv-nfs"
 
 capability {
   access_mode     = "multi-node-multi-writer"
