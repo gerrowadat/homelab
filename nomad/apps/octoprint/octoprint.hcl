@@ -17,7 +17,7 @@ job "octoprint" {
       }
       driver = "docker" 
       config {
-        image = "octoprint/octoprint:latest"
+        image = "octoprint/octoprint:1.11.7"
         labels {
           group = "octoprint"
         } 

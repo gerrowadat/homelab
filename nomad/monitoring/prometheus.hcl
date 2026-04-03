@@ -52,7 +52,7 @@ EOH
       # Rule files use a glob (/config/monitoring/*_rules.yml) so new rule
       # files are picked up by /-/reload without touching prometheus.yml.
       config {
-        image      = "prom/prometheus:v3.10.0"
+        image      = "prom/prometheus:v3.11.0"
         entrypoint = ["/bin/sh", "/config/nomad/monitoring/prometheus_watch.sh"]
         labels {
           group = "prometheus"

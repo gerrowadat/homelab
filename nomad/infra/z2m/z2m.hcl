@@ -25,7 +25,7 @@ job "z2m" {
       # 'nobody' keeps the process unprivileged otherwise.
       user = "nobody:dialout"
       config {
-        image = "koenkk/zigbee2mqtt:2.9.1"
+        image = "koenkk/zigbee2mqtt:2.9.2"
         volumes = [
           # udev is needed so the container can detect the Conbee stick's device path.
           "/run/udev:/run/udev:ro",

@@ -8,7 +8,7 @@ job "prom-consul-exporter" {
       }
       driver = "docker" 
       config {
-        image = "prom/consul-exporter"
+        image = "prom/consul-exporter:v0.13.0"
         args = [
           "--consul.server=consul.service.consul:8500"
         ]

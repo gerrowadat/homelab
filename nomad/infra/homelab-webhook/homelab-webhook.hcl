@@ -23,7 +23,7 @@ job "homelab-webhook" {
       driver = "docker"
 
       config {
-        image   = "python:3.12-alpine"
+        image   = "python:3.12.13-alpine"
         command = "/bin/sh"
         args    = ["-c", "apk add --no-cache git su-exec && cp /gitrepo/nomad/infra/homelab-webhook/webhook.py /local/webhook.py && exec su-exec nobody python /local/webhook.py"]
         ports   = ["homelab-webhook"]

@@ -10,7 +10,7 @@ job "postfix-andvari-smarthost" {
       }
       driver = "docker" 
       config {
-        image = "mwader/postfix-relay:latest"
+        image = "mwader/postfix-relay:1.2.9"
         labels {
           group = "postfix-andvari-smarthost"
         }
