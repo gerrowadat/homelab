@@ -1,7 +1,14 @@
 job "octoprint" {
   datacenters = ["home"]
   group "octoprint_servers" {
-   
+
+    volume "octoprint" {
+      type            = "csi"
+      source          = "octoprint"
+      access_mode     = "single-node-writer"
+      attachment_mode = "file-system"
+    }
+
     task "octoprint_server" {
       # picluster5 is attached to the 3d printer.
       constraint {
@@ -11,9 +18,6 @@ job "octoprint" {
       driver = "docker" 
       config {
         image = "octoprint/octoprint:latest"
-        volumes = [
-          "/things/docker/octoprint:/octoprint"
-        ]
         labels {
           group = "octoprint"
         } 
@@ -30,6 +34,10 @@ job "octoprint" {
            container_path = "/dev/video0"
          }
         ]
+      }
+      volume_mount {
+        volume      = "octoprint"
+        destination = "/octoprint"
       }
       env {
         ENABLE_MJPG_STREAMER = "true"
