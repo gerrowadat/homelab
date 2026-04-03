@@ -1,7 +1,7 @@
 id = "birdnet" # ID as seen in nomad
 name = "birdnet" # Display name
 type = "csi"
-plugin_id = "tings-srv-nfs" # Needs to match the deployed plugin
+plugin_id = "rabbitseason-srv-nfs"
 
 capability {
   access_mode     = "multi-node-multi-writer"
