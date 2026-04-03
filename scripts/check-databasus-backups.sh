@@ -60,7 +60,7 @@ FAIL=0
 check_db() {
     local engine="$1"
     local db="$2"
-    if echo "$BACKUPS" | grep -q "$db"; then
+    if echo "$BACKUPS" | grep -q "^${db}-"; then
         echo "  [OK]   $engine/$db"
         PASS=$((PASS + 1))
     else
