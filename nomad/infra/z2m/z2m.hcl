@@ -2,7 +2,14 @@ job "z2m" {
   priority = 100
   datacenters = ["home"]
   group "z2m_servers" {
-   
+
+    volume "z2m" {
+      type            = "csi"
+      source          = "z2m"
+      access_mode     = "single-node-writer"
+      attachment_mode = "file-system"
+    }
+
     task "z2m_server" {
       service {
         name = "z2m"
@@ -20,13 +27,16 @@ job "z2m" {
       config {
         image = "koenkk/zigbee2mqtt:2.9.1"
         volumes = [
-          "/things/docker/z2m:/app/data",
           # udev is needed so the container can detect the Conbee stick's device path.
           "/run/udev:/run/udev:ro",
         ]
         ports = ["z2m"]
         # privileged is required for direct USB/serial device access.
         privileged = true
+      }
+      volume_mount {
+        volume      = "z2m"
+        destination = "/app/data"
       }
       resources {
         cpu    = 100
