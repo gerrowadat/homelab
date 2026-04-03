@@ -25,7 +25,7 @@ job "mysql" {
 
       driver = "docker"
       config {
-        image = "mysql:8.4"
+        image = "mysql:8.4.8"
         ports = ["mysql"]
         labels {
           group = "mysql"

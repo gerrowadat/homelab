@@ -12,7 +12,7 @@ job "newt" {
       }
       driver = "docker"
       config {
-        image = "fosrl/newt"
+        image = "fosrl/newt:1.10.4"
         labels {
           group = "newt"
         }

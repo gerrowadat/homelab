@@ -17,7 +17,7 @@ job "prom-blackbox-exporter" {
       }
       driver = "docker" 
       config {
-        image = "prom/blackbox-exporter"
+        image = "prom/blackbox-exporter:v0.28.0"
         args = ["--config.file=/config/monitoring/prom-blackbox-exporter.yml"]
         labels {
           group = "prom-blackbox-exporter"

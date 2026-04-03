@@ -26,7 +26,7 @@ job "prom-alertmanager" {
       driver = "docker"
 
       config {
-        image = "prom/alertmanager"
+        image = "prom/alertmanager:v0.31.1"
         args = ["--config.file=/config/monitoring/prom-alertmanager.yml",
                 "--storage.path=/data/prom-alertmanager",
                 "--web.external-url=http://prom-alertmanager.service.home.consul:9093/"]
