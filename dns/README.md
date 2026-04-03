@@ -1,6 +1,6 @@
 # dns
 
-BIND9 configuration for the `home.andvari.net` zone, served by hedwig, donkeh, and duckseason.
+BIND9 configuration for the `home.andvari.net` zone, served by hedwig and duckseason.
 
 | File | Purpose |
 |---|---|
@@ -37,4 +37,4 @@ cd ansible
 ansible-playbook -i inventory.yml site.yml --limit dns_server
 ```
 
-DNS servers (from `ansible/inventory.yml`): **hedwig**, **donkeh**, **duckseason**.
+DNS servers (from `ansible/inventory.yml`): **hedwig**, **duckseason**.

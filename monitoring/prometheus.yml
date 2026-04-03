@@ -29,9 +29,6 @@ scrape_configs:
           - hedwig
           - rabbitseason
           - duckseason
-          - donkeh
-          - bebop
-          - rocksteady
           - picluster5
           - tings
     relabel_configs:
@@ -144,12 +141,9 @@ scrape_configs:
     honor_labels: true
     static_configs:
       - targets:
-          - bebop:4646
-          - donkeh:4646
           - duckseason:4646
           - hedwig:4646
           - picluster5:4646
-          - rocksteady:4646
     relabel_configs:
       - source_labels: [__address__]
         regex: '([^:]+):\d+'

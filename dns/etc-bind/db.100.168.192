@@ -1,6 +1,6 @@
 $TTL    604800
 @       IN      SOA     home.andvari.net. admin.home.andvari.net. (
-                             21         ; Serial
+                             22         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
@@ -10,9 +10,6 @@ $TTL    604800
 
 ; PTR Records
 245   IN      PTR     picluster5.home.andvari.net.
-247   IN      PTR     bebop.home.andvari.net.
-248   IN      PTR     rocksteady.home.andvari.net.
-249   IN      PTR     donkeh.home.andvari.net.
 250   IN      PTR     hedwig.home.andvari.net.
 251   IN      PTR     rabbitseason.home.andvari.net.
 252   IN      PTR     tings.home.andvari.net.

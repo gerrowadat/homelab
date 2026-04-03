@@ -19,9 +19,9 @@ encrypt Consul cluster gossip traffic and must match across all nodes.
 
 | Group | Hosts | Purpose |
 |---|---|---|
-| `nomadconsul` | picluster2/4/5, duckseason, hedwig, donkeh, bebop, rocksteady | Nomad clients+servers and Consul agents |
+| `nomadconsul` | picluster5, duckseason, hedwig | Nomad clients+servers and Consul agents |
 | `nfs_server` | duckseason, rabbitseason | NFS servers: duckseason exports `/export/things`; rabbitseason exports `/srv` (from `/localssd/srv`) and `/mix` (from `/localdisk/mix`) |
-| `dns_server` | hedwig, donkeh, duckseason | BIND9 with Consul forwarding for `.consul` queries |
+| `dns_server` | hedwig, duckseason | BIND9 with Consul forwarding for `.consul` queries |
 | `ups` | hedwig, duckseason | NUT for UPS monitoring |
 | `login` | rabbitseason | Public-facing SSH login node |
 
