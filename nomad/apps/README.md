@@ -4,7 +4,6 @@ User-facing applications.
 
 | Job | What it is | Notes |
 |---|---|---|
-| `hass` | Home Assistant | Pinned to `hedwig` (local SSD); currently disabled (count=0) |
 | `octoprint` | 3D printer web UI + webcam streamer | Pinned to `picluster5` (printer USB attached there) |
 | `miniflux` | RSS reader | Backed by postgres; path-based route at `/rss` |
 | `birdnet` | BirdNET-Go bird call detection | Backed by CSI NFS volume; at `birbs.home.andvari.net` |
