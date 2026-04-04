@@ -24,7 +24,7 @@
       "description": "Consul LAN member count is {{ $value }}. Nodes may have left the cluster."
       "summary": "Consul cluster member count has dropped."
     "expr": |
-      consul_serf_lan_members{job="consul"} < 4
+      consul_serf_lan_members{job="consul"} < 3
     "for": "5m"
     "labels":
       "severity": "warning"
