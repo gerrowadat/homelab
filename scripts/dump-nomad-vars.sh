@@ -1,0 +1,251 @@
+#!/usr/bin/env bash
+# dump-nomad-vars.sh — dump all Nomad variables to an encrypted restore script.
+#
+# Reads every variable path accessible to the current NOMAD_TOKEN and writes
+# a bash restore script that, when run, re-creates each variable using
+# `nomad var put`.
+#
+# By default the restore script is encrypted with AES-256-CBC using a
+# passphrase read from a Nomad variable (default: backup/encryption-key,
+# item: key). That variable must exist before running this script. Its value
+# should be memorised independently so that decryption works even if the
+# Nomad cluster is gone.
+#
+# Requires: nomad, jq, openssl
+# Requires: NOMAD_TOKEN set in environment
+# Optional: NOMAD_ADDR (default: http://127.0.0.1:4646)
+
+set -euo pipefail
+
+KEY_VAR_PATH="backup/encryption-key"
+ENCRYPT=true
+OUTPUT_FILE=""
+
+# ---------------------------------------------------------------------------
+
+usage() {
+    cat << 'EOF'
+Usage: dump-nomad-vars.sh [options]
+
+Dumps all Nomad variables (default namespace) to an encrypted bash restore
+script. The restore script, when decrypted and run, re-creates every variable
+via `nomad var put`.
+
+Options:
+  -o FILE        Output file.
+                 Default: nomad-vars-YYYYMMDD-HHMMSS.sh.enc  (encrypted)
+                          nomad-vars-YYYYMMDD-HHMMSS.sh       (--no-encrypt)
+  --no-encrypt   Write a plaintext restore script.
+                 WARNING: the output file contains all secrets in the clear.
+  --key-path P   Nomad variable path holding the encryption passphrase.
+                 Must contain an item named "key".
+                 Default: backup/encryption-key
+  -h, --help     Print this help and exit.
+
+Prerequisites:
+  - nomad, jq, openssl must be in PATH.
+  - NOMAD_TOKEN must be set (read access to all variables + the key variable).
+  - The encryption-key variable must exist (unless --no-encrypt):
+      nomad var put backup/encryption-key key=<passphrase>
+
+Decrypting the dump:
+  openssl enc -aes-256-cbc -pbkdf2 -d \
+    -pass pass:<passphrase> -in <dumpfile> | less
+
+Restoring from a dump:
+  openssl enc -aes-256-cbc -pbkdf2 -d \
+    -pass pass:<passphrase> -in <dumpfile> | bash
+
+Notes:
+  - The backup/encryption-key variable is excluded from the dump. It must be
+    created manually on the new cluster before running the restore script.
+  - Only the default Nomad namespace is dumped. For other namespaces, set
+    NOMAD_NAMESPACE and run again with a different output file.
+EOF
+}
+
+die() { echo "ERROR: $*" >&2; exit 1; }
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -o)           OUTPUT_FILE="$2"; shift 2 ;;
+        --no-encrypt) ENCRYPT=false; shift ;;
+        --key-path)   KEY_VAR_PATH="$2"; shift 2 ;;
+        -h|--help)    usage; exit 0 ;;
+        *)            die "Unknown option: $1" ;;
+    esac
+done
+
+# ---------------------------------------------------------------------------
+# Preflight checks
+# ---------------------------------------------------------------------------
+
+[[ -n "${NOMAD_TOKEN:-}" ]] || die "NOMAD_TOKEN is not set"
+command -v nomad   >/dev/null 2>&1 || die "nomad not found in PATH"
+command -v jq      >/dev/null 2>&1 || die "jq not found in PATH"
+if [[ "$ENCRYPT" == "true" ]]; then
+    command -v openssl >/dev/null 2>&1 || die "openssl not found in PATH"
+fi
+
+# ---------------------------------------------------------------------------
+# Resolve output filename
+# ---------------------------------------------------------------------------
+
+if [[ -z "$OUTPUT_FILE" ]]; then
+    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    if [[ "$ENCRYPT" == "true" ]]; then
+        OUTPUT_FILE="nomad-vars-${TIMESTAMP}.sh.enc"
+    else
+        OUTPUT_FILE="nomad-vars-${TIMESTAMP}.sh"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Read encryption passphrase from Nomad
+# ---------------------------------------------------------------------------
+
+if [[ "$ENCRYPT" == "true" ]]; then
+    echo "Reading encryption passphrase from: ${KEY_VAR_PATH}"
+    PASSPHRASE=$(nomad var get -out=json "$KEY_VAR_PATH" 2>/dev/null \
+        | jq -r '.Items.key' 2>/dev/null || true)
+    if [[ -z "$PASSPHRASE" || "$PASSPHRASE" == "null" ]]; then
+        die "Could not read .Items.key from '${KEY_VAR_PATH}'.
+       Create it first:  nomad var put '${KEY_VAR_PATH}' key=<passphrase>"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Build the restore script in a temp file
+# ---------------------------------------------------------------------------
+
+RESTORE_TMP=$(mktemp /tmp/nomad-vars-restore.XXXXXX)
+trap 'rm -f "$RESTORE_TMP"' EXIT
+
+# Write the restore script header (single-quoted delimiter: no expansion here)
+cat >> "$RESTORE_TMP" << 'SCRIPT_HEADER'
+#!/usr/bin/env bash
+# nomad-vars-restore.sh — restore Nomad variables from a dump.
+# Generated by dump-nomad-vars.sh.
+#
+# WARNING: This file contains secrets. Delete it after use.
+#
+# Before running:
+#   1. Set NOMAD_TOKEN (with permission to write variables).
+#   2. Create the encryption-key variable manually:
+#        nomad var put backup/encryption-key key=<passphrase>
+#
+# Requires: nomad
+# Requires: NOMAD_TOKEN set in environment
+# Optional: NOMAD_ADDR (default: http://127.0.0.1:4646)
+
+set -euo pipefail
+
+[[ -n "${NOMAD_TOKEN:-}" ]] || { echo "ERROR: NOMAD_TOKEN is not set" >&2; exit 1; }
+
+echo "Restoring Nomad variables to: ${NOMAD_ADDR:-http://127.0.0.1:4646}"
+echo ""
+
+SCRIPT_HEADER
+
+# ---------------------------------------------------------------------------
+# Enumerate and dump each variable
+# ---------------------------------------------------------------------------
+
+echo "Listing variables in ${NOMAD_ADDR:-http://127.0.0.1:4646}..."
+echo ""
+
+PATHS=$(nomad var list -out=json | jq -r '.[].Path')
+
+if [[ -z "$PATHS" ]]; then
+    echo "WARNING: no variables found — nothing to dump." >&2
+    exit 0
+fi
+
+COUNT=0
+SKIPPED=0
+ERRORS=0
+
+while IFS= read -r path; do
+    # Skip the encryption key variable. It must be seeded manually on a new
+    # cluster before the restore script can run.
+    if [[ "$path" == "$KEY_VAR_PATH" ]]; then
+        printf "  skip   %s\n" "$path"
+        SKIPPED=$((SKIPPED + 1))
+        continue
+    fi
+
+    # Fetch items as compact single-line JSON
+    ITEMS=""
+    if ! ITEMS=$(nomad var get -out=json "$path" 2>/dev/null | jq -c '.Items'); then
+        printf "  ERROR  %s  (skipping — could not read)\n" "$path" >&2
+        ERRORS=$((ERRORS + 1))
+        continue
+    fi
+
+    printf "  dump   %s\n" "$path"
+
+    # Append a restore block to the temp file.
+    #
+    # The heredoc delimiter in the restore script is single-quoted
+    # ('__NOMAD_VAR_END__') so no shell expansion occurs when the restore
+    # script runs. ITEMS is always compact JSON (no newlines), so it cannot
+    # accidentally match the delimiter line.
+    {
+        printf 'echo "Restoring: %s"\n' "$path"
+        printf "nomad var put '%s' @- <<'__NOMAD_VAR_END__'\n" "$path"
+        printf '%s\n' "$ITEMS"
+        printf '__NOMAD_VAR_END__\n\n'
+    } >> "$RESTORE_TMP"
+
+    COUNT=$((COUNT + 1))
+done <<< "$PATHS"
+
+# Footer for the restore script
+{
+    printf 'echo ""\n'
+    printf 'echo "Done."\n'
+} >> "$RESTORE_TMP"
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+
+echo ""
+printf "Dumped %d variable(s)" "$COUNT"
+[[ "$SKIPPED" -gt 0 ]] && printf ", skipped %d (encryption key)" "$SKIPPED"
+[[ "$ERRORS"  -gt 0 ]] && printf ", ERRORS %d" "$ERRORS"
+printf "\n"
+
+if [[ "$ERRORS" -gt 0 ]]; then
+    echo "WARNING: $ERRORS variable(s) could not be read and were omitted." >&2
+fi
+
+# ---------------------------------------------------------------------------
+# Write output (encrypted or plaintext)
+# ---------------------------------------------------------------------------
+
+if [[ "$ENCRYPT" == "true" ]]; then
+    echo "Encrypting to: ${OUTPUT_FILE}"
+    openssl enc -aes-256-cbc -pbkdf2 \
+        -in  "$RESTORE_TMP" \
+        -out "$OUTPUT_FILE" \
+        -pass "pass:${PASSPHRASE}"
+    echo ""
+    echo "To decrypt and inspect:"
+    printf "  openssl enc -aes-256-cbc -pbkdf2 -d -pass pass:<passphrase> -in %s | less\n" \
+        "$OUTPUT_FILE"
+    echo ""
+    echo "To decrypt and restore:"
+    printf "  openssl enc -aes-256-cbc -pbkdf2 -d -pass pass:<passphrase> -in %s | bash\n" \
+        "$OUTPUT_FILE"
+else
+    cp "$RESTORE_TMP" "$OUTPUT_FILE"
+    chmod 600 "$OUTPUT_FILE"
+    echo ""
+    echo "WARNING: plaintext dump written — this file contains all secrets in the clear!"
+    printf "To restore: bash '%s'\n" "$OUTPUT_FILE"
+fi
