@@ -9,7 +9,8 @@
   - "alert": "NomadJobMemoryOverReservation"
     "annotations":
       "summary": "{{ $labels.job }}/{{ $labels.task }} is over its memory reservation"
-      "description": "{{ $labels.job }}/{{ $labels.task }} on {{ $labels.host }} has been using {{ $value | humanize }}B above its reservation for 5 minutes. Consider raising the memory reservation."
+      "description": |
+        {{ $labels.job }}/{{ $labels.task }} on {{ $labels.host }} has been {{ $value | humanize }}B over its memory reservation{{ with query (printf "nomad_client_allocs_memory_allocated{job=\"%s\",task=\"%s\",host=\"%s\"}" $labels.job $labels.task $labels.host) }} (reservation: {{ . | first | value | humanize }}B){{ end }}, for {{ with query (printf "time() - ALERTS_FOR_STATE{alertname=\"NomadJobMemoryOverReservation\",job=\"%s\",task=\"%s\"}" $labels.job $labels.task) }}{{ . | first | value | humanizeDuration }}{{ end }}. Consider raising the memory reservation.
     "expr": |
       (
         nomad_client_allocs_memory_usage - nomad_client_allocs_memory_allocated
