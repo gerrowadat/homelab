@@ -208,7 +208,8 @@ http:
       loadBalancer:
         servers:
           - url: "http://immich.service.home.consul:2283"
-{{ end }}{{ end }}EOH
+{{ end }}{{ end }}
+EOH
         destination = "local/dynamic.yml"
       }
 
