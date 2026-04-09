@@ -101,9 +101,15 @@ EOF
 
     # -----------------------------------------------------------------------
     # immich-redis: job queue and session cache
+    # Prestart sidecar: starts before immich-server and immich-ml.
     # -----------------------------------------------------------------------
     task "immich-redis" {
       driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = true
+      }
 
       service {
         name = "immich-redis"
@@ -131,9 +137,15 @@ EOF
     # Uses port 5433 to avoid collision with the shared postgres on 5432.
     # PGDATA is set to a subdirectory to avoid NFS "directory not empty" errors
     # on first initialisation.
+    # Prestart sidecar: starts before immich-server and immich-ml.
     # -----------------------------------------------------------------------
     task "immich-db" {
       driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = true
+      }
 
       service {
         name = "immich-db"
