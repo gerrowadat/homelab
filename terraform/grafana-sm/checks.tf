@@ -5,9 +5,10 @@ locals {
 resource "grafana_synthetic_monitoring_check" "http" {
   for_each = var.http_checks
 
-  job     = each.key
-  target  = each.value.target
-  enabled = true
+  job       = each.key
+  target    = each.value.target
+  enabled   = true
+  frequency = each.value.frequency
 
   # Resolve probe names to IDs; skip any name not available in this account's probe list.
   probes = [

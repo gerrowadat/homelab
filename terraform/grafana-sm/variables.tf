@@ -36,7 +36,8 @@ logic cannot be driven by label values — only by the job name.
 EOT
   type = map(object({
     target             = string
-    probes             = optional(list(string), ["Atlanta", "Chicago", "London", "Singapore"])
+    probes             = optional(list(string), ["London"])
+    frequency          = optional(number, 600000)  # milliseconds; default 10 minutes
     valid_status_codes = optional(list(number), [200])
 
     # Body matching: regexp patterns. Check fails if body matches any pattern in
