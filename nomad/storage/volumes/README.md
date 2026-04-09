@@ -15,6 +15,8 @@ capacity, access mode, and NFS mount parameters.
 | `kutt` | kutt job |
 | `media` | Shared media storage |
 | `monitoring` | prometheus (TSDB), alertmanager (state) |
+| `immich-photos` | immich job (photo/video library at `/usr/src/app/upload`) |
+| `immich-db` | immich job (postgres data directory) |
 | `mysql` | mysql job (`/var/lib/mysql`) |
 
 Note: postgres uses a local SSD bind-mount (`/localssd/postgres` on `hedwig`)

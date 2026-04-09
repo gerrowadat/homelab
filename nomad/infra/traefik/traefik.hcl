@@ -171,7 +171,13 @@ http:
         certResolver: le
       middlewares: [internal-only]
       service: grafana
-
+{{ with nomadVar "nomad/jobs/traefik" }}{{ with .immich_hostname }}    immich:
+      rule: "Host(`{{ . }}`)"
+      tls:
+        certResolver: le
+      middlewares: [internal-only]
+      service: immich
+{{ end }}{{ end }}
   services:
     # Consul DNS resolves these to wherever the service is currently running.
     sonarr:
@@ -198,7 +204,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://grafana.service.home.consul:3000"
-EOH
+{{ with nomadVar "nomad/jobs/traefik" }}{{ with .immich_hostname }}    immich:
+      loadBalancer:
+        servers:
+          - url: "http://immich.service.home.consul:2283"
+{{ end }}{{ end }}EOH
         destination = "local/dynamic.yml"
       }
 
