@@ -15,7 +15,7 @@ All four services run as tasks in a single Nomad job group:
 | `immich-server` | `ghcr.io/immich-app/immich-server:release` | 2283 |
 | `immich-ml` | `ghcr.io/immich-app/immich-machine-learning:release` | 3003 |
 | `immich-redis` | `redis:7-alpine` | 6379 |
-| `immich-db` | `ghcr.io/immich-app/postgres:16-vectorchord` | 5433 |
+| `immich-db` | `ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0` | 5433 |
 
 Immich requires its own postgres (with the vectorchord extension) — it does
 not use the shared `postgres` job. Port 5433 is used to avoid collision with
