@@ -43,14 +43,14 @@ job "immich" {
 
       template {
         data = <<EOF
-DB_HOSTNAME=immich-db.service.home.consul
+DB_HOSTNAME=127.0.0.1
 DB_PORT=5433
 DB_USERNAME=immich
 DB_PASSWORD={{ with nomadVar "nomad/jobs/immich" }}{{ .db_password }}{{ end }}
 DB_DATABASE_NAME=immich
-REDIS_HOSTNAME=immich-redis.service.home.consul
+REDIS_HOSTNAME=127.0.0.1
 REDIS_PORT=6379
-IMMICH_MACHINE_LEARNING_URL=http://immich-ml.service.home.consul:3003
+IMMICH_MACHINE_LEARNING_URL=http://127.0.0.1:3003
 EOF
         destination = "secrets/env"
         env         = true
