@@ -73,6 +73,31 @@ EOF
     }
 
     # -----------------------------------------------------------------------
+    # wait-for-db: ephemeral prestart task — polls pg_isready until postgres
+    # is accepting connections, then exits 0. Main tasks don't start until
+    # all ephemeral prestart tasks have exited successfully.
+    # -----------------------------------------------------------------------
+    task "wait-for-db" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        image   = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0"
+        command = "sh"
+        args    = ["-c", "until pg_isready -h 127.0.0.1 -p 5433 -U immich; do sleep 2; done"]
+      }
+
+      resources {
+        cpu    = 50
+        memory = 64
+      }
+    }
+
+    # -----------------------------------------------------------------------
     # immich-machine-learning: CLIP embeddings + facial recognition (CPU-only)
     # -----------------------------------------------------------------------
     task "immich-ml" {
