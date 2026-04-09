@@ -2,9 +2,8 @@
 
 [Immich](https://immich.app) — self-hosted photo and video management.
 
-The public hostname is stored in the `nomad/jobs/traefik` variable (not in
-this repo) and is not added to local DNS — it resolves via public DNS to
-Traefik on hedwig.
+Served at `https://pics.andvari.net` (internal network only via `internal-only` middleware).
+Resolves via public DNS to Traefik on hedwig; not added to local DNS.
 
 ## Architecture
 
@@ -40,28 +39,14 @@ nomad var put nomad/jobs/immich \
   db_password='choose-a-strong-password'
 ```
 
-### 2. Add the hostname to the Traefik variable
-
-The Traefik dynamic config reads `immich_hostname` from `nomad/jobs/traefik`.
-Add it while preserving all existing keys:
-
-```bash
-nomad var get -out json nomad/jobs/traefik \
-  | jq '.Items.immich_hostname = "<your-hostname>"' \
-  | nomad var put -in json nomad/jobs/traefik -
-```
-
-Once set, Nomad re-renders Traefik's dynamic config and the route becomes
-active automatically — no Traefik redeploy needed.
-
-### 3. Create the CSI volumes
+### 2. Create the CSI volumes
 
 ```bash
 nomad volume create nomad/storage/volumes/immich-photos.hcl
 nomad volume create nomad/storage/volumes/immich-db.hcl
 ```
 
-### 4. Deploy
+### 3. Deploy
 
 ```bash
 nomad job run nomad/apps/immich/immich.hcl
