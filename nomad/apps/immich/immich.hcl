@@ -188,6 +188,7 @@ POSTGRES_USER=immich
 POSTGRES_PASSWORD={{ with nomadVar "nomad/jobs/immich" }}{{ .db_password }}{{ end }}
 POSTGRES_DB=immich
 PGDATA=/var/lib/postgresql/data/pgdata
+PGPORT=5433
 EOF
         destination = "secrets/env"
         env         = true
