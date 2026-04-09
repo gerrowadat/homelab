@@ -13,25 +13,25 @@ http_checks = {
 
   # Example: public-facing site that must be reachable from the internet.
   # Alert fires if all probes report failure for 5 minutes.
+  # Defaults: frequency = 600000 (10 min), probes = ["London"]
   "my-public-site" = {
     target             = "https://example.com"
-    probes             = ["Atlanta", "London", "Singapore"]
     valid_status_codes = [200]
   }
 
   # Example: endpoint that must return 200 and contain specific text in the body.
+  # Override frequency to 5 minutes for more critical checks.
   "my-public-site-content-check" = {
     target                          = "https://example.com/health"
-    probes                          = ["Atlanta", "London"]
     valid_status_codes              = [200]
     fail_if_body_not_matches_regexp = ["ok"]
+    frequency                       = 300000  # 5 minutes
   }
 
   # Example: endpoint that redirects on login — check the redirect itself, not the destination.
   # no_follow_redirects stops the probe from following the 302 so valid_status_codes = [302] works.
   "my-redirect-check" = {
     target              = "https://example.com/login"
-    probes              = ["London"]
     valid_status_codes  = [302]
     no_follow_redirects = true
   }
@@ -41,7 +41,6 @@ http_checks = {
   # can reach it (probe_success == 1 for 5 minutes).
   "internal-admin-ui" = {
     target             = "https://admin.example.com"
-    probes             = ["Atlanta", "London", "Singapore"]
     valid_status_codes = [200, 401, 403]
   }
 }
