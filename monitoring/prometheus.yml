@@ -121,6 +121,12 @@ scrape_configs:
     static_configs:
       - targets: ['nomad-botherer.service.home.consul:9112']
 
+  # Traefik reverse proxy metrics.
+  # Requires metrics.prometheus.entryPoint=traefik in traefik static config.
+  - job_name: traefik
+    static_configs:
+      - targets: ['traefik.service.home.consul:8888']
+
   # Newt tunnel client metrics (built-in Prometheus endpoint).
   - job_name: newt
     static_configs:
