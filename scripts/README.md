@@ -13,6 +13,7 @@ Utility scripts for operating the homelab cluster.
 | `check-databasus-backups.sh` | List all non-system databases (PostgreSQL + MySQL) and verify each one has a backup in the databasus volume. |
 | `grafana-sm-export-tfvars.py` | Reconstruct `terraform/grafana-sm/terraform.tfvars` from the live Grafana Cloud Synthetic Monitoring API. Run this if you've lost your local tfvars. See `docs/grafana-synthetic-monitoring.md`. |
 | `dump-nomad-vars.sh` | Dump all Nomad variables to an AES-256-CBC encrypted bash restore script. Use for disaster-recovery backups; restore by decrypting and piping to bash. See below. |
+| `volume-shell.sh` | Start an interactive shell with a Nomad CSI volume mounted at `/<volume-name>`. Useful for inspecting or modifying volume contents directly. |
 
 ## Nomad variable backup and restore
 
