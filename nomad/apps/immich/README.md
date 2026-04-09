@@ -47,7 +47,7 @@ Add it while preserving all existing keys:
 
 ```bash
 nomad var get -out json nomad/jobs/traefik \
-  | jq '.Items.immich_hostname = "pics.home.andvari.net"' \
+  | jq '.Items.immich_hostname = "<your-hostname>"' \
   | nomad var put -in json nomad/jobs/traefik -
 ```
 
