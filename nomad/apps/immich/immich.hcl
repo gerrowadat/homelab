@@ -43,14 +43,14 @@ job "immich" {
 
       template {
         data = <<EOF
-DB_HOSTNAME=127.0.0.1
-DB_PORT=5433
+DB_HOSTNAME={{ env "NOMAD_IP_db" }}
+DB_PORT={{ env "NOMAD_PORT_db" }}
 DB_USERNAME=immich
 DB_PASSWORD={{ with nomadVar "nomad/jobs/immich" }}{{ .db_password }}{{ end }}
 DB_DATABASE_NAME=immich
-REDIS_HOSTNAME=127.0.0.1
-REDIS_PORT=6379
-IMMICH_MACHINE_LEARNING_URL=http://127.0.0.1:3003
+REDIS_HOSTNAME={{ env "NOMAD_IP_redis" }}
+REDIS_PORT={{ env "NOMAD_PORT_redis" }}
+IMMICH_MACHINE_LEARNING_URL=http://{{ env "NOMAD_IP_ml" }}:{{ env "NOMAD_PORT_ml" }}
 EOF
         destination = "secrets/env"
         env         = true
@@ -88,7 +88,7 @@ EOF
       config {
         image   = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0"
         command = "sh"
-        args    = ["-c", "until pg_isready -h 127.0.0.1 -p 5433 -U immich; do sleep 2; done"]
+        args    = ["-c", "until pg_isready -h ${NOMAD_IP_db} -p ${NOMAD_PORT_db} -U immich; do sleep 2; done"]
       }
 
       resources {
