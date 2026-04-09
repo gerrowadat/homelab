@@ -109,6 +109,12 @@ api:
 
 ping: {}
 
+metrics:
+  prometheus:
+    entryPoint: traefik
+    addRoutersLabels: true
+    addServicesLabels: true
+
 log:
   level: INFO
 EOH
