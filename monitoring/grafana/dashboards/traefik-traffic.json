@@ -3,7 +3,7 @@
   "uid": "traefik-traffic",
   "tags": ["traefik", "traffic"],
   "schemaVersion": 40,
-  "version": 1,
+  "version": 2,
   "refresh": "1m",
   "time": { "from": "now-3h", "to": "now" },
   "timezone": "browser",
@@ -19,7 +19,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(traefik_router_requests_total{job=\"traefik\",entrypoint=\"websecure\"}[$__rate_interval])) by (router)",
+          "expr": "sum(rate(traefik_router_requests_total{job=\"traefik\"}[$__rate_interval])) by (router)",
           "legendFormat": "{{router}}",
           "refId": "A"
         }
@@ -46,7 +46,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(traefik_router_requests_total{job=\"traefik\",entrypoint=\"websecure\"}[$__rate_interval])) by (code)",
+          "expr": "sum(rate(traefik_router_requests_total{job=\"traefik\"}[$__rate_interval])) by (code)",
           "legendFormat": "{{code}}",
           "refId": "A"
         }
@@ -90,7 +90,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(traefik_router_requests_total{job=\"traefik\",entrypoint=\"websecure\",code=~\"4..|5..\"}[$__rate_interval])) by (router, code)",
+          "expr": "sum(rate(traefik_router_requests_total{job=\"traefik\",code=~\"4..|5..\"}[$__rate_interval])) by (router, code)",
           "legendFormat": "{{router}} — {{code}}",
           "refId": "A"
         }
@@ -117,7 +117,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.95, sum(rate(traefik_router_request_duration_seconds_bucket{job=\"traefik\",entrypoint=\"websecure\"}[$__rate_interval])) by (router, le))",
+          "expr": "histogram_quantile(0.95, sum(rate(traefik_router_request_duration_seconds_bucket{job=\"traefik\"}[$__rate_interval])) by (router, le))",
           "legendFormat": "{{router}}",
           "refId": "A"
         }
@@ -145,7 +145,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sort_desc(sum(increase(traefik_router_requests_total{job=\"traefik\",entrypoint=\"websecure\"}[$__range])) by (router))",
+          "expr": "sort_desc(sum(increase(traefik_router_requests_total{job=\"traefik\"}[$__range])) by (router))",
           "legendFormat": "{{router}}",
           "refId": "A",
           "instant": true,
