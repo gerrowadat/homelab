@@ -26,11 +26,15 @@ job "prometheus" {
       driver = "docker"
 
       # Grafana Cloud remote_read credentials from nomad/jobs/prometheus.
-      # Written to /local/remote_read.yml; change_mode=signal sends SIGHUP to
-      # the supervisor script (prometheus_watch.sh, PID 1) on credential
-      # rotation, which re-concatenates and reloads prometheus.
+      # Combined with the gitrepo prometheus.yml into /local/prometheus.yml at
+      # task startup. change_mode=restart means credential rotation restarts the
+      # task (acceptable — credentials change rarely).
+      # Rule files use a glob (/config/monitoring/*_rules.yml) so new rule files
+      # and alert rule changes are picked up by /-/reload (via the webhook) without
+      # a redeploy. Scrape config changes in prometheus.yml require a redeploy.
       template {
         data = <<EOH
+{{ file "/config/monitoring/prometheus.yml" }}
 remote_read:
   - url: "https://{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_host }}{{ end }}/api/prom/api/v1/read"
     basic_auth:
@@ -38,22 +42,18 @@ remote_read:
       password: "{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_read_token }}{{ end }}"
     read_recent: true
 EOH
-        destination = "local/remote_read.yml"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
+        destination = "local/prometheus.yml"
+        change_mode = "restart"
       }
 
-      # prometheus_watch.sh (from gitrepo) is the entrypoint. It:
-      #   1. Concatenates prometheus.yml + remote_read.yml -> /local/prometheus.yml
-      #   2. Starts prometheus as a background process
-      #   3. On SIGHUP: re-concatenates and reloads (handles credential rotation)
-      #   4. Polls prometheus.yml every 10s: re-concatenates and reloads on change
-      #      (handles pushes to main picked up by the homelab-webhook /-/reload)
-      # Rule files use a glob (/config/monitoring/*_rules.yml) so new rule
-      # files are picked up by /-/reload without touching prometheus.yml.
       config {
-        image      = "prom/prometheus:v3.11.0"
-        entrypoint = ["/bin/sh", "/config/nomad/monitoring/prometheus_watch.sh"]
+        image  = "prom/prometheus:v3.11.0"
+        args   = [
+          "--config.file=/local/prometheus.yml",
+          "--storage.tsdb.path=/data/prometheus/prom-tsdb/",
+          "--web.external-url=http://prometheus.service.home.consul:9090/",
+          "--web.enable-lifecycle",
+        ]
         labels {
           group = "prometheus"
         }
