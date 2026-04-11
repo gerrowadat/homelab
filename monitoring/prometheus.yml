@@ -151,6 +151,12 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: prom-blackbox-exporter.service.home.consul:9115
+      # Extract the service short name (birdnet / kutt / immich) from the URL
+      # so dashboard legends stay readable.
+      - source_labels: [__param_target]
+        regex: 'https?://([^.]+)\.service\..*'
+        target_label: service
+        replacement: '$1'
 
   # Nomad client metrics — per-allocation CPU and memory usage.
   # Each client only publishes metrics for allocations running on it, so all

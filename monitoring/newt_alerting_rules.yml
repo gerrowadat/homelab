@@ -36,20 +36,6 @@ groups:
         discarding data, likely due to a slow consumer or buffer exhaustion on a
         tunnelled service.
 
-  # Spike in new connections — possible scan or abuse of an exposed service.
-  # Threshold: >20 new connections in 5 minutes is unusual for a personal homelab.
-  - alert: NewtConnectionSpike
-    expr: |
-      sum(increase(newt_proxy_accept_total[5m])) > 20
-    for: 2m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Newt: high rate of new tunnel connections"
-      description: >
-        {{ $value | humanize }} new proxy connections accepted in the last 5 minutes.
-        Something may be hammering a tunnelled service.
-
   # -------------------------------------------------------------------------
   # HTTP health — via Traefik router metrics
   # Covers the three services routed through the Newt tunnel.
