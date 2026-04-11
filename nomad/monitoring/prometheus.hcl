@@ -26,15 +26,15 @@ job "prometheus" {
       driver = "docker"
 
       # Grafana Cloud remote_read credentials from nomad/jobs/prometheus.
-      # Combined with the gitrepo prometheus.yml into /local/prometheus.yml at
-      # task startup. change_mode=restart means credential rotation restarts the
-      # task (acceptable — credentials change rarely).
+      # Written to /local/remote_read.yml; prometheus_start.sh concatenates this
+      # with the gitrepo prometheus.yml at container startup.
+      # change_mode=restart: credential rotation restarts the task (acceptable —
+      # credentials change rarely).
       # Rule files use a glob (/config/monitoring/*_rules.yml) so new rule files
       # and alert rule changes are picked up by /-/reload (via the webhook) without
       # a redeploy. Scrape config changes in prometheus.yml require a redeploy.
       template {
         data = <<EOH
-{{ file "/config/monitoring/prometheus.yml" }}
 remote_read:
   - url: "https://{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_host }}{{ end }}/api/prom/api/v1/read"
     basic_auth:
@@ -42,18 +42,13 @@ remote_read:
       password: "{{ with nomadVar "nomad/jobs/prometheus" }}{{ .grafana_metrics_read_token }}{{ end }}"
     read_recent: true
 EOH
-        destination = "local/prometheus.yml"
+        destination = "local/remote_read.yml"
         change_mode = "restart"
       }
 
       config {
-        image  = "prom/prometheus:v3.11.0"
-        args   = [
-          "--config.file=/local/prometheus.yml",
-          "--storage.tsdb.path=/data/prometheus/prom-tsdb/",
-          "--web.external-url=http://prometheus.service.home.consul:9090/",
-          "--web.enable-lifecycle",
-        ]
+        image      = "prom/prometheus:v3.11.0"
+        entrypoint = ["/bin/sh", "/config/nomad/monitoring/prometheus_start.sh"]
         labels {
           group = "prometheus"
         }
