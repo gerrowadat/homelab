@@ -191,8 +191,6 @@ http:
       service: kutt
 {{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .immich_hostname }}    immich:
       rule: "Host(`{{ . }}`)"
-      tls:
-        certResolver: le
       middlewares: [internal-only]
       service: immich
 {{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .paperless_hostname }}    paperless:
