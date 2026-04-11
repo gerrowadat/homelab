@@ -14,13 +14,8 @@ job "birdnet" {
       service {
         name = "birdnet"
         port = "birdnet"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.birdnet.rule=Host(`birbs.home.andvari.net`)",
-          "traefik.http.routers.birdnet.tls=true",
-          "traefik.http.routers.birdnet.tls.certresolver=le",
-          "traefik.http.routers.birdnet.middlewares=internal-only@file",
-        ]
+        # Traefik routing is defined in nomad/infra/traefik/traefik.hcl
+        # (dynamic.yml template), keyed off birdnet_hostname in nomad/jobs/traefik.
         check {
           name = "HTTP Connection Check"
           type = "http"

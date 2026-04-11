@@ -17,13 +17,8 @@ job "kutt" {
       service {
         name = "kutt"
         port = "kutt"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.kutt.rule=Host(`go.home.andvari.net`)",
-          "traefik.http.routers.kutt.tls=true",
-          "traefik.http.routers.kutt.tls.certresolver=le",
-          "traefik.http.routers.kutt.middlewares=internal-only@file",
-        ]
+        # Traefik routing is defined in nomad/infra/traefik/traefik.hcl
+        # (dynamic.yml template), keyed off kutt_hostname in nomad/jobs/traefik.
         check {
           name     = "HTTP Connection Check"
           type     = "http"

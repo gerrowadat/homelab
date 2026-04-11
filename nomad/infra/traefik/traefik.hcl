@@ -177,10 +177,20 @@ http:
         certResolver: le
       middlewares: [internal-only]
       service: grafana
-{{ with nomadVar "nomad/jobs/traefik" }}{{ with .immich_hostname }}    immich:
+{{ with nomadVar "nomad/jobs/traefik" }}{{ with .birdnet_hostname }}    birdnet:
       rule: "Host(`{{ . }}`)"
       tls:
         certResolver: le
+      middlewares: [internal-only]
+      service: birdnet
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .kutt_hostname }}    kutt:
+      rule: "Host(`{{ . }}`)"
+      tls:
+        certResolver: le
+      middlewares: [internal-only]
+      service: kutt
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .immich_hostname }}    immich:
+      rule: "Host(`{{ . }}`)"
       middlewares: [internal-only]
       service: immich
 {{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .paperless_hostname }}    paperless:
@@ -215,7 +225,15 @@ http:
       loadBalancer:
         servers:
           - url: "http://grafana.service.home.consul:3000"
-{{ with nomadVar "nomad/jobs/traefik" }}{{ with .immich_hostname }}    immich:
+{{ with nomadVar "nomad/jobs/traefik" }}{{ with .birdnet_hostname }}    birdnet:
+      loadBalancer:
+        servers:
+          - url: "http://birdnet.service.home.consul:8823"
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .kutt_hostname }}    kutt:
+      loadBalancer:
+        servers:
+          - url: "http://kutt.service.home.consul:3000"
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .immich_hostname }}    immich:
       loadBalancer:
         servers:
           - url: "http://immich.service.home.consul:2283"
