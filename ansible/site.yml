@@ -35,6 +35,13 @@
   roles:
     - role: ups
 
+- name: docker hosts (non-nomad)
+  hosts: docker
+  become: true
+  become_user: root
+  roles:
+    - role: docker
+
 - name: all physical hosts
   hosts: node_exporter
   any_errors_fatal: false

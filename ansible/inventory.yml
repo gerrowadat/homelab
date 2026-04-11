@@ -86,6 +86,19 @@ nomadconsul:
                   - "192.168.100.251"
                   - "192.168.100.253"
 
+# Hosts that should have Docker installed but are not Nomad nodes.
+# Nomad nodes get Docker via the hashicorp role dependency.
+docker:
+        hosts:
+                rabbitseason:
+                        ansible_user: doc
+        vars:
+                download_arch: amd64
+                docker_dns_servers:
+                  - "192.168.100.250"
+                  - "192.168.100.251"
+                  - "192.168.100.253"
+
 # All physical hosts that should run node_exporter.
 node_exporter:
         children:
