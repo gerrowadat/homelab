@@ -183,6 +183,11 @@ http:
         certResolver: le
       middlewares: [internal-only]
       service: immich
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .paperless_hostname }}    paperless:
+      rule: "Host(`{{ . }}`)"
+      tls:
+        certResolver: le
+      service: paperless
 {{ end }}{{ end }}
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -214,6 +219,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://immich.service.home.consul:2283"
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .paperless_hostname }}    paperless:
+      loadBalancer:
+        servers:
+          - url: "http://paperless.service.home.consul:8000"
 {{ end }}{{ end }}
 EOH
         destination = "local/dynamic.yml"
