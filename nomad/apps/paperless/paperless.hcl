@@ -99,7 +99,7 @@ job "paperless" {
       }
 
       config {
-        image = "docker.io/gotenberg/gotenberg:8.10.1"
+        image = "docker.io/gotenberg/gotenberg:8.30.1"
         ports = ["gotenberg"]
         # JS disabled for security; allow-list restricts filesystem access.
         # Non-default port to avoid colliding with kutt (3000).

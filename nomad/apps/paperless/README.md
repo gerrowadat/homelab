@@ -12,7 +12,7 @@ All four services run as tasks in a single Nomad job group:
 |---|---|---|---|
 | `paperless-webserver` | `paperlessngx/paperless-ngx:2.20.13` | 8000 | Web UI, API, background consumer |
 | `paperless-redis` | `redis:7-alpine` | 6380 | Task queue and job broker |
-| `paperless-gotenberg` | `gotenberg/gotenberg:8.10.1` | 3001 | Office doc → PDF conversion |
+| `paperless-gotenberg` | `gotenberg/gotenberg:8.30.1` | 3001 | Office doc → PDF conversion |
 | `paperless-tika` | `apache/tika:3.0.0.0` | 9998 | Content extraction from Office/email |
 
 Redis, Gotenberg, and Tika are prestart sidecars — they start before the webserver and keep running alongside it.
