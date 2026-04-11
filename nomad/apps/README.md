@@ -10,6 +10,7 @@ User-facing applications.
 | `cringesweeper` | Sweeps old posts from Bluesky and Mastodon | Secrets in `nomad/jobs/cringesweeper` |
 | `kutt` | URL shortener at go.home.andvari.net | Backed by postgres and CSI NFS volume; secrets in `nomad/jobs/kutt` |
 | `immich` | Self-hosted photo/video management | Dedicated postgres+vectorchord, Redis, ML; photos on mix, DB on srv |
+| `paperless` | Document management (paperless-ngx) | Shared postgres, Redis + Gotenberg + Tika sidecars; media/consume/export on mix, index on srv |
 
 ## Hardware-pinned jobs
 
