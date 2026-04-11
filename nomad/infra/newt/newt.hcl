@@ -33,6 +33,9 @@ EOH
         TZ                              = "Europe/Dublin"
         NEWT_METRICS_PROMETHEUS_ENABLED = "true"
         NEWT_ADMIN_ADDR                 = "0.0.0.0:2112"
+        # Counts bytes in a background goroutine rather than inline, reducing
+        # latency on the hot data path while still publishing accurate totals.
+        NEWT_METRICS_ASYNC_BYTES        = "true"
       }
     }
 

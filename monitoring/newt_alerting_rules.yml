@@ -2,19 +2,77 @@ groups:
 - name: newt
   rules:
 
-  # Fire when a lot of new proxy connections are accepted in a short window.
-  # newt_proxy_accept_total counts every connection accepted through the tunnel,
-  # so a spike here means something is hammering the exposed services.
-  # Threshold: >20 new connections in 5 minutes (sustained for 2m) is unusual
-  # for a personal homelab tunnel — tune this down if you add high-traffic services.
-  - alert: NewtConnectionSpike
-    expr: |
-      sum(increase(newt_proxy_accept_total[5m])) > 20
+  # -------------------------------------------------------------------------
+  # Tunnel health
+  # -------------------------------------------------------------------------
+
+  # The Newt client has lost its connection to the Pangolin exit node.
+  # All externally-reachable services (birdnet, kutt, immich) are unreachable
+  # until this recovers.
+  - alert: NewtTunnelOffline
+    expr: newt_online == 0
     for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Newt tunnel is offline"
+      description: >
+        The Newt tunnel to the Pangolin exit node has been offline for 2 minutes.
+        Services exposed via Newt (birdnet, kutt, immich) are unreachable externally.
+
+  # Write drops mean the tunnel proxy is filling its send buffer faster than the
+  # far end is draining it — either a slow consumer or brief network hiccup.
+  # More than 10 drops in 5 minutes is worth knowing about.
+  - alert: NewtWriteDropsHigh
+    expr: |
+      sum(increase(newt_proxy_write_drops_total[5m])) > 10
+    for: 5m
     labels:
       severity: warning
     annotations:
-      summary: "Newt: high rate of new tunnel connections"
+      summary: "Newt: proxy write drops increasing"
       description: >
-        {{ $value | humanize }} new proxy connections accepted in the last 5 minutes.
-        Something may be hammering a tunnelled service.
+        {{ $value | humanize }} write drops in the last 5 minutes. The tunnel is
+        discarding data, likely due to a slow consumer or buffer exhaustion on a
+        tunnelled service.
+
+  # -------------------------------------------------------------------------
+  # HTTP health — via Traefik router metrics
+  # Covers the three services routed through the Newt tunnel.
+  # -------------------------------------------------------------------------
+
+  # >5% of requests to a newt-exposed service are returning 5xx errors.
+  - alert: NewtServiceHTTP5xxHigh
+    expr: |
+      sum by (router) (
+        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt|immich)@consulcatalog",code=~"5.."}[5m])
+      )
+      /
+      sum by (router) (
+        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt|immich)@consulcatalog"}[5m])
+      ) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High HTTP 5xx error rate on {{ $labels.router }}"
+      description: >
+        {{ $labels.router }} is returning {{ $value | humanize }} (ratio) 5xx responses
+        over the last 5 minutes (threshold: 5%). Check the service logs.
+
+  # -------------------------------------------------------------------------
+  # Backend availability — via blackbox probes
+  # Probes hit internal Consul addresses so this fires even if the tunnel is
+  # fine but the application itself has crashed.
+  # -------------------------------------------------------------------------
+
+  - alert: NewtServiceDown
+    expr: probe_success{job="blackbox-newt-services"} == 0
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Newt service backend is down: {{ $labels.instance }}"
+      description: >
+        {{ $labels.instance }} has failed its HTTP health probe for 3 minutes.
+        The backend application is unhealthy regardless of tunnel status.
