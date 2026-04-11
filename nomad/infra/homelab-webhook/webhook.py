@@ -18,8 +18,7 @@ WEBHOOK_SECRET = os.environ["GITHUB_WEBHOOK_SECRET"].encode()
 PORT = 9111
 
 RELOAD_TARGETS = [
-    # prometheus omitted: prometheus_watch.sh polls the gitrepo and reloads
-    # automatically when prometheus.yml changes, so the webhook reload is redundant.
+    "http://prometheus.service.home.consul:9090/-/reload",
     "http://prom-alertmanager.service.home.consul:9093/-/reload",
     "http://prom-blackbox-exporter.service.home.consul:9115/-/reload",
 ]

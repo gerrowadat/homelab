@@ -79,7 +79,7 @@ Config files live in `monitoring/` and are mounted into prometheus/alertmanager/
 
 On push to main, the `homelab-webhook` Nomad job (at `nomad/infra/homelab-webhook/`) pulls the repo and POSTs `/-/reload` to prometheus (9090), alertmanager (9093), and blackbox-exporter (9115).
 
-The entrypoint for the prometheus container is `nomad/monitoring/prometheus_watch.sh` (from the gitrepo). It concatenates `prometheus.yml` + a Nomad-rendered `remote_read.yml` into `/local/prometheus.yml`, starts prometheus as a background process, and acts as a supervisor: SIGHUP (sent by Nomad on credential rotation via `change_mode=signal`) triggers an immediate re-concatenate + reload; a polling loop re-concatenates and reloads whenever `prometheus.yml` changes (picked up from the gitrepo after the homelab-webhook pulls on push to main). All config changes are picked up by `/-/reload` without a `nomad job run` redeploy. Rule files use a glob so they are also live-reloadable.
+The prometheus container uses a Nomad template to combine `prometheus.yml` (from the gitrepo) with Grafana Cloud `remote_read` credentials (from `nomad/jobs/prometheus`) into `/local/prometheus.yml` at task startup. Credential rotation restarts the task (`change_mode=restart`). Prometheus runs with its standard entrypoint pointing at `/local/prometheus.yml`. Rule files use a glob (`/config/monitoring/*_rules.yml`) so new alert rules are picked up by `/-/reload` (sent by the homelab-webhook on push to main) without a redeploy. Changes to scrape config in `prometheus.yml` require a `nomad job run` redeploy.
 
 Prometheus requires `--web.enable-lifecycle` to enable `/-/reload`. Alertmanager and blackbox-exporter enable it by default.
 

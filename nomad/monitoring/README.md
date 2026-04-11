@@ -12,7 +12,10 @@ Prometheus-based monitoring stack with Grafana dashboards.
 
 Prometheus config files (scrape targets, alert rules, recording rules) live in
 `monitoring/` at the repo root — mounted into the prometheus container via the
-`gitrepo` CSI volume.
+`gitrepo` CSI volume. A Nomad template combines `prometheus.yml` with Grafana
+Cloud `remote_read` credentials at task startup into `/local/prometheus.yml`.
+Alert rule changes (via the `*_rules.yml` glob) are picked up by `/-/reload`
+without a redeploy; scrape config changes in `prometheus.yml` require one.
 
 Grafana provisioning config (datasources, dashboard providers, dashboard JSON
 files) lives in `monitoring/grafana/` — also mounted via the `gitrepo` CSI
