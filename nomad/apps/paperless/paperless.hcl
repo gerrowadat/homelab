@@ -190,10 +190,10 @@ PAPERLESS_DBPORT=5432
 PAPERLESS_DBNAME=paperless
 PAPERLESS_DBUSER=paperless
 PAPERLESS_DBSSLMODE=disable
-PAPERLESS_REDIS=redis://127.0.0.1:6380
+PAPERLESS_REDIS=redis://{{ env "NOMAD_IP_redis" }}:{{ env "NOMAD_PORT_redis" }}
 PAPERLESS_TIKA_ENABLED=true
-PAPERLESS_TIKA_ENDPOINT=http://127.0.0.1:9998
-PAPERLESS_TIKA_GOTENBERG_ENDPOINT=http://127.0.0.1:3001
+PAPERLESS_TIKA_ENDPOINT=http://{{ env "NOMAD_IP_tika" }}:{{ env "NOMAD_PORT_tika" }}
+PAPERLESS_TIKA_GOTENBERG_ENDPOINT=http://{{ env "NOMAD_IP_gotenberg" }}:{{ env "NOMAD_PORT_gotenberg" }}
 PAPERLESS_TIME_ZONE=Europe/Dublin
 PAPERLESS_OCR_LANGUAGE=eng
 # inotify doesn't work over NFS; poll every 60 seconds instead.
