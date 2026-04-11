@@ -132,6 +132,26 @@ scrape_configs:
     static_configs:
       - targets: ['newt.service.home.consul:2112']
 
+  # HTTP availability probes for services exposed externally via the Newt tunnel.
+  # Probed at their internal Consul addresses so backend health is tracked
+  # independently of the tunnel itself.
+  - job_name: blackbox-newt-services
+    metrics_path: /probe
+    params:
+      module: [http_2xx_internal]
+    static_configs:
+      - targets:
+          - http://birdnet.service.home.consul:8823/
+          - http://kutt.service.home.consul:3000/
+          - http://immich.service.home.consul:2283/api/server/ping
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prom-blackbox-exporter.service.home.consul:9115
+
   # Nomad client metrics — per-allocation CPU and memory usage.
   # Each client only publishes metrics for allocations running on it, so all
   # clients must be scraped. Requires prometheus_metrics=true in nomad.hcl
