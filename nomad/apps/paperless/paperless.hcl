@@ -184,7 +184,7 @@ PAPERLESS_SECRET_KEY={{ .secret_key }}
 PAPERLESS_ADMIN_USER={{ .admin_user }}
 PAPERLESS_ADMIN_PASSWORD={{ .admin_password }}
 PAPERLESS_URL=https://{{ .hostname }}
-PAPERLESS_ALLOWED_HOSTS={{ .hostname }},localhost
+PAPERLESS_ALLOWED_HOSTS={{ .hostname }},localhost,paperless.service.home.consul
 PAPERLESS_CSRF_TRUSTED_ORIGINS=https://{{ .hostname }}
 {{- end }}
 PAPERLESS_DBENGINE=postgresql
