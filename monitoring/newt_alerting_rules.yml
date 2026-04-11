@@ -45,11 +45,11 @@ groups:
   - alert: NewtServiceHTTP5xxHigh
     expr: |
       sum by (router) (
-        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt)@consulcatalog|immich@file",code=~"5.."}[5m])
+        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt)@nomad|immich@file",code=~"5.."}[5m])
       )
       /
       sum by (router) (
-        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt)@consulcatalog|immich@file"}[5m])
+        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt)@nomad|immich@file"}[5m])
       ) > 0.05
     for: 5m
     labels:
