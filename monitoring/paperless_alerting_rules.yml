@@ -1,0 +1,24 @@
+groups:
+- name: paperless
+  rules:
+
+  # >5% of requests to paperless are returning 5xx errors.
+  # Router is defined in the Traefik dynamic file config (dynamic.yml),
+  # so Traefik labels it as paperless@file.
+  - alert: PaperlessHTTP5xxHigh
+    expr: |
+      sum(
+        rate(traefik_router_requests_total{job="traefik",router="paperless@file",code=~"5.."}[5m])
+      )
+      /
+      sum(
+        rate(traefik_router_requests_total{job="traefik",router="paperless@file"}[5m])
+      ) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High HTTP 5xx error rate on paperless"
+      description: >
+        Paperless is returning {{ $value | humanizePercentage }} 5xx responses
+        over the last 5 minutes (threshold: 5%). Check the paperless-webserver logs.
