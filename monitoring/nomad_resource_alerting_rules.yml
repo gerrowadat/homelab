@@ -6,6 +6,9 @@
   # This means the task is over its soft limit; with oversubscription enabled
   # it won't be OOM-killed until it hits memory_max, but it's a sign the
   # reservation needs raising.
+  # Uses memory_rss (not memory_usage) because memory_usage includes page cache,
+  # which is evictable and inflates the number for I/O-heavy tasks like immich.
+  # RSS matches what Nomad's UI reports and what matters for scheduling.
   - "alert": "NomadJobMemoryOverReservation"
     "annotations":
       "summary": "{{ $labels.job }}/{{ $labels.task }} is over its memory reservation"
@@ -13,7 +16,7 @@
         {{ $labels.job }}/{{ $labels.task }} on {{ $labels.host }} has been {{ $value | humanize }}B over its memory reservation{{ with query (printf "nomad_client_allocs_memory_allocated{job=\"%s\",task=\"%s\",host=\"%s\"}" $labels.job $labels.task $labels.host) }} (reservation: {{ . | first | value | humanize }}B){{ end }}, for {{ with query (printf "time() - ALERTS_FOR_STATE{alertname=\"NomadJobMemoryOverReservation\",job=\"%s\",task=\"%s\"}" $labels.job $labels.task) }}{{ . | first | value | humanizeDuration }}{{ end }}. Consider raising the memory reservation.
     "expr": |
       (
-        nomad_client_allocs_memory_usage - nomad_client_allocs_memory_allocated
+        nomad_client_allocs_memory_rss - nomad_client_allocs_memory_allocated
       ) > 0
     "for": "5m"
     "labels":
