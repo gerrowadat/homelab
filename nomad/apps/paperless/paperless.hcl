@@ -155,6 +155,8 @@ job "paperless" {
     # paperless-webserver: main web UI, REST API, and background consumer.
     # Hostname-based Traefik route defined in nomad/infra/traefik/traefik.hcl
     # (dynamic.yml template), keyed off paperless_hostname in nomad/jobs/traefik.
+    # The hostname is also stored in nomad/jobs/paperless so this job can read
+    # it without needing access to the traefik variable.
     # Publicly accessible — no internal-only middleware.
     # -----------------------------------------------------------------------
     task "paperless-webserver" {
@@ -178,12 +180,10 @@ PAPERLESS_DBPASS={{ .db_password }}
 PAPERLESS_SECRET_KEY={{ .secret_key }}
 PAPERLESS_ADMIN_USER={{ .admin_user }}
 PAPERLESS_ADMIN_PASSWORD={{ .admin_password }}
+PAPERLESS_URL=https://{{ .hostname }}
+PAPERLESS_ALLOWED_HOSTS={{ .hostname }},localhost
+PAPERLESS_CSRF_TRUSTED_ORIGINS=https://{{ .hostname }}
 {{- end }}
-{{- with nomadVar "nomad/jobs/traefik" }}{{ with .paperless_hostname }}
-PAPERLESS_URL=https://{{ . }}
-PAPERLESS_ALLOWED_HOSTS={{ . }},localhost
-PAPERLESS_CSRF_TRUSTED_ORIGINS=https://{{ . }}
-{{- end }}{{ end }}
 PAPERLESS_DBENGINE=postgresql
 PAPERLESS_DBHOST=postgres.service.home.consul
 PAPERLESS_DBPORT=5432

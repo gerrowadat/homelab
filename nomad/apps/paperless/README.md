@@ -56,18 +56,26 @@ nomad var put nomad/jobs/paperless \
   db_password='the-password-from-above' \
   secret_key='the-generated-key' \
   admin_user='admin' \
-  admin_password='choose-a-strong-password'
+  admin_password='choose-a-strong-password' \
+  hostname='<your-hostname>'
 ```
+
+The `hostname` key is used to set `PAPERLESS_URL`, `PAPERLESS_ALLOWED_HOSTS`, and
+`PAPERLESS_CSRF_TRUSTED_ORIGINS` inside the container. The paperless job reads its
+own variable only — it does not have access to `nomad/jobs/traefik`.
 
 ### 3. Add the hostname to the Traefik variable
 
-This controls both the Traefik routing rule and the `PAPERLESS_URL` / CSRF settings injected into the container:
+This controls the Traefik routing rule:
 
 ```bash
 nomad var get -out json nomad/jobs/traefik \
   | jq '.Items.paperless_hostname = "<your-hostname>"' \
   | nomad var put -in json nomad/jobs/traefik -
 ```
+
+The hostname must be set in both variables — `nomad/jobs/paperless` for the app
+config and `nomad/jobs/traefik` for the router rule.
 
 ### 4. Add a public DNS A record
 
