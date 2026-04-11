@@ -9,6 +9,7 @@ Prometheus configuration files, mounted into the prometheus container via the
 | `node_exporter_alerting_rules.yml` | Alerts for host-level metrics (disk, memory, load) |
 | `node_exporter_recording_rules.yml` | Pre-computed recording rules for dashboard performance |
 | `blackbox_alerting_rules.yml` | Alerts for failed HTTP/ICMP probes |
+| `paperless_alerting_rules.yml` | Alerts for paperless-ngx (Traefik 5xx error rate) |
 | `prom-alertmanager.yml` | Alert routing and email notification config |
 | `prom-blackbox-exporter.yml` | Probe module definitions (http_2xx, icmp) |
 | `grafana/` | Grafana provisioning config and dashboard JSON files |
