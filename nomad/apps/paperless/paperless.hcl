@@ -99,11 +99,14 @@ job "paperless" {
       }
 
       config {
-        image = "docker.io/gotenberg/gotenberg:8.30.1"
-        ports = ["gotenberg"]
+        image   = "docker.io/gotenberg/gotenberg:8.30.1"
+        ports   = ["gotenberg"]
+        # gotenberg image uses tini as its entrypoint; command must be set so
+        # tini receives "gotenberg" as the executable, not the first flag.
         # JS disabled for security; allow-list restricts filesystem access.
         # Non-default port to avoid colliding with kutt (3000).
-        args  = [
+        command = "gotenberg"
+        args    = [
           "--chromium-disable-javascript=true",
           "--chromium-allow-list=file:///tmp/.*",
           "--api-port=3001",
