@@ -10,7 +10,7 @@ groups:
   # All externally-reachable services (birdnet, kutt, immich) are unreachable
   # until this recovers.
   - alert: NewtTunnelOffline
-    expr: newt_online == 0
+    expr: newt_tunnel_sessions == 0
     for: 2m
     labels:
       severity: critical
@@ -25,7 +25,7 @@ groups:
   # More than 10 drops in 5 minutes is worth knowing about.
   - alert: NewtWriteDropsHigh
     expr: |
-      sum(increase(newt_proxy_write_drops_total[5m])) > 10
+      sum(increase(newt_proxy_drops_total[5m])) > 10
     for: 5m
     labels:
       severity: warning
@@ -45,11 +45,11 @@ groups:
   - alert: NewtServiceHTTP5xxHigh
     expr: |
       sum by (router) (
-        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt|immich)@consulcatalog",code=~"5.."}[5m])
+        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt)@consulcatalog|immich@file",code=~"5.."}[5m])
       )
       /
       sum by (router) (
-        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt|immich)@consulcatalog"}[5m])
+        rate(traefik_router_requests_total{job="traefik",router=~"(birdnet|kutt)@consulcatalog|immich@file"}[5m])
       ) > 0.05
     for: 5m
     labels:
