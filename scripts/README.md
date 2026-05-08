@@ -12,6 +12,7 @@ Utility scripts for operating the homelab cluster.
 | `mysql-connect.sh` | Open a mysql shell to the local mysql instance via its Consul address. |
 | `check-databasus-backups.sh` | List all non-system databases (PostgreSQL + MySQL) and verify each one has a backup in the databasus volume. |
 | `grafana-sm-export-tfvars.py` | Reconstruct `terraform/grafana-sm/terraform.tfvars` from the live Grafana Cloud Synthetic Monitoring API. Run this if you've lost your local tfvars. See `docs/grafana-synthetic-monitoring.md`. |
+| `nomad-var-set.sh` | Update a single key in a Nomad variable without touching the other keys. Usage: `bash scripts/nomad-var-set.sh <path> <key> <value>`. |
 | `dump-nomad-vars.sh` | Dump all Nomad variables to an AES-256-CBC encrypted bash restore script. Use for disaster-recovery backups; restore by decrypting and piping to bash. See below. |
 | `volume-shell.sh` | Start an interactive shell with a Nomad CSI volume mounted at `/<volume-name>`. Useful for inspecting or modifying volume contents directly. |
 
