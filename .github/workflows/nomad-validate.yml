@@ -1,0 +1,40 @@
+name: Validate Nomad jobs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nomad/**"
+      - "versions.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "nomad/**"
+      - "versions.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read Nomad version
+        id: versions
+        run: |
+          ver=$(grep '^nomad_version:' versions.yml | awk '{print $2}' | tr -d '"')
+          echo "nomad_version=${ver}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate all Nomad job files
+        run: |
+          # Exclude acl/ (policy files) and storage/volumes/ (volume registration
+          # files) — neither are job specs and nomad job validate rejects them.
+          find nomad -name "*.hcl" \
+            -not -path "nomad/acl/*" \
+            -not -path "nomad/storage/volumes/*" \
+            | sort | while read -r f; do
+            echo "==> $f"
+            docker run --rm \
+              -v "$GITHUB_WORKSPACE:/workspace:ro" \
+              "hashicorp/nomad:${{ steps.versions.outputs.nomad_version }}" \
+              job validate "/workspace/$f"
+          done

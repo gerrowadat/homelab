@@ -1,0 +1,28 @@
+name: Validate Terraform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "terraform/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "terraform/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: terraform init
+        run: terraform -chdir=terraform/grafana-sm init -backend=false
+
+      - name: terraform validate
+        run: terraform -chdir=terraform/grafana-sm validate
+
+      - name: terraform fmt check
+        run: terraform fmt -check -recursive terraform/

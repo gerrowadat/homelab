@@ -1,5 +1,9 @@
 # --- Hashicorp apt repo setup ---
 
+- name: Load version variables from repo root
+  ansible.builtin.include_vars:
+    file: "{{ playbook_dir }}/../versions.yml"
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: apt
