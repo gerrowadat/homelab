@@ -26,7 +26,12 @@ jobs:
 
       - name: Validate all Nomad job files
         run: |
-          find nomad -name "*.hcl" | sort | while read -r f; do
+          # Exclude acl/ (policy files) and storage/volumes/ (volume registration
+          # files) — neither are job specs and nomad job validate rejects them.
+          find nomad -name "*.hcl" \
+            -not -path "nomad/acl/*" \
+            -not -path "nomad/storage/volumes/*" \
+            | sort | while read -r f; do
             echo "==> $f"
             docker run --rm \
               -v "$GITHUB_WORKSPACE:/workspace:ro" \
