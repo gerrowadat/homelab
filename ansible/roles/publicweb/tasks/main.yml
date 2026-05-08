@@ -11,7 +11,7 @@
 
 - name: Packages for a web server
   ansible.builtin.apt:
-    update-cache: yes
+    update-cache: true
     pkg:
       - cron
       - nginx

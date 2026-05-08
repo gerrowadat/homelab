@@ -1,6 +1,6 @@
 - name: Reload systemd daemon
   ansible.builtin.systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Restart consul
   ansible.builtin.systemd:

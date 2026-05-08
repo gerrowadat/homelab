@@ -1,0 +1,29 @@
+# ansible-lint configuration for the homelab repo.
+# Rules are skipped here when they are purely stylistic or would require
+# large-scale refactoring of working infrastructure code. Genuine correctness
+# issues (schema, yaml formatting) are fixed in the files themselves.
+
+skip_list:
+  # File tasks don't always need explicit mode= — system defaults are intentional.
+  - risky-file-permissions
+  # Inline reloads/restarts after config changes are a deliberate pattern here.
+  - no-handler
+  # Task name capitalisation is cosmetic.
+  - name[casing]
+  # Short module names (apt, copy, etc.) are fine for internal playbooks.
+  - fqcn[action-core]
+  - fqcn[action]
+  # shell vs command distinction is context-dependent.
+  - command-instead-of-shell
+  # Some packages are intentionally pulled at latest.
+  - latest
+  # ignore_errors is used intentionally in some tasks.
+  - ignore-errors
+  # changed_when omissions are intentional in idempotent tasks here.
+  - no-changed-when
+  # Register variable names don't need role prefixes in this homelab.
+  - var-naming[no-role-prefix]
+  # Jinja spacing style is cosmetic.
+  - jinja[spacing]
+  # Jinja templates mid-name are fine for host/share info in task names.
+  - name[template]

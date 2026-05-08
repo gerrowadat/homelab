@@ -1,4 +1,5 @@
 galaxy_info:
   author: local
   description: NFS server pre-configuration (bind mounts)
+  license: BSD-3-Clause
   min_ansible_version: "2.9"
