@@ -23,7 +23,7 @@
     repo: "deb [arch={{ download_arch }}] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
     state: present
     filename: hashicorp
-    update_cache: yes
+    update_cache: true
   when: hashicorp_needs_install
 
 # --- Consul ---
@@ -41,7 +41,7 @@
 - name: Create consul user
   ansible.builtin.user:
     name: consul
-    create_home: no
+    create_home: false
     home: /etc/consul.d
     shell: /bin/false
 
@@ -79,7 +79,7 @@
 - name: Enable consul on boot
   ansible.builtin.systemd:
     name: consul
-    enabled: yes
+    enabled: true
     state: started
   when: consul_enabled
 
@@ -133,5 +133,5 @@
 - name: Enable nomad on boot
   ansible.builtin.systemd:
     name: nomad
-    enabled: yes
+    enabled: true
     state: started

@@ -1,12 +1,12 @@
 - name: Grab my rc files
   become: true
-  become_user : '{{ ansible_user }}'
+  become_user: '{{ ansible_user }}'
   ansible.builtin.git:
     repo: 'https://github.com/gerrowadat/rcfiles.git'
     dest: '/home/{{ ansible_user }}/.rcfiles'
 
 - name: Symlink .vimrc to git version
-  become: yes
+  become: true
   become_user: '{{ ansible_user }}'
   ansible.builtin.file:
     src: '/home/{{ ansible_user }}/.rcfiles/vimrc'
@@ -40,7 +40,7 @@
   when: not vundle_files.stat.exists
 
 - name: Symlink .bash_aliases to git version
-  become: yes
+  become: true
   become_user: '{{ ansible_user }}'
   ansible.builtin.file:
     src: '/home/{{ ansible_user }}/.rcfiles/bash_aliases'
@@ -48,7 +48,7 @@
     state: link
 
 - name: Symlink .gitconfig to git version
-  become: yes
+  become: true
   become_user: '{{ ansible_user }}'
   ansible.builtin.file:
     src: '/home/{{ ansible_user }}/.rcfiles/gitconfig'
@@ -56,10 +56,10 @@
     state: link
 
 - name: Symlink .bashrc to git version
-  become: yes
+  become: true
   become_user: '{{ ansible_user }}'
   ansible.builtin.file:
     src: '/home/{{ ansible_user }}/.rcfiles/bashrc'
     dest: '/home/{{ ansible_user }}/.bashrc'
     state: link
-    force: yes
+    force: true

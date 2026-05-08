@@ -1,6 +1,6 @@
 - name: Install prometheus-node-exporter
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
     pkg:
       - prometheus-node-exporter
@@ -8,5 +8,5 @@
 - name: Enable and start prometheus-node-exporter
   ansible.builtin.systemd:
     name: prometheus-node-exporter
-    enabled: yes
+    enabled: true
     state: started

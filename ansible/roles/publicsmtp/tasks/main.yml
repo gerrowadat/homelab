@@ -1,6 +1,6 @@
 - name: Packages for an smtp server
   ansible.builtin.apt:
-    update-cache: yes
+    update-cache: true
     pkg:
       - postfix
       - opendkim
@@ -46,7 +46,7 @@
   ansible.builtin.template:
     src: postsrsd/etc-default-postsrsd.j2
     dest: /etc/default/postsrsd
-  register: postsrsd_cf.changed
+  register: postsrsd_cf
 
 - name: reload postsrsd for new config
   ansible.builtin.systemd:
@@ -101,4 +101,3 @@
     name: postfix.service
     state: restarted
   when: postfix_cf.changed
-
