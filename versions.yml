@@ -1,0 +1,5 @@
+# Pinned versions for HashiCorp tools installed by Ansible.
+# This is the single source of truth — CI workflows and the Ansible
+# hashicorp role both read from here.
+nomad_version: "1.11.0"
+consul_version: "1.22.1"

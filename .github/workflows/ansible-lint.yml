@@ -1,0 +1,25 @@
+name: Lint Ansible
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ansible/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "ansible/**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ansible-lint
+        run: pip install ansible-lint
+
+      # Lint local roles only — site.yml references an external Galaxy role
+      # (ansible-nfs-server) that is not committed to the repo.
+      - name: Run ansible-lint
+        run: ansible-lint ansible/roles/
