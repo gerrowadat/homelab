@@ -54,11 +54,6 @@ nfs_server:
                                                 - 'no_root_squash'
                                   path: /mix
 
-login:
-        hosts:
-                rabbitseason:
-                        ansible_user: doc
-
 nomadconsul:
         hosts:
                 picluster5:
@@ -68,6 +63,7 @@ nomadconsul:
                 duckseason:
                         nfs_primary: localhost
                 hedwig:
+                rabbitseason:
         vars:
                 download_arch: amd64
                 ansible_user: doc
@@ -81,19 +77,6 @@ nomadconsul:
                 nfs_share: "/export/things"
                 # DNS servers that forward .consul queries to the local consul agent.
                 # These are the nomad server nodes running bind9 with consul forwarding.
-                docker_dns_servers:
-                  - "192.168.100.250"
-                  - "192.168.100.251"
-                  - "192.168.100.253"
-
-# Hosts that should have Docker installed but are not Nomad nodes.
-# Nomad nodes get Docker via the hashicorp role dependency.
-docker:
-        hosts:
-                rabbitseason:
-                        ansible_user: doc
-        vars:
-                download_arch: amd64
                 docker_dns_servers:
                   - "192.168.100.250"
                   - "192.168.100.251"
