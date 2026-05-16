@@ -15,6 +15,7 @@ Infrastructure services that apps depend on.
 | `postfix-andvari-smarthost` | Internal Postfix smarthost | Relays outbound mail |
 | `dns` | Consul-aware DNS | BIND9 forwarding `.consul` to local Consul agent |
 | `homelab-webhook` | GitHub webhook receiver | Pulls gitrepo and reloads monitoring services on push to main |
+| `nomad-botherer` | Nomad job drift detector | Compares HCL definitions in repo against live Nomad jobs; webhook-triggered |
 
 ## SSL certificate pipeline
 
