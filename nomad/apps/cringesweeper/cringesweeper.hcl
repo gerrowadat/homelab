@@ -5,7 +5,7 @@ job "cringesweeper" {
     task "cringesweeper" {
       driver = "docker"
       config {
-        image   = "ghcr.io/gerrowadat/cringesweeper:0.3.0"
+        image   = "ghcr.io/gerrowadat/cringesweeper:0.3.2"
         command = "/app/cringesweeper"
         args    = ["server", "--port=8080", "--platforms=bluesky,mastodon", "--max-post-age=60d", "--preserve-pinned", "--preserve-selflike", "--unlike-posts", "--unshare-reposts"]
       }
