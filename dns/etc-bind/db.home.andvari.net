@@ -1,7 +1,7 @@
 $ORIGIN home.andvari.net.
 $TTL    604800
 @       IN      SOA     ns1.home.andvari.net. admin.home.andvari.net. (
-                 55     ; Serial
+                 56     ; Serial
              604800     ; Refresh
               86400     ; Retry
             2419200     ; Expire
@@ -22,3 +22,4 @@ rabbitseason   IN A 192.168.100.251
 duckseason     IN A 192.168.100.253
 
 smtp IN CNAME postfix-andvari-smarthost.service.home.consul.
+logs IN CNAME traefik.service.home.consul.

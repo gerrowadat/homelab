@@ -48,6 +48,7 @@ GF_SERVER_ROOT_URL=https://home.andvari.net/graphs/
 GF_SERVER_SERVE_FROM_SUB_PATH=true
 GF_PATHS_PROVISIONING=/config/monitoring/grafana/provisioning
 GF_AUTH_ANONYMOUS_ENABLED=false
+GF_INSTALL_PLUGINS=victoriametrics-logs-datasource
 EOH
       }
 

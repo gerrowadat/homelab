@@ -9,6 +9,27 @@ Prometheus-based monitoring stack with Grafana dashboards.
 | `prom-blackbox-exporter` | HTTP and ICMP probes |
 | `prom-consul-exporter` | Consul cluster metrics |
 | `grafana` | Dashboards and visualisation at `home.andvari.net/graphs` |
+| `victorialogs` | Centralised log storage (VictoriaLogs), queryable at `logs.home.andvari.net` |
+| `otel-collector` | OTEL Collector system job (one per node); tails Docker logs and accepts OTLP push |
+
+See `docs/log-collection.md` for the full rollout guide and operational playbook.
+
+Key log commands:
+
+```bash
+# Check both jobs
+nomad job status victorialogs
+nomad job status otel-collector
+
+# Health check
+curl -s http://logs.service.home.consul:9428/health
+
+# Query recent logs
+curl -s 'http://logs.service.home.consul:9428/select/logsql/query?query=*&limit=10' | jq .
+
+# Check storage usage
+curl -s http://logs.service.home.consul:9428/metrics | grep victorialogs_data_size_bytes
+```
 
 Prometheus config files (scrape targets, alert rules, recording rules) live in
 `monitoring/` at the repo root — mounted into the prometheus container via the

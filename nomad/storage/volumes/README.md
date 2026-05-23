@@ -14,6 +14,7 @@ capacity, access mode, and NFS mount parameters.
 | `jellyfin` | Defined; no active job in this repo |
 | `kutt` | kutt job |
 | `media` | Shared media storage |
+| `logs` | victorialogs job (log storage, 30-day retention) |
 | `monitoring` | prometheus (TSDB), alertmanager (state) |
 | `immich-photos` | immich job (photo/video library at `/usr/src/app/upload`) |
 | `immich-db` | immich job (postgres data directory) |

@@ -1,0 +1,10 @@
+apiVersion: 1
+
+datasources:
+  - name: Logs
+    type: victoriametrics-logs-datasource
+    uid: logs
+    url: http://logs.service.home.consul:9428
+    access: proxy
+    isDefault: false
+    editable: false
