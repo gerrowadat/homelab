@@ -91,6 +91,7 @@ scrape_configs:
           - z2m.service.home.consul:8081
           - nomad-botherer.service.home.consul:9112
           - http://paperless.service.home.consul:8000/
+          - logs.service.home.consul:9428
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -116,6 +117,11 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: prom-blackbox-exporter.service.home.consul:9115
+
+  # VictoriaLogs metrics (ingestion rate, storage size, error counters).
+  - job_name: victorialogs
+    static_configs:
+      - targets: ['logs.service.home.consul:9428']
 
   # nomad-botherer job drift detector.
   - job_name: nomad-botherer
