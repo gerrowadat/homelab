@@ -48,12 +48,12 @@ GF_SERVER_ROOT_URL=https://home.andvari.net/graphs/
 GF_SERVER_SERVE_FROM_SUB_PATH=true
 GF_PATHS_PROVISIONING=/config/monitoring/grafana/provisioning
 GF_AUTH_ANONYMOUS_ENABLED=false
-GF_INSTALL_PLUGINS=victoriametrics-logs-datasource
+GF_PLUGINS_PREINSTALL_SYNC=victoriametrics-logs-datasource
 EOH
       }
 
       config {
-        image = "grafana/grafana:11.4.0"
+        image = "grafana/grafana:13.0.1"
         ports = ["grafana"]
         dns_search_domains = ["home.andvari.net"]
       }
@@ -81,7 +81,7 @@ EOH
 
       resources {
         cpu    = 200
-        memory = 128
+        memory = 512
       }
     }
   }
