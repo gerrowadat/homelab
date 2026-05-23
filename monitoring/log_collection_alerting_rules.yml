@@ -1,0 +1,64 @@
+"groups":
+- "name": "log-collection"
+  "rules":
+
+  # VictoriaLogs HTTP health check failing — storage or process is down.
+  - "alert": "VictoriaLogsDown"
+    "annotations":
+      "summary": "VictoriaLogs is not responding"
+      "description": "VictoriaLogs health probe at {{ $labels.instance }} has been failing for 5 minutes. Log storage is unavailable."
+    "expr": |
+      probe_success{job="blackbox-consul-http",instance="logs.service.home.consul:9428"} < 1
+    "for": "5m"
+    "labels":
+      "severity": "critical"
+
+  # No log rows ingested via OTEL in the last 15 minutes. In a running cluster
+  # with multiple services this should never be zero — if it is, either
+  # VictoriaLogs is not receiving from the collectors or all collectors are dead.
+  - "alert": "LogsNotFlowing"
+    "annotations":
+      "summary": "No logs ingested in the last 15 minutes"
+      "description": "VictoriaLogs has received 0 log rows via OpenTelemetry for 15 minutes. Check the otel-collector system job on all nodes."
+    "expr": |
+      rate(vl_rows_ingested_total{type="opentelemetry_protobuf"}[15m]) == 0
+    "for": "15m"
+    "labels":
+      "severity": "critical"
+
+  # Log ingestion rate has dropped sharply. A sudden drop relative to the
+  # recent baseline suggests one or more collectors have gone silent without
+  # crashing (e.g. Docker socket permission issue, export backpressure).
+  - "alert": "LogIngestionRateLow"
+    "annotations":
+      "summary": "Log ingestion rate has dropped significantly"
+      "description": "VictoriaLogs is ingesting {{ $value | humanize }} rows/s, less than 10% of the 1-hour average. Some collectors may be failing silently."
+    "expr": |
+      rate(vl_rows_ingested_total{type="opentelemetry_protobuf"}[5m])
+        < 0.1 * avg_over_time(rate(vl_rows_ingested_total{type="opentelemetry_protobuf"}[5m])[1h:5m])
+    "for": "15m"
+    "labels":
+      "severity": "warning"
+
+  # VictoriaLogs is dropping rows. Any non-zero drop rate is unexpected.
+  - "alert": "VictoriaLogsRowsDropped"
+    "annotations":
+      "summary": "VictoriaLogs is dropping log rows"
+      "description": "VictoriaLogs is dropping {{ $value | humanize }} rows/s (reason: {{ $labels.reason }}). Check storage capacity and field count limits."
+    "expr": |
+      rate(vl_rows_dropped_total[5m]) > 0
+    "for": "5m"
+    "labels":
+      "severity": "warning"
+
+  # One or more otel-collector tasks has a failed allocation. Since this is a
+  # system job, any failure means a node has lost log collection entirely.
+  - "alert": "OtelCollectorDown"
+    "annotations":
+      "summary": "otel-collector has a failed allocation"
+      "description": "The otel-collector system job has {{ $value }} failed allocation(s). At least one cluster node is not collecting logs."
+    "expr": |
+      nomad_nomad_job_summary_failed{exported_job="otel-collector"} > 0
+    "for": "5m"
+    "labels":
+      "severity": "critical"
