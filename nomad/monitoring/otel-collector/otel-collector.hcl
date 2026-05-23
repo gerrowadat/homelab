@@ -17,44 +17,55 @@ job "otel-collector" {
       user   = "0"
 
       config {
-        image = "otel/opentelemetry-collector-contrib:0.123.0"
+        image = "otel/opentelemetry-collector-contrib:0.152.0"
         args  = ["--config=/local/otel-collector.yml"]
         ports = ["otlp_grpc", "otlp_http", "metrics"]
         volumes = [
           "/var/lib/docker/containers:/hostlog/containers:ro",
+          "/var/run/docker.sock:/var/run/docker.sock:ro",
         ]
       }
 
       template {
         destination = "local/otel-collector.yml"
         data        = <<EOH
+extensions:
+  # Watches the Docker daemon for container start/stop events. Used by
+  # receiver_creator to dynamically create a filelog instance per container,
+  # with that container's labels (Nomad job/task/alloc) injected as resource
+  # attributes at discovery time.
+  docker_observer:
+    endpoint: unix:///var/run/docker.sock
+
 receivers:
-  filelog:
-    include:
-      - /hostlog/containers/*/*.log
-    include_file_path: true
-    operators:
-      # Docker wraps each log line in JSON: {"log":"...", "stream":"stdout", "time":"..."}
-      - type: json_parser
-        timestamp:
-          parse_from: attributes.time
-          layout_type: gotime
-          layout: '2006-01-02T15:04:05.999999999Z07:00'
-      - type: move
-        from: attributes.log
-        to: body
-      - type: regex_parser
-        regex: '/hostlog/containers/(?P<container_id>[a-f0-9]+)'
-        parse_from: attributes["log.file.path"]
-        parse_to: attributes
-      - type: move
-        from: attributes.stream
-        to: attributes["log.iostream"]
-      # Set host.name as a record attribute (not resource attribute) so VictoriaLogs
-      # stores it as a queryable field. Uses Consul Template to query the local node name.
-      - type: add
-        field: attributes["host.name"]
-        value: '{{ with node }}{{ .Node.Node }}{{ end }}'
+  receiver_creator:
+    watch_observers: [docker_observer]
+    receivers:
+      filelog:
+        rule: type == "container"
+        config:
+          include:
+            - /hostlog/containers/`container_id`/`container_id`-json.log
+          include_file_path: true
+          operators:
+            # Docker wraps each log line in JSON: {"log":"...", "stream":"stdout", "time":"..."}
+            - type: json_parser
+              timestamp:
+                parse_from: attributes.time
+                layout_type: gotime
+                layout: '2006-01-02T15:04:05.999999999Z07:00'
+            - type: move
+              from: attributes.log
+              to: body
+            - type: move
+              from: attributes.stream
+              to: attributes["log.iostream"]
+          resource:
+            nomad.job:      '`labels["com.hashicorp.nomad.job_name"]`'
+            nomad.task:     '`labels["com.hashicorp.nomad.task_name"]`'
+            nomad.group:    '`labels["com.hashicorp.nomad.task_group_name"]`'
+            nomad.alloc_id: '`labels["com.hashicorp.nomad.alloc_id"]`'
+            container.id:   '`container_id`'
 
   otlp:
     protocols:
@@ -67,12 +78,22 @@ processors:
   batch:
     timeout: 5s
 
-  # Detects host.name from the OS hostname; applied to OTLP-pushed logs and metrics.
-  # For filelog records, host.name is set as a record attribute via the add operator above.
   resourcedetection/system:
     detectors: [system]
     system:
       hostname_sources: [os]
+
+  # Promote Nomad labels and host.name from resource attributes to log record
+  # attributes so VictoriaLogs indexes them as queryable fields.
+  transform/record_attrs:
+    log_statements:
+      - context: log
+        statements:
+          - set(attributes["nomad.job"],      resource.attributes["nomad.job"])
+          - set(attributes["nomad.task"],     resource.attributes["nomad.task"])
+          - set(attributes["nomad.group"],    resource.attributes["nomad.group"])
+          - set(attributes["nomad.alloc_id"], resource.attributes["nomad.alloc_id"])
+          - set(attributes["host.name"],      resource.attributes["host.name"])
 
 exporters:
   otlphttp/logs:
@@ -85,10 +106,11 @@ exporters:
     endpoint: "0.0.0.0:8889"
 
 service:
+  extensions: [docker_observer]
   pipelines:
     logs:
-      receivers: [filelog, otlp]
-      processors: [batch, resourcedetection/system]
+      receivers: [receiver_creator, otlp]
+      processors: [batch, resourcedetection/system, transform/record_attrs]
       exporters: [otlphttp/logs]
     metrics:
       receivers: [otlp]
