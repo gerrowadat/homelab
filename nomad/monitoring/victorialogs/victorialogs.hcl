@@ -1,0 +1,62 @@
+job "victorialogs" {
+  datacenters = ["home"]
+
+  group "victorialogs" {
+
+    volume "logs" {
+      type            = "csi"
+      source          = "logs"
+      read_only       = false
+      attachment_mode = "file-system"
+      access_mode     = "multi-node-multi-writer"
+    }
+
+    network {
+      port "http" {
+        static = 9428
+      }
+    }
+
+    task "victorialogs" {
+      driver = "docker"
+
+      config {
+        image = "victoriametrics/victoria-logs:v1.23.0-victorialogs"
+        args  = [
+          "-storageDataPath=/data",
+          "-retentionPeriod=30d",
+          "-httpListenAddr=:9428",
+        ]
+        ports = ["http"]
+      }
+
+      volume_mount {
+        volume      = "logs"
+        destination = "/data"
+      }
+
+      service {
+        name = "logs"
+        port = "http"
+        check {
+          type     = "http"
+          path     = "/health"
+          interval = "10s"
+          timeout  = "2s"
+        }
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.logs.rule=Host(`logs.home.andvari.net`)",
+          "traefik.http.routers.logs.tls=true",
+          "traefik.http.routers.logs.tls.certresolver=le",
+          "traefik.http.routers.logs.middlewares=internal-only@file",
+        ]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 256
+      }
+    }
+  }
+}

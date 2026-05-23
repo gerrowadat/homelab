@@ -269,8 +269,9 @@ nomad job run nomad/monitoring/grafana.hcl
   (e.g. `GF_INSTALL_PLUGINS=grafana-piechart-panel`). They download at startup
   and persist to the `grafana` CSI volume.
 
-- **Additional datasources**: Loki for log aggregation, if added later, just
-  needs a file in `monitoring/grafana/provisioning/datasources/`.
+- **Additional datasources**: The `Logs` datasource (VictoriaLogs) is already
+  provisioned. Further datasources just need a file in
+  `monitoring/grafana/provisioning/datasources/`.
 
 - **Organisation/teams**: Grafana supports multiple orgs and teams. For a
   single-user homelab the default org is fine.
