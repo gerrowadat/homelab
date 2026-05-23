@@ -31,9 +31,7 @@ job "otel-collector" {
         data        = <<EOH
 extensions:
   # Watches the Docker daemon for container start/stop events. Used by
-  # receiver_creator to dynamically create a filelog instance per container,
-  # with that container's labels (Nomad job/task/alloc) injected as resource
-  # attributes at discovery time.
+  # receiver_creator to dynamically create a filelog instance per container.
   docker_observer:
     endpoint: unix:///var/run/docker.sock
 
@@ -61,9 +59,6 @@ receivers:
               from: attributes.stream
               to: attributes["log.iostream"]
           resource:
-            nomad.job:      '`labels["com.hashicorp.nomad.job_name"]`'
-            nomad.task:     '`labels["com.hashicorp.nomad.task_name"]`'
-            nomad.group:    '`labels["com.hashicorp.nomad.task_group_name"]`'
             nomad.alloc_id: '`labels["com.hashicorp.nomad.alloc_id"]`'
             container.id:   '`container_id`'
 
@@ -83,17 +78,20 @@ processors:
     system:
       hostname_sources: [os]
 
-  # Promote Nomad labels and host.name from resource attributes to log record
-  # attributes so VictoriaLogs indexes them as queryable fields.
+  # Promote key fields to log record attributes so VictoriaLogs indexes them.
+  # host.name is injected from the Nomad node name at template render time
+  # because resourcedetection/system returns the container's internal hostname
+  # (its short container ID), not the physical host.
+  # nomad.task is extracted from container.name, which docker_observer sets to
+  # "<task_name>-<alloc-uuid>". The alloc UUID is always 36 chars; stripping 37
+  # chars (UUID + preceding hyphen) leaves the task name.
   transform/record_attrs:
     log_statements:
       - context: log
         statements:
-          - set(attributes["nomad.job"],      resource.attributes["nomad.job"])
-          - set(attributes["nomad.task"],     resource.attributes["nomad.task"])
-          - set(attributes["nomad.group"],    resource.attributes["nomad.group"])
+          - set(attributes["host.name"],      "{{ with node }}{{ .Node.Node }}{{ end }}")
           - set(attributes["nomad.alloc_id"], resource.attributes["nomad.alloc_id"])
-          - set(attributes["host.name"],      resource.attributes["host.name"])
+          - set(attributes["nomad.task"],     Substring(resource.attributes["container.name"], 0, Len(resource.attributes["container.name"]) - 37)) where resource.attributes["nomad.alloc_id"] != nil
 
 exporters:
   otlphttp/logs:
@@ -110,7 +108,7 @@ service:
   pipelines:
     logs:
       receivers: [receiver_creator, otlp]
-      processors: [batch, resourcedetection/system, transform/record_attrs]
+      processors: [batch, transform/record_attrs]
       exporters: [otlphttp/logs]
     metrics:
       receivers: [otlp]

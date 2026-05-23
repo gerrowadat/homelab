@@ -40,15 +40,19 @@ Each log record gets the following attributes from the filelog pipeline:
 
 | Attribute | Source | Example |
 |---|---|---|
-| `host.name` | `NOMAD_NODE_NAME` (injected by OTEL Collector system job) | `picluster1` |
-| `container_id` | Parsed from the Docker log file path | `a3f9d2c1b4e8` |
+| `host.name` | Nomad node name, injected at template render time | `picluster1` |
+| `nomad.alloc_id` | Docker label `com.hashicorp.nomad.alloc_id` | `65b5cd12-b346-...` |
+| `nomad.task` | Extracted from container name (`<task>-<alloc-uuid>`) | `grafana` |
+| `container.name` | Set by docker_observer (`<task>-<alloc-uuid>`) | `grafana-65b5cd12-...` |
+| `container.id` | Full container SHA | `a3f9d2c1b4e8...` |
 | `log.iostream` | Docker log JSON (`stream` field) | `stdout` / `stderr` |
 | `log.file.path` | Full path of the tailed log file | `/hostlog/containers/...` |
 
-Nomad job name and task name are not automatically attached — Docker label
-metadata is not available without Docker socket access. Cross-reference
-`container_id` with `docker ps` or `nomad alloc status` to trace a container
-back to its allocation.
+Nomad job name and group name are not attached — Docker only sets `alloc_id`
+as a label; job/group names are only in container environment variables, which
+the docker_observer does not expose to the receiver_creator expression language.
+Cross-reference `nomad.alloc_id` with `nomad alloc status <alloc-id>` to map a
+log record back to its Nomad job.
 
 ### Apps pushing OTLP directly
 
