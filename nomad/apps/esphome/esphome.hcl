@@ -29,8 +29,7 @@ job "esphome" {
         image   = "ghcr.io/esphome/esphome:2026.5.0"
         ports   = ["http"]
         # -v raises log level to DEBUG; use -vv for full VERBOSE output
-        command = "esphome"
-        args    = ["-v", "dashboard", "/config"]
+        args = ["-v", "dashboard", "/config"]
       }
 
       volume_mount {
