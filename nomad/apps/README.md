@@ -11,6 +11,7 @@ User-facing applications.
 | `kutt` | URL shortener at go.home.andvari.net | Backed by postgres and CSI NFS volume; secrets in `nomad/jobs/kutt` |
 | `immich` | Self-hosted photo/video management | Dedicated postgres+vectorchord, Redis, ML; photos on mix, DB on srv |
 | `paperless` | Document management (paperless-ngx) | Shared postgres, Redis + Gotenberg + Tika sidecars; media/consume/export on mix, index on srv |
+| `esphome` | ESPHome dashboard for ESP8266/ESP32 firmware | Config on srv CSI volume; OTA-only (no USB); at `esphome.service.home.consul:6052` |
 
 ## Hardware-pinned jobs
 
