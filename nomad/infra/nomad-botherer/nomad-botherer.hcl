@@ -16,7 +16,7 @@ job "nomad-botherer" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/gerrowadat/nomad-botherer:0.2.0"
+        image = "ghcr.io/gerrowadat/nomad-botherer:0.3.0"
         ports = ["nomad-botherer"]
       }
 
@@ -32,7 +32,7 @@ WEBHOOK_PATH=/webhooks/nomad-botherer
 NOMAD_ADDR=http://nomad.service.home.consul:4646
 LOG_LEVEL=debug
 WEBHOOK_SECRET={{ with nomadVar "nomad/jobs/nomad-botherer" }}{{ .github_webhook_secret }}{{ end }}
-GRPC_API_KEY={{ with nomadVar "nomad/jobs/nomad-botherer" }}{{ .github_webhook_secret }}{{ end }}
+API_KEY={{ with nomadVar "nomad/jobs/nomad-botherer" }}{{ .github_webhook_secret }}{{ end }}
 NOMAD_TOKEN={{ with nomadVar "nomad/jobs/nomad-botherer" }}{{ .nomad_token }}{{ end }}
 EOF
       }
