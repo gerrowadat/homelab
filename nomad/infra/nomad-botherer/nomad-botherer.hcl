@@ -16,7 +16,7 @@ job "nomad-botherer" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/gerrowadat/nomad-botherer:0.1.1"
+        image = "ghcr.io/gerrowadat/nomad-botherer:0.1.2"
         ports = ["nomad-botherer"]
       }
 
