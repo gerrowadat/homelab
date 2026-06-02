@@ -1,6 +1,10 @@
 job "immich" {
   datacenters = ["home"]
 
+  meta {
+    "gitops.managed" = "true"
+  }
+
   group "immich" {
 
     # Photos library — stored on mix (large media NFS share)

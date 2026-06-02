@@ -1,5 +1,10 @@
 job "cringesweeper" {
   datacenters = ["home"]
+
+  meta {
+    "gitops.managed" = "true"
+  }
+
   group "cringesweeper_servers" {
     count = 1
     task "cringesweeper" {

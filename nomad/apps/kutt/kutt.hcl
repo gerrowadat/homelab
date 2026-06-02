@@ -1,6 +1,10 @@
 job "kutt" {
   datacenters = ["home"]
 
+  meta {
+    "gitops.managed" = "true"
+  }
+
   group "kutt_servers" {
 
     volume "kutt" {
