@@ -1,5 +1,10 @@
 job "octoprint" {
   datacenters = ["home"]
+
+  meta = {
+    "gitops.managed" = "true"
+  }
+
   group "octoprint_servers" {
 
     volume "octoprint" {

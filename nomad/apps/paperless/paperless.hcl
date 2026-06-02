@@ -1,6 +1,10 @@
 job "paperless" {
   datacenters = ["home"]
 
+  meta = {
+    "gitops.managed" = "true"
+  }
+
   group "paperless" {
 
     # Search index and application state — fast storage on srv.

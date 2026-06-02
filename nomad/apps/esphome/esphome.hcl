@@ -1,6 +1,10 @@
 job "esphome" {
   datacenters = ["home"]
 
+  meta = {
+    "gitops.managed" = "true"
+  }
+
   group "esphome" {
     volume "esphome" {
       type            = "csi"

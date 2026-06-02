@@ -1,5 +1,10 @@
 job "birdnet" {
   datacenters = ["home"]
+
+  meta = {
+    "gitops.managed" = "true"
+  }
+
   group "birdnet_servers" {
 
     volume "birdnet" {
