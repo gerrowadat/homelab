@@ -15,6 +15,7 @@ Utility scripts for operating the homelab cluster.
 | `nomad-var-set.sh` | Update a single key in a Nomad variable without touching the other keys. Usage: `bash scripts/nomad-var-set.sh <path> <key> <value>`. |
 | `dump-nomad-vars.sh` | Dump all Nomad variables to an AES-256-CBC encrypted bash restore script. Use for disaster-recovery backups; restore by decrypting and piping to bash. See below. |
 | `volume-shell.sh` | Start an interactive shell with a Nomad CSI volume mounted at `/<volume-name>`. Useful for inspecting or modifying volume contents directly. |
+| `bother.sh` | CLI wrapper for the nomad-botherer JSON API. Reads the API key from `nomad/jobs/nomad-botherer` and exposes all API endpoints as subcommands (`diffs`, `refresh`, `status`, etc.). Requires `NOMAD_TOKEN`. |
 
 ## Nomad variable backup and restore
 
