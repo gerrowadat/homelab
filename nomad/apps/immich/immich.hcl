@@ -1,8 +1,8 @@
 job "immich" {
   datacenters = ["home"]
 
-  meta = {
-    "gitops.managed" = "true"
+  meta {
+    gitops_managed = "true"
   }
 
   group "immich" {

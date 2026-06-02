@@ -1,8 +1,8 @@
 job "miniflux" {
   datacenters = ["home"]
 
-  meta = {
-    "gitops.managed" = "true"
+  meta {
+    gitops_managed = "true"
   }
 
   group "miniflux_servers" {
