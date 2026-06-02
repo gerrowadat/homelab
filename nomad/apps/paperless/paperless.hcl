@@ -1,7 +1,7 @@
 job "paperless" {
   datacenters = ["home"]
 
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
 

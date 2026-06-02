@@ -1,7 +1,7 @@
 job "immich" {
   datacenters = ["home"]
 
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
 

@@ -1,7 +1,7 @@
 job "birdnet" {
   datacenters = ["home"]
 
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
 

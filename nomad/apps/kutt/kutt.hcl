@@ -1,7 +1,7 @@
 job "kutt" {
   datacenters = ["home"]
 
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
 

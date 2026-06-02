@@ -1,7 +1,7 @@
 job "miniflux" {
   datacenters = ["home"]
 
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
 

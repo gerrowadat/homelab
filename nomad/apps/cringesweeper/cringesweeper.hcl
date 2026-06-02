@@ -1,7 +1,7 @@
 job "cringesweeper" {
   datacenters = ["home"]
 
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
 

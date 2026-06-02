@@ -35,7 +35,7 @@ scripts/          Utility scripts (validation, reload helpers)
 - amd64-only images get a constraint: `attribute = "${attr.cpu.arch}" operator = "=" value = "amd64"`.
 - All `nomad/apps/` jobs must opt in to nomad-botherer drift monitoring with a top-level meta block:
   ```hcl
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
   ```

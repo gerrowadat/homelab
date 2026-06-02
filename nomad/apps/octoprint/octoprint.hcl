@@ -1,7 +1,7 @@
 job "octoprint" {
   datacenters = ["home"]
 
-  meta {
+  meta = {
     "gitops.managed" = "true"
   }
 
