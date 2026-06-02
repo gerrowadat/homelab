@@ -1,42 +1,107 @@
 "groups":
-- "name": "nomad-botherer"
+- "name": "nomad_botherer_drift"
   "rules":
 
-  # Fires if Prometheus can't scrape nomad-botherer's metrics endpoint.
-  # Distinct from ConsulServiceDown: that checks HTTP reachability via blackbox;
-  # this catches cases where the service is up but metrics are broken.
-  - "alert": "NomadBothererDown"
-    "annotations":
-      "summary": "nomad-botherer is not reachable"
-      "description": "nomad-botherer metrics endpoint has been unscrapeable for 5 minutes. Job drift detection is not running."
-    "expr": |
-      up{job="nomad-botherer"} == 0
+  # Any drift detected for more than 5 minutes. The window absorbs the normal
+  # gap between a git push and the next diff check.
+  - "alert": "NomadJobDrift"
+    "expr": "nomad_botherer:drifted_jobs:total > 0"
     "for": "5m"
     "labels":
       "severity": "warning"
-
-  # Fires if nomad-botherer has seen webhook signature or parse errors in the
-  # last hour. Errors here mean GitHub pushes are not being processed and drift
-  # detection will fall back to polling only.
-  - "alert": "NomadBothererWebhookErrors"
     "annotations":
-      "summary": "nomad-botherer webhook errors"
-      "description": "nomad-botherer has received {{ $value | humanize }} webhook error(s) in the last hour. Check WEBHOOK_SECRET and payload format."
-    "expr": |
-      increase(nomad_botherer_webhook_events_total{event="error"}[1h]) > 0
-    "for": "0m"
+      "summary": "{{ $value | humanize }} Nomad job(s) have drifted from git"
+      "description": "nomad-botherer has detected drift between the git repo and the live Nomad cluster for more than 5 minutes. Run `curl nomad-botherer.service.home.consul:9112/diffs` for details."
+
+  # Any drift persisting for more than 6 hours. Per-job, per-diff-type.
+  - "alert": "NomadJobDriftPersistent"
+    "expr": "nomad_botherer:job_drift_age_seconds > 21600"
+    "labels":
+      "severity": "critical"
+    "annotations":
+      "summary": "Nomad job {{ $labels.job }} has been drifting ({{ $labels.diff_type }}) for {{ $value | humanizeDuration }}"
+      "description": "Job {{ $labels.job }} has been in drift state '{{ $labels.diff_type }}' for over 6 hours. This is unlikely to be a deploy in progress — manual intervention is probably needed."
+
+  # A job defined in git is absent from Nomad for more than 15 minutes.
+  - "alert": "NomadJobMissingFromNomad"
+    "expr": "nomad_botherer:job_drift_age_seconds{diff_type=\"missing_from_nomad\"} > 900"
     "labels":
       "severity": "warning"
-
-  # Fires if more than 3 jobs have a modified diff (definition in HCL differs
-  # from what's running in Nomad). Missing jobs are excluded -- use diff_type
-  # "missing_from_nomad" or "missing_from_hcl" to alert on those separately.
-  - "alert": "NomadJobDrift"
     "annotations":
-      "summary": "{{ $value | humanize }} Nomad jobs have drifted from HCL"
-      "description": "{{ $value | humanize }} jobs are modified (running config differs from HCL). Run `curl nomad-botherer.service.home.consul:9112/diffs` for details."
-    "expr": |
-      nomad_botherer_drifted_jobs{diff_type="modified"} > 3
+      "summary": "Nomad job {{ $labels.job }} is defined in git but missing from Nomad"
+      "description": "Job {{ $labels.job }} has not been registered in Nomad for {{ $value | humanizeDuration }}. It may have been accidentally stopped or never submitted."
+
+  # A running Nomad job has no corresponding HCL file in the repo for over 1 hour.
+  - "alert": "NomadJobMissingFromHCL"
+    "expr": "nomad_botherer:job_drift_age_seconds{diff_type=\"missing_from_hcl\"} > 3600"
+    "labels":
+      "severity": "warning"
+    "annotations":
+      "summary": "Nomad job {{ $labels.job }} has no HCL definition in git"
+      "description": "Job {{ $labels.job }} is running in Nomad but has no corresponding HCL file in the watched repo. It has been in this state for {{ $value | humanizeDuration }}."
+
+- "name": "nomad_botherer_health"
+  "rules":
+
+  # nomad-botherer has not completed a diff check recently (threshold: 2× diff-interval).
+  - "alert": "NomadBothererCheckStale"
+    "expr": "nomad_botherer:seconds_since_last_check > 300"
+    "for": "2m"
+    "labels":
+      "severity": "warning"
+    "annotations":
+      "summary": "nomad-botherer has not run a diff check in {{ $value | humanizeDuration }}"
+      "description": "The last diff check was more than 5 minutes ago. The service may be unable to reach the Nomad API."
+
+  # Git fetch loop has been failing for 10 minutes.
+  - "alert": "NomadBothererGitFetchFailing"
+    "expr": "nomad_botherer:git_fetch_error_rate5m > 0"
     "for": "10m"
     "labels":
       "severity": "warning"
+    "annotations":
+      "summary": "nomad-botherer git fetch is failing"
+      "description": "Git fetch/clone operations have been failing for 10 minutes. Drift checks continue against the last successful fetch but new commits will not be picked up."
+
+  # Git repo has not refreshed in over 30 minutes.
+  - "alert": "NomadBothererGitStale"
+    "expr": "nomad_botherer:seconds_since_git_update > 1800"
+    "for": "5m"
+    "labels":
+      "severity": "warning"
+    "annotations":
+      "summary": "nomad-botherer git repo has not been updated in {{ $value | humanizeDuration }}"
+      "description": "The in-memory git checkout has not been refreshed from the remote in over 30 minutes. Drift checks may be running against a stale view of the repo."
+
+  # Nomad API calls are failing.
+  - "alert": "NomadBothererAPIErrors"
+    "expr": "nomad_botherer:nomad_api_error_rate5m > 0"
+    "for": "10m"
+    "labels":
+      "severity": "warning"
+    "annotations":
+      "summary": "nomad-botherer is seeing Nomad API errors (op={{ $labels.op }})"
+      "description": "Nomad API {{ $labels.op }} operations have been failing for 10 minutes. Drift detection results may be incomplete."
+
+  # Prometheus cannot scrape the metrics endpoint at all.
+  - "alert": "NomadBothererDown"
+    "expr": "up{job=\"nomad-botherer\"} == 0"
+    "for": "5m"
+    "labels":
+      "severity": "critical"
+    "annotations":
+      "summary": "nomad-botherer is not reachable"
+      "description": "nomad-botherer metrics endpoint has been unscrapeable for 5 minutes. Job drift detection is not running."
+
+- "name": "nomad_botherer_webhooks"
+  "rules":
+
+  # Webhook deliveries are consistently failing (falls back to polling only).
+  - "alert": "NomadBothererWebhookErrors"
+    "expr": "rate(nomad_botherer_webhook_events_total{event=\"error\"}[10m]) > 0"
+    "for": "10m"
+    "labels":
+      "severity": "warning"
+    "annotations":
+      "summary": "nomad-botherer webhook handler is returning errors"
+      "description": "Webhook events have been failing for 10 minutes. The service will fall back to poll-interval-based checks. Check logs for signature verification or parse errors."
