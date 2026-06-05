@@ -131,17 +131,22 @@ http:
   middlewares:
     internal-only:
       ipAllowList:
-        # Restricts access to the homelab LAN. Apply to any router that
-        # should not be reachable from the internet.
+        # Restricts access to the homelab LAN. Use for services reachable via
+        # Pangolin -- depth:1 extracts the real client IP from X-Forwarded-For
+        # (without it, ipAllowList would check RemoteAddr = 172.17.0.1 via Newt).
         sourceRange:
           - "192.168.100.0/24"
 {{ with nomadVar "nomad/jobs/traefik" }}{{ with .home_ip }}          - "{{ . }}/32"
 {{ end }}{{ end }}        ipStrategy:
-          # Use the real client IP from X-Forwarded-For (depth=1 = leftmost,
-          # i.e. the original client as seen by the first proxy -- Pangolin).
-          # Without this, ipAllowList checks RemoteAddr (172.17.0.1 via Newt)
-          # rather than the forwarded IP.
           depth: 1
+    internal-only-direct:
+      ipAllowList:
+        # Restricts access to the homelab LAN. Use for services only accessed
+        # directly (not via Pangolin) -- checks RemoteAddr, not X-Forwarded-For.
+        sourceRange:
+          - "192.168.100.0/24"
+{{ with nomadVar "nomad/jobs/traefik" }}{{ with .home_ip }}          - "{{ . }}/32"
+{{ end }}{{ end }}
 
   routers:
     sonarr:
@@ -198,6 +203,12 @@ http:
       tls:
         certResolver: le
       service: paperless
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .hass_hostname }}    hass:
+      rule: "Host(`{{ . }}`)"
+      tls:
+        certResolver: le
+      middlewares: [internal-only-direct]
+      service: hass
 {{ end }}{{ end }}
   services:
     # Consul DNS resolves these to wherever the service is currently running.
@@ -241,6 +252,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://paperless.service.home.consul:8000"
+{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .hass_hostname }}    hass:
+      loadBalancer:
+        servers:
+          - url: "http://hass.service.home.consul:8123"
 {{ end }}{{ end }}
 EOH
         destination = "local/dynamic.yml"
