@@ -38,7 +38,7 @@ if [ -z "$IFACE" ]; then
   IFACE=$(ip -o -6 addr show scope link | grep -v '^ *[0-9]*: lo' | awk 'NR==1{print $2}')
 fi
 echo "matter-server: using interface $IFACE"
-exec python-matter-server --storage-path /data --primary-interface "$IFACE"
+exec /usr/local/bin/python-matter-server --storage-path /data --primary-interface "$IFACE"
 EOF
         destination = "local/start.sh"
         perms       = "0755"
