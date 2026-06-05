@@ -32,13 +32,15 @@ job "matter-server" {
         data        = <<EOF
 #!/bin/sh
 # Find the interface used for outbound traffic (the LAN interface).
-IFACE=$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'dev \K\S+' | head -1)
+IFACE=$(ip route get 1.1.1.1 2>/dev/null | awk '/dev/{for(i=1;i<=NF;i++) if($i=="dev") print $(i+1); exit}')
 if [ -z "$IFACE" ]; then
   # Fallback: first non-loopback interface with a link-local IPv6 address.
-  IFACE=$(ip -o -6 addr show scope link | grep -v '^ *[0-9]*: lo' | awk 'NR==1{print $2}')
+  IFACE=$(ip -o -6 addr show scope link | awk '!/: lo/{print $2; exit}')
 fi
 echo "matter-server: using interface $IFACE"
-exec /usr/local/bin/python-matter-server --storage-path /data --primary-interface "$IFACE"
+# Include common venv locations (uv installs to /app/.venv in newer images).
+export PATH="/app/.venv/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+exec python-matter-server --storage-path /data --primary-interface "$IFACE"
 EOF
         destination = "local/start.sh"
         perms       = "0755"
