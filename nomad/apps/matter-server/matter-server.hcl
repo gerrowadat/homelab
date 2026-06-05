@@ -28,10 +28,21 @@ job "matter-server" {
         }
       }
 
+      template {
+        data = <<EOF
+#!/bin/sh
+exec python-matter-server \
+  --storage-path /data \
+  --primary-interface {{ with nomadVar "nomad/jobs/matter-server" }}{{ .primary_interface }}{{ end }}
+EOF
+        destination = "local/start.sh"
+        perms       = "0755"
+      }
+
       config {
         image        = "ghcr.io/home-assistant-libs/python-matter-server:8.1.0"
         ports        = ["ws"]
-        args         = ["--storage-path", "/data"]
+        entrypoint   = ["/bin/sh", "/local/start.sh"]
         security_opt = ["apparmor=unconfined"]
       }
 
