@@ -29,7 +29,7 @@ job "matter-server" {
       }
 
       template {
-        data        = <<'EOF'
+        data        = <<EOF
 #!/bin/sh
 # Find the interface used for outbound traffic (the LAN interface).
 IFACE=$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'dev \K\S+' | head -1)
