@@ -39,8 +39,7 @@ if [ -z "$IFACE" ]; then
 fi
 echo "matter-server: using interface $IFACE"
 # Include common venv locations (uv installs to /app/.venv in newer images).
-export PATH="/app/.venv/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-exec python-matter-server --storage-path /data --primary-interface "$IFACE"
+exec /usr/local/bin/matter-server --storage-path /data --primary-interface "$IFACE"
 EOF
         destination = "local/start.sh"
         perms       = "0755"
