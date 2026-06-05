@@ -29,11 +29,16 @@ job "matter-server" {
       }
 
       template {
-        data = <<EOF
+        data        = <<'EOF'
 #!/bin/sh
-exec python-matter-server \
-  --storage-path /data \
-  --primary-interface {{ with nomadVar "nomad/jobs/matter-server" }}{{ .primary_interface }}{{ end }}
+# Find the interface used for outbound traffic (the LAN interface).
+IFACE=$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'dev \K\S+' | head -1)
+if [ -z "$IFACE" ]; then
+  # Fallback: first non-loopback interface with a link-local IPv6 address.
+  IFACE=$(ip -o -6 addr show scope link | grep -v '^ *[0-9]*: lo' | awk 'NR==1{print $2}')
+fi
+echo "matter-server: using interface $IFACE"
+exec python-matter-server --storage-path /data --primary-interface "$IFACE"
 EOF
         destination = "local/start.sh"
         perms       = "0755"
