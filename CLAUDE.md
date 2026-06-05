@@ -153,7 +153,7 @@ bash scripts/reload_prometheus_blackbox.sh
 |---|---|---|
 | `picluster1`–`picluster4` | arm64 | General cluster nodes |
 | `picluster5` | arm64 | 3D printer (octoprint), Zigbee stick (z2m) |
-| `hedwig` | amd64 | Traefik (ports 80/443), Home Assistant, on UPS |
+| `hedwig` | amd64 | Traefik (ports 80/443), on UPS |
 | `rabbitseason` | amd64 | NFS server (CSI volumes) |
 | `duckseason` | amd64 | On networking UPS; NUT daemon for UPS monitoring |
 

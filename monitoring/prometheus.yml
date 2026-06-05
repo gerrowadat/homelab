@@ -92,6 +92,7 @@ scrape_configs:
           - nomad-botherer.service.home.consul:9112
           - http://paperless.service.home.consul:8000/
           - logs.service.home.consul:9428
+          - hass.service.home.consul:8123
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -110,6 +111,7 @@ scrape_configs:
           - mosquitto.service.home.consul:1883
           - mysql.service.home.consul:3306
           - postgres.service.home.consul:5432
+          - matter-server.service.home.consul:5580
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
