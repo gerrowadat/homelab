@@ -33,6 +33,7 @@ job "matter-server" {
         ports        = ["ws"]
         args         = ["--storage-path", "/data"]
         security_opt = ["apparmor=unconfined"]
+        network_mode = "host"
       }
 
       volume_mount {
