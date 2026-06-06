@@ -39,17 +39,18 @@ if [ -z "$IFACE" ]; then
 fi
 echo "matter-server: using interface $IFACE"
 # Include common venv locations (uv installs to /app/.venv in newer images).
-exec /usr/local/bin/matter-server --storage-path /data --primary-interface "$IFACE"
+exec /usr/local/bin/matter-server --storage-path /data --primary-interface "$IFACE" --log-level debug
 EOF
         destination = "local/start.sh"
         perms       = "0755"
       }
 
       config {
-        image        = "ghcr.io/home-assistant-libs/python-matter-server:8.1.0"
-        ports        = ["ws"]
-        entrypoint   = ["/bin/sh", "/local/start.sh"]
-        security_opt = ["apparmor=unconfined"]
+        image         = "ghcr.io/home-assistant-libs/python-matter-server:8.1.0"
+        ports         = ["ws"]
+        entrypoint    = ["/bin/sh", "/local/start.sh"]
+        security_opt  = ["apparmor=unconfined"]
+        network_mode  = "host"
       }
 
       volume_mount {
