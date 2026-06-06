@@ -39,7 +39,7 @@ if [ -z "$IFACE" ]; then
 fi
 echo "matter-server: using interface $IFACE"
 # Include common venv locations (uv installs to /app/.venv in newer images).
-exec /usr/local/bin/matter-server --storage-path /data --primary-interface "$IFACE" --log-level debug
+exec /usr/local/bin/matter-server --storage-path /data --primary-interface "$IFACE"
 EOF
         destination = "local/start.sh"
         perms       = "0755"
