@@ -1,5 +1,8 @@
 job "mosquitto" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+  }
   group "mqtt_servers" {
 
     constraint {

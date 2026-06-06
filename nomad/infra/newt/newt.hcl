@@ -1,5 +1,8 @@
 job "newt" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+  }
   group "newt_servers" {
     count = 1
     constraint {

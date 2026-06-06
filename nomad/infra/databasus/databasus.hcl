@@ -2,6 +2,10 @@ job "databasus" {
   datacenters = ["home"]
   type        = "service"
 
+  meta {
+    gitops_managed = "true"
+  }
+
   group "databasus" {
 
     volume "databasus" {

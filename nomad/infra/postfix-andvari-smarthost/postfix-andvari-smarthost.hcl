@@ -1,6 +1,9 @@
 // Accept mail locally and queue/forward to mx.andvari.net
 job "postfix-andvari-smarthost" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+  }
   group "postfix-andvari-smarthost_servers" {
    
     task "postfix-andvari-smarthost_server" {

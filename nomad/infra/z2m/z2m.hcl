@@ -1,6 +1,9 @@
 job "z2m" {
   priority = 100
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+  }
   group "z2m_servers" {
 
     volume "z2m" {
