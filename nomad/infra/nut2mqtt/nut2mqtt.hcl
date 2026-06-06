@@ -1,5 +1,8 @@
 job "nut2mqtt" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+  }
   group "nut2mqtt_servers" {
     count = 1
      constraint {
