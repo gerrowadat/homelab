@@ -106,8 +106,9 @@ EOF
       }
 
       config {
-        image = "ghcr.io/home-assistant/home-assistant:2026.6.1"
-        ports = ["http"]
+        image        = "ghcr.io/home-assistant/home-assistant:2026.6.1"
+        ports        = ["http"]
+        network_mode = "host"
       }
 
       volume_mount {
