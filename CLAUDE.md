@@ -130,6 +130,11 @@ bash scripts/pg-connect.sh
 bash scripts/check-monitoring-configs.sh
 ```
 
+**Check pinned image tags against updates diun has seen:**
+```bash
+bash scripts/check-image-updates.sh
+```
+
 **Reload Prometheus/Blackbox config (no restart needed):**
 ```bash
 bash scripts/reload_prometheus.sh
