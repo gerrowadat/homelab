@@ -45,6 +45,20 @@ nomad acl policy apply -description "Diun read access" diun nomad/acl/diun-polic
 nomad acl token create -name=diun -policy=diun -type=client
 ```
 
+## Monitoring
+
+Diun exposes no Prometheus metrics, so monitoring is Nomad-level:
+
+- `DiunNotRunning` (`monitoring/diun_alerting_rules.yml`) — warns when the
+  job has no running allocation (or the job disappears entirely) for 15
+  minutes.
+- Crash-loops and resource pressure are covered by the generic
+  `NomadTaskFlapping` / `nomad-resources` alerts.
+
+Whether registry checks are actually succeeding is not observable until the
+nomad-botherer webhook intake ships and provides receiver-side metrics
+(`nomad_botherer_diun_webhooks_received_total` etc., per the proposal).
+
 ## Deployment
 
 ```bash
