@@ -6,7 +6,23 @@ keeps a record of what it has seen.
 
 Uses Diun's **Nomad provider** with `watchByDefault: true`: every running
 Docker-driver task in the cluster is watched, no per-job opt-in meta needed.
-Checks run every 6 hours.
+Checks run every 6 hours. `defaults.watchRepo: true` makes diun watch the 10
+highest semver tags of each repo (not just the pinned tag), so it knows about
+newer releases.
+
+## Checking for recommended updates
+
+```bash
+bash scripts/check-image-updates.sh
+```
+
+Compares every image tag pinned in `nomad/` HCL against the tags diun has
+seen (queried via `nomad alloc exec` + diun's gRPC CLI) and prints one line
+per image: `UPDATE` (newer tag available), `OK`, `MUTABLE` (latest/nightly
+style tags, digest-tracked only), `UNWATCHED` (no diun record — job not
+running, or no watch cycle since the alloc started), or `SKIP` (image built
+from HCL interpolation). The state db is on ephemeral task disk, so after a
+reschedule expect UNWATCHED until the next watch cycle.
 
 ## Notifications
 

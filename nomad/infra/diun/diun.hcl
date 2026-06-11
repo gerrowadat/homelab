@@ -29,6 +29,14 @@ watch:
   jitter: 30s
   firstCheckNotif: false
 
+# Without watchRepo diun only tracks digest changes of the pinned tags;
+# it never learns about newer releases. Watch the 10 highest semver tags
+# per repo so scripts/check-image-updates.sh has something to recommend.
+defaults:
+  watchRepo: true
+  maxTags: 10
+  sortTags: semver
+
 providers:
   nomad:
     address: http://nomad.service.home.consul:4646
