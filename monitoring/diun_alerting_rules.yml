@@ -1,0 +1,29 @@
+groups:
+- name: diun
+  rules:
+
+  # Diun has no allocation in "running". Catches scheduling failures (image
+  # pull errors, no eligible nodes) as well as the job being stopped; the
+  # absent() arm fires if the job is purged/GC'd and the series disappears
+  # entirely. Crash-loops are covered by the generic NomadTaskFlapping alert.
+  #
+  # Diun exposes no Prometheus metrics of its own, so this is liveness only —
+  # whether registry checks are succeeding is not observable until the
+  # nomad-botherer diun webhook intake ships and provides receiver-side
+  # metrics. Warning, not critical: diun is advisory tooling; a missed 6-hour
+  # check cycle costs nothing.
+  - alert: DiunNotRunning
+    expr: |
+      nomad_nomad_job_summary_running{exported_job="diun"} < 1
+        or
+      absent(nomad_nomad_job_summary_running{exported_job="diun"})
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Diun is not running"
+      description: >
+        The diun job has had no running allocation for 15 minutes. Image
+        update checks are not happening. Check `nomad job status diun` —
+        common causes are image pull failures or a missing
+        nomad/jobs/diun variable blocking the template.
