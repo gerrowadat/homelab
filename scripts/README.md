@@ -16,6 +16,7 @@ Utility scripts for operating the homelab cluster.
 | `dump-nomad-vars.sh` | Dump all Nomad variables to an AES-256-CBC encrypted bash restore script. Use for disaster-recovery backups; restore by decrypting and piping to bash. See below. |
 | `volume-shell.sh` | Start an interactive shell with a Nomad CSI volume mounted at `/<volume-name>`. Useful for inspecting or modifying volume contents directly. |
 | `bother.sh` | CLI wrapper for the nomad-botherer JSON API. Reads the API key from `nomad/jobs/nomad-botherer` and exposes all API endpoints as subcommands (`diffs`, `refresh`, `status`, etc.). Requires `NOMAD_TOKEN`. |
+| `bother-dev-cmdline.sh` | Print a command line for running a local dev build of nomad-botherer outside docker, with the same environment as the deployed version. Renders the env template from the running job spec, including secrets from Nomad variables. Usage: `bash scripts/bother-dev-cmdline.sh [path-to-binary]`. Requires `NOMAD_TOKEN`. Output contains secrets. |
 
 ## Nomad variable backup and restore
 
