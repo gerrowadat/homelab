@@ -2,7 +2,8 @@ job "hass" {
   datacenters = ["home"]
 
   meta {
-    gitops_managed = "true"
+    gitops_managed       = "true"
+    gitops_update_policy = "image-only"
   }
 
   group "hass" {
