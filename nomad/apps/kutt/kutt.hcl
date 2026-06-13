@@ -54,7 +54,7 @@ EOF
       }
 
       config {
-        image = "docker.io/kutt/kutt:v3.2.3"
+        image = "docker.io/kutt/kutt:v3.2.4"
         ports = ["kutt"]
       }
 
