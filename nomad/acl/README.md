@@ -7,7 +7,7 @@ Nomad ACL policy definitions.
 | `variable-admin-policy.hcl` | Read/write access to all Nomad variables in all namespaces |
 | `traefik-policy.hcl` | Read access to the default namespace service catalog for Traefik routing |
 | `traefik-vars-policy.hcl` | Read access to `cloud_dns_key` for Traefik's workload identity |
-| `nomad-botherer-policy.hcl` | List, read, plan, and mutate jobs in the default namespace; mount CSI volumes (for nomad-botherer drift detection and job reconciliation) |
+| `nomad-botherer-policy.hcl` | List, read, plan, and mutate jobs in the default namespace; mount CSI volumes; read all `nomad/jobs/*` variables (for nomad-botherer drift detection and job reconciliation) |
 
 ## Prerequisites: workload identity auth method
 
