@@ -1,5 +1,9 @@
 job "prom-blackbox-exporter" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+    gitops_update_policy = "full"
+  }
   group "prom-blackbox-exporter_servers" {
 
     volume "gitrepo" {
