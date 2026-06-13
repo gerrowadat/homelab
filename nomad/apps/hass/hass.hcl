@@ -106,7 +106,7 @@ EOF
       }
 
       config {
-        image        = "ghcr.io/home-assistant/home-assistant:2026.6.1"
+        image        = "ghcr.io/home-assistant/home-assistant:2026.6.3"
         ports        = ["http"]
         network_mode = "host"
       }
