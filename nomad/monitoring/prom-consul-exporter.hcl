@@ -1,5 +1,9 @@
 job "prom-consul-exporter" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+    gitops_update_policy = "full"
+  }
   group "prom-consul-exporter_servers" {
     task "prom-consul-exporter_server" {
       service {

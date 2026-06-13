@@ -1,5 +1,9 @@
 job "prom-alertmanager" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+    gitops_update_policy = "full"
+  }
   group "prom-alertmanager_servers" {
 
     volume "monitoring" {

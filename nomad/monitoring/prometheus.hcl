@@ -1,5 +1,9 @@
 job "prometheus" {
   datacenters = ["home"]
+  meta {
+    gitops_managed = "true"
+    gitops_update_policy = "full"
+  }
   group "prometheus_servers" {
 
     volume "monitoring" {
