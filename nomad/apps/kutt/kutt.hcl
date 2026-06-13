@@ -3,6 +3,7 @@ job "kutt" {
 
   meta {
     gitops_managed = "true"
+    gitops_update_policy = "full"
   }
 
   group "kutt_servers" {

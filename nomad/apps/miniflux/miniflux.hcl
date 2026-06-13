@@ -3,6 +3,7 @@ job "miniflux" {
 
   meta {
     gitops_managed = "true"
+    gitops_update_policy = "image-only"
   }
 
   group "miniflux_servers" {
