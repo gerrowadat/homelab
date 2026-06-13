@@ -32,7 +32,7 @@ EOF
       }
       driver = "docker" 
       config {
-        image = "docker.io/miniflux/miniflux:2.2.18"
+        image = "docker.io/miniflux/miniflux:2.3.1"
         ports = ["miniflux"]
       }
     }
