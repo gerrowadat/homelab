@@ -1,6 +1,6 @@
 # mysql
 
-MySQL 8.4 database server. Used by apps that require MySQL (e.g. Zigbee2MQTT).
+MySQL 9.7 LTS database server. Used by apps that require MySQL (e.g. birdnet).
 
 Reachable at `mysql.service.home.consul:3306` from within the cluster.
 
