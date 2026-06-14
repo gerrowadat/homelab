@@ -26,7 +26,7 @@ job "databasus" {
       driver = "docker"
 
       config {
-        image = "docker.io/databasus/databasus:3.42.0"
+        image = "docker.io/databasus/databasus:v3.42.0"
         ports = ["http"]
       }
 
