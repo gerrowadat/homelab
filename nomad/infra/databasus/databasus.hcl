@@ -4,6 +4,7 @@ job "databasus" {
 
   meta {
     gitops_managed = "true"
+    gitops_update_policy = "image-only"
   }
 
   group "databasus" {
@@ -25,7 +26,7 @@ job "databasus" {
       driver = "docker"
 
       config {
-        image = "docker.io/databasus/databasus:latest"
+        image = "docker.io/databasus/databasus:3.42.0"
         ports = ["http"]
       }
 
