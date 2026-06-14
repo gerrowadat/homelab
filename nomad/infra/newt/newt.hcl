@@ -2,6 +2,7 @@ job "newt" {
   datacenters = ["home"]
   meta {
     gitops_managed = "true"
+    gitops_update_policy = "image-only"
   }
   group "newt_servers" {
     count = 1
@@ -15,7 +16,7 @@ job "newt" {
       }
       driver = "docker"
       config {
-        image = "fosrl/newt:1.10.4"
+        image = "fosrl/newt:1.13.0"
         labels {
           group = "newt"
         }

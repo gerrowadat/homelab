@@ -3,6 +3,7 @@ job "z2m" {
   datacenters = ["home"]
   meta {
     gitops_managed = "true"
+    gitops_update_policy = "image-only"
   }
   group "z2m_servers" {
 
@@ -28,7 +29,7 @@ job "z2m" {
       # 'nobody' keeps the process unprivileged otherwise.
       user = "nobody:dialout"
       config {
-        image = "koenkk/zigbee2mqtt:2.9.2"
+        image = "koenkk/zigbee2mqtt:2.12.0"
         volumes = [
           # udev is needed so the container can detect the Conbee stick's device path.
           "/run/udev:/run/udev:ro",
