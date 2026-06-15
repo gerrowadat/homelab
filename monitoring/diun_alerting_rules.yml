@@ -14,9 +14,9 @@ groups:
   # check cycle costs nothing.
   - alert: DiunNotRunning
     expr: |
-      nomad_nomad_job_summary_running{exported_job="diun"} < 1
+      nomad_nomad_job_summary_running{job="diun"} < 1
         or
-      absent(nomad_nomad_job_summary_running{exported_job="diun"})
+      absent(nomad_nomad_job_summary_running{job="diun"})
     for: 15m
     labels:
       severity: warning
