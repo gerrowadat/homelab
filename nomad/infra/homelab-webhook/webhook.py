@@ -7,6 +7,7 @@ import http.server
 import json
 import os
 import subprocess
+import time
 import urllib.request
 
 
@@ -86,17 +87,43 @@ def touches_grafana_config(payload):
     return bool(changed)
 
 
-def reload_services():
-    for url in RELOAD_TARGETS:
-        log(f"Sending POST /-/reload to {url}")
+def post_with_retries(url, headers=None, attempts=3, timeout=5, backoff=2):
+    """POST to url with retries. Raises RuntimeError if all attempts fail.
+
+    A reload POST that fails silently leaves the running service on stale
+    config until the next monitoring push (this is how a fixed alert rule sat
+    undeployed for a day). Retrying rides out transient blips, and the caller
+    attempts every target rather than aborting on the first failure.
+    """
+    last = None
+    for n in range(1, attempts + 1):
         req = urllib.request.Request(url, method="POST", data=b"")
+        for key, value in (headers or {}).items():
+            req.add_header(key, value)
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
                 if resp.status not in (200, 204):
                     raise RuntimeError(f"HTTP {resp.status}")
-                log(f"  -> OK (HTTP {resp.status})")
+                log(f"  -> OK (HTTP {resp.status})" + ("" if n == 1 else f" on attempt {n}"))
+                return
         except Exception as e:
-            raise RuntimeError(f"Reload failed for {url}: {e}")
+            last = e
+            log(f"  -> attempt {n}/{attempts} FAILED for {url}: {e}")
+            if n < attempts:
+                time.sleep(backoff)
+    raise RuntimeError(f"{url}: {last}")
+
+
+def reload_services():
+    failures = []
+    for url in RELOAD_TARGETS:
+        log(f"Sending POST /-/reload to {url}")
+        try:
+            post_with_retries(url)
+        except Exception as e:
+            failures.append(str(e))
+    if failures:
+        raise RuntimeError("Reload failed for: " + "; ".join(failures))
 
 
 def reload_grafana():
@@ -105,17 +132,16 @@ def reload_grafana():
     credentials = base64.b64encode(
         f"{GRAFANA_ADMIN_USER}:{GRAFANA_ADMIN_PASSWORD}".encode()
     ).decode()
+    headers = {"Authorization": f"Basic {credentials}"}
+    failures = []
     for url in GRAFANA_RELOAD_TARGETS:
         log(f"Sending POST to {url}")
-        req = urllib.request.Request(url, method="POST", data=b"")
-        req.add_header("Authorization", f"Basic {credentials}")
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                if resp.status not in (200, 204):
-                    raise RuntimeError(f"HTTP {resp.status}")
-                log(f"  -> OK (HTTP {resp.status})")
+            post_with_retries(url, headers=headers)
         except Exception as e:
-            raise RuntimeError(f"Grafana reload failed for {url}: {e}")
+            failures.append(str(e))
+    if failures:
+        raise RuntimeError("Grafana reload failed for: " + "; ".join(failures))
 
 
 class WebhookHandler(http.server.BaseHTTPRequestHandler):

@@ -35,6 +35,14 @@ job "homelab-webhook" {
         destination = "/gitrepo"
       }
 
+      // Ensure stdout is never block-buffered, so reload/pull logs reach
+      // `nomad alloc logs` immediately even if a future webhook.py drops the
+      // explicit flush. Without this, log output can sit unflushed and a
+      // failed reload looks like silence.
+      env {
+        PYTHONUNBUFFERED = "1"
+      }
+
       template {
         destination = "secrets/env"
         env         = true
