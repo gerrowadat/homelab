@@ -51,14 +51,25 @@
     "labels":
       "severity": "warning"
 
-  # One or more otel-collector tasks has a failed allocation. Since this is a
-  # system job, any failure means a node has lost log collection entirely.
+  # A new otel-collector allocation has failed recently. This is a system job,
+  # so a failing alloc means a node has lost log collection.
+  #
+  # The job name lives in the `job` label, not `exported_job`: the nomad scrape
+  # uses honor_labels (see prometheus.yml), so the metric's own job="otel-collector"
+  # label is preserved. The previous exported_job selector matched nothing, so
+  # this alert never fired.
+  #
+  # We alert on increase() over a window, not on the raw failed gauge:
+  # nomad_nomad_job_summary_failed is a cumulative count of allocs ever failed,
+  # so it is non-zero on a perfectly healthy job (historical failures) and
+  # `> 0` would fire permanently. increase(...[15m]) > 0 fires only on a *new*
+  # failure and self-resolves once the window passes with no further failures.
   - "alert": "OtelCollectorDown"
     "annotations":
-      "summary": "otel-collector has a failed allocation"
-      "description": "The otel-collector system job has {{ $value }} failed allocation(s). At least one cluster node is not collecting logs."
+      "summary": "otel-collector allocation failed"
+      "description": "The otel-collector system job has had {{ $value }} new failed allocation(s) in the last 15m. At least one cluster node may have lost log collection."
     "expr": |
-      nomad_nomad_job_summary_failed{exported_job="otel-collector"} > 0
+      increase(nomad_nomad_job_summary_failed{job="otel-collector"}[15m]) > 0
     "for": "5m"
     "labels":
       "severity": "critical"
