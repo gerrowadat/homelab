@@ -31,7 +31,7 @@ job "victorialogs" {
       driver = "docker"
 
       config {
-        image = "victoriametrics/victoria-logs:v1.50.0"
+        image = "victoriametrics/victoria-logs:v1.51.0"
         args  = [
           "-storageDataPath=/data",
           "-retentionPeriod=30d",
