@@ -9,6 +9,12 @@ job "databasus" {
 
   group "databasus" {
 
+    update {
+      auto_revert = true
+      health_check = "checks"
+      healthy_deadline = "5m"
+    }
+
     volume "databasus" {
       type            = "csi"
       source          = "databasus"
@@ -26,7 +32,7 @@ job "databasus" {
       driver = "docker"
 
       config {
-        image = "docker.io/databasus/databasus:v3.42.0"
+        image = "docker.io/databasus/databasus:v3.47.0"
         ports = ["http"]
       }
 
