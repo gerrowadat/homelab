@@ -1,7 +1,17 @@
 job "victorialogs" {
   datacenters = ["home"]
 
+  meta {
+    gitops_managed = "true"
+    gitops_update_policy = "full"
+  }
+
   group "victorialogs" {
+
+    update {
+      auto_revert = true
+      health_check = "checks"
+    }
 
     volume "logs" {
       type            = "csi"
