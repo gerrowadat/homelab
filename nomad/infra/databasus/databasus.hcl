@@ -4,7 +4,7 @@ job "databasus" {
 
   meta {
     gitops_managed = "true"
-    gitops_update_policy = "image-only"
+    gitops_update_policy = "full"
   }
 
   group "databasus" {
