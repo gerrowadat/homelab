@@ -54,7 +54,11 @@ job "databasus" {
 
       resources {
         cpu    = 100
-        memory = 256
+        # databasus bundles an embedded Postgres (metadata store) alongside the
+        # Go app, and the scheduled backup run spikes on top of both. At 256 the
+        # task pinned its limit during the nightly backup and was OOM-killed
+        # (exit 137), failing the backup; idle sits ~100 MiB. 512 gives headroom.
+        memory = 512
       }
     }
   }
