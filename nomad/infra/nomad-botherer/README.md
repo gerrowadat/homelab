@@ -27,22 +27,14 @@ Reads from `nomad/jobs/nomad-botherer`. Create or update before deploying:
 
 ```bash
 nomad var put nomad/jobs/nomad-botherer \
-  github_webhook_secret=<secret>
+  github_webhook_secret=<secret> \
+  nomad_token=<optional-acl-token>
 ```
 
 | Key                     | Required | Description                                                      |
 |-------------------------|----------|------------------------------------------------------------------|
 | `github_webhook_secret` | yes      | HMAC secret configured in the GitHub webhook settings            |
-
-## Nomad access (workload identity)
-
-This job authenticates to the Nomad API with its **default workload identity**,
-not a static token. The task's `identity { file = true }` block makes Nomad
-write a short-lived, auto-renewed ACL token to `${NOMAD_SECRETS_DIR}/nomad_token`,
-which nomad-botherer (>= 0.9.0) auto-detects. Capabilities come from the
-`nomad-botherer` policy **associated with this job** — see
-`nomad/acl/README.md`. No `nomad_token` variable is needed; if one lingers from
-the old setup it is unused and the static token can be deleted.
+| `nomad_token`           | no       | Nomad ACL token — see `nomad/acl/nomad-botherer-policy.hcl`     |
 
 ---
 
