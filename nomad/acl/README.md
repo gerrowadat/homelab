@@ -43,10 +43,14 @@ nomad acl policy apply -description "Traefik service catalog reader" traefik tra
 nomad acl token create -name="traefik" -policy=traefik
 # Store the Secret ID in: nomad var put nomad/jobs/traefik nomad_token=<id>
 
-# nomad-botherer: list, read, plan, and mutate jobs; mount CSI volumes for job reconciliation
-nomad acl policy apply -description "nomad-botherer job drift detector" nomad-botherer nomad-botherer-policy.hcl
-nomad acl token create -name="nomad-botherer" -policy=nomad-botherer
-# Store the Secret ID in: nomad var put nomad/jobs/homelab-webhook nomad_token=<id>
+# nomad-botherer: list, read, plan, and mutate jobs; mount CSI volumes; read variables.
+# Uses workload identity (no static token): the policy is ASSOCIATED WITH THE JOB
+# via -job, so the nomad-botherer task's default identity gets these capabilities.
+# The job's `identity { file = true }` block materialises the token at
+# ${NOMAD_SECRETS_DIR}/nomad_token, which nomad-botherer auto-detects.
+nomad acl policy apply -namespace default -job nomad-botherer \
+  -description "nomad-botherer job drift detector" \
+  nomad-botherer nomad-botherer-policy.hcl
 ```
 
 See `backpack.sh` for the bootstrap sequence that runs these on a fresh cluster.
