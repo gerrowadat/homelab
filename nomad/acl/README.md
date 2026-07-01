@@ -43,10 +43,19 @@ nomad acl policy apply -description "Traefik service catalog reader" traefik tra
 nomad acl token create -name="traefik" -policy=traefik
 # Store the Secret ID in: nomad var put nomad/jobs/traefik nomad_token=<id>
 
-# nomad-botherer: list, read, plan, and mutate jobs; mount CSI volumes for job reconciliation
+# nomad-botherer: list, read, plan, and mutate jobs; mount CSI volumes; read variables.
+# Uses workload identity via the ACL login exchange (nomad-botherer >= 0.9.1) --
+# no static token. The job has a named identity `nomad-api` (aud "nomad.io"); on
+# login the binding rule below grants it the nomad-botherer policy. A raw WI JWT
+# cannot be used directly (Nomad's Job.Plan rejects it), hence the exchange.
 nomad acl policy apply -description "nomad-botherer job drift detector" nomad-botherer nomad-botherer-policy.hcl
-nomad acl token create -name="nomad-botherer" -policy=nomad-botherer
-# Store the Secret ID in: nomad var put nomad/jobs/homelab-webhook nomad_token=<id>
+nomad acl binding-rule create \
+  -auth-method nomad-workloads -bind-type policy \
+  -bind-name nomad-botherer \
+  -selector 'value.nomad_job_id == "nomad-botherer"'
 ```
+
+The `nomad-workloads` JWT auth method (see the top of this file) must exist, and
+its `bound_audiences` (`nomad.io`) must match the job's `identity` block `aud`.
 
 See `backpack.sh` for the bootstrap sequence that runs these on a fresh cluster.
