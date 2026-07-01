@@ -30,6 +30,15 @@ job "nomad-botherer" {
         name = "nomad-api"
         aud  = ["nomad.io"]
         file = true
+        // ttl is required: without it Nomad issues a non-expiring JWT and never
+        // rewrites the file, so once the exchanged ACL token expires (~30m) the
+        // re-login presents a stale JWT the auth method rejects and botherer
+        // loses access. With ttl set, Nomad issues an expiring JWT and renews
+        // the file (~2/3 through the ttl) so a valid JWT is always present.
+        // change_mode = noop: renewals must not restart the task (botherer
+        // re-reads the file itself).
+        ttl         = "1h"
+        change_mode = "noop"
       }
 
       config {
