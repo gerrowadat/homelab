@@ -3,6 +3,7 @@ job "esphome" {
 
   meta {
     gitops_managed = "true"
+    gitops_update_policy = "full"
   }
 
   group "esphome" {
@@ -30,7 +31,7 @@ job "esphome" {
       }
 
       config {
-        image        = "ghcr.io/esphome/esphome:2026.5.0"
+        image        = "ghcr.io/esphome/esphome:2026.6.1"
         ports        = ["http"]
         network_mode = "host"
         args         = ["dashboard", "/config"]
