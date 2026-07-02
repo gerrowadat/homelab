@@ -198,11 +198,6 @@ http:
       rule: "Host(`{{ . }}`)"
       middlewares: [internal-only]
       service: immich
-{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .paperless_hostname }}    paperless:
-      rule: "Host(`{{ . }}`)"
-      tls:
-        certResolver: le
-      service: paperless
 {{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .hass_hostname }}    hass:
       rule: "Host(`{{ . }}`)"
       tls:
@@ -248,10 +243,6 @@ http:
       loadBalancer:
         servers:
           - url: "http://immich.service.home.consul:2283"
-{{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .paperless_hostname }}    paperless:
-      loadBalancer:
-        servers:
-          - url: "http://paperless.service.home.consul:8000"
 {{ end }}{{ end }}{{ with nomadVar "nomad/jobs/traefik" }}{{ with .hass_hostname }}    hass:
       loadBalancer:
         servers:
