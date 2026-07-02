@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# bother-dev-cmdline.sh — print a command line for running a local dev build
-# of nomad-botherer outside docker, with the same environment as the version
+# gitops-dev-cmdline.sh — print a command line for running a local dev build
+# of nomad-gitops outside docker, with the same environment as the version
 # currently deployed on the cluster.
 #
 # Reads the env template from the running job spec (nomad inspect) and
@@ -10,14 +10,14 @@
 # WARNING: the output contains secrets (webhook secret, API key, Nomad
 # token). Don't paste it anywhere public.
 #
-# Usage: bother-dev-cmdline.sh [path-to-binary]   (default: ./nomad-botherer)
+# Usage: gitops-dev-cmdline.sh [path-to-binary]   (default: ./nomad-gitops)
 #
 # Requires: nomad (with cluster access and NOMAD_TOKEN), jq
 
 set -euo pipefail
 
-BINARY="${1:-./nomad-botherer}"
-JOB="nomad-botherer"
+BINARY="${1:-./nomad-gitops}"
+JOB="nomad-gitops"
 
 command -v jq >/dev/null || { echo "error: jq is required" >&2; exit 1; }
 

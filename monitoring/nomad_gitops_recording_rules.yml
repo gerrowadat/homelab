@@ -1,0 +1,43 @@
+# Recording rules for nomad-gitops.
+#
+# These pre-aggregate frequently-used expressions so dashboards and alerts
+# can reference cheap series instead of recomputing the same expressions
+# on every query.
+
+groups:
+  - name: nomad_gitops_recording
+    interval: 30s
+    rules:
+
+      # Total number of drifting jobs across all diff types.
+      # Use this for a single "is anything wrong?" gauge.
+      - record: nomad_gitops:drifted_jobs:total
+        expr: sum without(diff_type) (nomad_gitops_drifted_jobs)
+
+      # Per-type count, preserved with the diff_type label.
+      # Equivalent to nomad_gitops_drifted_jobs but available under a
+      # stable recording-rule name for dashboards.
+      - record: nomad_gitops:drifted_jobs:by_type
+        expr: nomad_gitops_drifted_jobs
+
+      # How long each drifting job has been in its current state (seconds).
+      # Only present for jobs that are currently drifting.
+      - record: nomad_gitops:job_drift_age_seconds
+        expr: time() - nomad_gitops_job_drift_first_seen_timestamp_seconds
+
+      # 5-minute rate of git fetch errors.
+      # Positive values indicate the git polling loop is failing.
+      - record: nomad_gitops:git_fetch_error_rate5m
+        expr: rate(nomad_gitops_git_fetch_errors_total[5m])
+
+      # 5-minute rate of Nomad API errors, labelled by operation.
+      - record: nomad_gitops:nomad_api_error_rate5m
+        expr: rate(nomad_gitops_api_errors_total[5m])
+
+      # Seconds since the last successful diff check.
+      - record: nomad_gitops:seconds_since_last_check
+        expr: time() - nomad_gitops_last_check_timestamp_seconds
+
+      # Seconds since the last successful git fetch.
+      - record: nomad_gitops:seconds_since_git_update
+        expr: time() - nomad_gitops_git_last_update_timestamp_seconds

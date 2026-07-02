@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# bother.sh — CLI wrapper for the nomad-botherer JSON API.
+# gitops.sh — CLI wrapper for the nomad-gitops JSON API.
 #
-# Reads the API key from the Nomad variable at nomad/jobs/nomad-botherer and
-# calls the nomad-botherer HTTP API. Authenticated endpoints require
+# Reads the API key from the Nomad variable at nomad/jobs/nomad-gitops and
+# calls the nomad-gitops HTTP API. Authenticated endpoints require
 # NOMAD_TOKEN to be set so the key can be fetched.
 #
-# Usage: bother.sh <command>
+# Usage: gitops.sh <command>
 #
 # Requires: nomad, curl, jq
-# Optional: NOMAD_ADDR, NOMAD_TOKEN, NOMAD_BOTHERER_ADDR
+# Optional: NOMAD_ADDR, NOMAD_TOKEN, NOMAD_GITOPS_ADDR
 
 set -euo pipefail
 
-BOTHERER_ADDR="${NOMAD_BOTHERER_ADDR:-http://nomad-botherer.service.home.consul:9112}"
-VAR_PATH="nomad/jobs/nomad-botherer"
+GITOPS_ADDR="${NOMAD_GITOPS_ADDR:-http://nomad-gitops.service.home.consul:9112}"
+VAR_PATH="nomad/jobs/nomad-gitops"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 
@@ -36,8 +36,8 @@ Unauthenticated commands:
 Environment:
   NOMAD_TOKEN           Nomad ACL token (required for authenticated commands)
   NOMAD_ADDR            Nomad API address (default: http://127.0.0.1:4646)
-  NOMAD_BOTHERER_ADDR   Override the botherer address
-                        (default: http://nomad-botherer.service.home.consul:9112)
+  NOMAD_GITOPS_ADDR   Override the gitops address
+                        (default: http://nomad-gitops.service.home.consul:9112)
 EOF
     exit 1
 }
@@ -52,36 +52,36 @@ get_api_key() {
     printf '%s' "$key"
 }
 
-bother_get() {
+gitops_get() {
     curl -sf \
         -H "Authorization: Bearer $1" \
-        "${BOTHERER_ADDR}$2" \
+        "${GITOPS_ADDR}$2" \
       | jq .
 }
 
-bother_post() {
+gitops_post() {
     curl -sf -X POST \
         -H "Authorization: Bearer $1" \
-        "${BOTHERER_ADDR}$2" \
+        "${GITOPS_ADDR}$2" \
       | jq .
 }
 
-bother_anon() {
-    curl -sf "${BOTHERER_ADDR}$1"
+gitops_anon() {
+    curl -sf "${GITOPS_ADDR}$1"
 }
 
 [[ $# -ge 1 ]] || usage
 CMD="$1"; shift
 
 case "$CMD" in
-    diffs)          bother_get "$(get_api_key)" /api/v1/diffs ;;
-    selected-jobs)  bother_get "$(get_api_key)" /api/v1/selected-jobs ;;
-    status)         bother_get "$(get_api_key)" /api/v1/status ;;
-    version)        bother_get "$(get_api_key)" /api/v1/version ;;
-    refresh)        bother_post "$(get_api_key)" /api/v1/refresh ;;
-    healthz)        bother_anon /healthz | jq . ;;
-    metrics)        bother_anon /metrics ;;
-    spec)           bother_anon /api/openapi.json | jq . ;;
+    diffs)          gitops_get "$(get_api_key)" /api/v1/diffs ;;
+    selected-jobs)  gitops_get "$(get_api_key)" /api/v1/selected-jobs ;;
+    status)         gitops_get "$(get_api_key)" /api/v1/status ;;
+    version)        gitops_get "$(get_api_key)" /api/v1/version ;;
+    refresh)        gitops_post "$(get_api_key)" /api/v1/refresh ;;
+    healthz)        gitops_anon /healthz | jq . ;;
+    metrics)        gitops_anon /metrics ;;
+    spec)           gitops_anon /api/openapi.json | jq . ;;
     -h|--help|help) usage ;;
     *)              echo "Unknown command: ${CMD}" >&2; usage ;;
 esac

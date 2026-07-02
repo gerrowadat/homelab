@@ -27,9 +27,9 @@ reschedule expect UNWATCHED until the next watch cycle.
 ## Notifications
 
 **None configured yet — deliberately.** The plan (see
-`docs/proposals/diun-integration.md` in the nomad-botherer repo) is for Diun
-to POST a webhook to nomad-botherer, which records available image updates
-and serves ready-to-apply HCL patches. nomad-botherer 0.3.1 does not yet
+`docs/proposals/diun-integration.md` in the nomad-gitops repo) is for Diun
+to POST a webhook to nomad-gitops, which records available image updates
+and serves ready-to-apply HCL patches. nomad-gitops 0.3.1 does not yet
 implement that intake, so for now found updates are only visible in Diun's
 logs:
 
@@ -72,8 +72,8 @@ Diun exposes no Prometheus metrics, so monitoring is Nomad-level:
   `NomadTaskFlapping` / `nomad-resources` alerts.
 
 Whether registry checks are actually succeeding is not observable until the
-nomad-botherer webhook intake ships and provides receiver-side metrics
-(`nomad_botherer_diun_webhooks_received_total` etc., per the proposal).
+nomad-gitops webhook intake ships and provides receiver-side metrics
+(`nomad_gitops_diun_webhooks_received_total` etc., per the proposal).
 
 ## Deployment
 

@@ -171,11 +171,11 @@ http:
       tls:
         certResolver: le
       service: homelab-webhook
-    nomad-botherer:
-      rule: "Host(`home.andvari.net`) && PathPrefix(`/webhooks/nomad-botherer`)"
+    nomad-gitops:
+      rule: "Host(`home.andvari.net`) && PathPrefix(`/webhooks/nomad-gitops`)"
       tls:
         certResolver: le
-      service: nomad-botherer
+      service: nomad-gitops
     grafana:
       rule: "Host(`home.andvari.net`) && PathPrefix(`/graphs`)"
       tls:
@@ -223,10 +223,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://homelab-webhook.service.home.consul:9111"
-    nomad-botherer:
+    nomad-gitops:
       loadBalancer:
         servers:
-          - url: "http://nomad-botherer.service.home.consul:9112"
+          - url: "http://nomad-gitops.service.home.consul:9112"
     grafana:
       loadBalancer:
         servers:

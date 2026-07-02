@@ -1,4 +1,4 @@
-// Allows nomad-botherer to list, read, plan, and mutate jobs in the default namespace.
+// Allows nomad-gitops to list, read, plan, and mutate jobs in the default namespace.
 // csi-list-volume, csi-read-volume, and csi-mount-volume are required when submitting
 // jobs that claim CSI volumes -- Nomad validates and claims volumes at registration time.
 //
@@ -6,7 +6,7 @@
 // enforces an anti-privilege-escalation check at job registration: a token that
 // submits a job whose templates read a Nomad variable (via nomadVar) must itself
 // have read access to that variable path. Without this, submitting any job that
-// reads its nomad/jobs/<jobname> secrets fails with a 403. Since botherer can
+// reads its nomad/jobs/<jobname> secrets fails with a 403. Since nomad-gitops can
 // reconcile any gitops-managed job, it needs read on the whole nomad/jobs/* tree.
 //
 // The plugin{} block grants read on the CSI plugin catalog. Registering a job

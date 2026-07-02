@@ -9,7 +9,7 @@ groups:
   #
   # Diun exposes no Prometheus metrics of its own, so this is liveness only —
   # whether registry checks are succeeding is not observable until the
-  # nomad-botherer diun webhook intake ships and provides receiver-side
+  # nomad-gitops diun webhook intake ships and provides receiver-side
   # metrics. Warning, not critical: diun is advisory tooling; a missed 6-hour
   # check cycle costs nothing.
   - alert: DiunNotRunning

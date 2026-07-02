@@ -33,7 +33,7 @@ scripts/          Utility scripts (validation, reload helpers)
 - Secrets go in Nomad variables at `nomad/jobs/<jobname>`, injected via `template` blocks into `secrets/env` with `env = true`. Variables must be created manually before deploying.
 - The `user` field (to run as a specific user) is a **task-level** field, not inside `config {}`.
 - amd64-only images get a constraint: `attribute = "${attr.cpu.arch}" operator = "=" value = "amd64"`.
-- All `nomad/apps/` jobs must opt in to nomad-botherer drift monitoring with a top-level meta block:
+- All `nomad/apps/` jobs must opt in to nomad-gitops drift monitoring with a top-level meta block:
   ```hcl
   meta {
     gitops_managed = "true"
