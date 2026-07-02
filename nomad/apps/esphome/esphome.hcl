@@ -3,6 +3,7 @@ job "esphome" {
 
   meta {
     gitops_managed = "true"
+    gitops_update_policy = "full"
   }
 
   group "esphome" {
