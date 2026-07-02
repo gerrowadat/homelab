@@ -175,7 +175,7 @@ curl -s http://prometheus.service.home.consul:9090/-/healthy
 
 **Keys:** `gcp_credentials_json`, `gce_project`, `acme_email`, `nomad_token`,
 and optional routing helpers (`home_ip`, `birdnet_hostname`, `kutt_hostname`,
-`immich_hostname`, `paperless_hostname`).
+`immich_hostname`).
 
 ### gcp_credentials_json (ACME DNS-01 challenge)
 
@@ -342,50 +342,6 @@ bash scripts/nomad-var-set.sh nomad/jobs/immich db_password NEW_PW_HERE
 
 Both tasks restart. `immich-db` restarts first; `immich-server` reconnects with
 the new password.
-
----
-
-## Paperless database password, secret key, and admin credentials (`nomad/jobs/paperless`)
-
-**Keys:** `db_password`, `secret_key`, `admin_user`, `admin_password`, `hostname`
-
-### db_password
-
-**Generate and change in PostgreSQL first:**
-```bash
-NEW_PW=$(openssl rand -base64 24 | tr -d '/+=')
-bash scripts/pg-connect.sh
-ALTER USER paperless WITH PASSWORD 'NEW_PW_HERE';
-\q
-
-bash scripts/nomad-var-set.sh nomad/jobs/paperless db_password NEW_PW_HERE
-```
-
-### secret_key
-
-This is Django's `SECRET_KEY`. Rotating it invalidates all active sessions and
-CSRF tokens. Check Paperless docs for your version before rotating, as it may
-affect encrypted data.
-
-```bash
-NEW_KEY=$(openssl rand -hex 64)
-bash scripts/nomad-var-set.sh nomad/jobs/paperless secret_key "$NEW_KEY"
-```
-
-### admin_password
-
-Change via the Paperless web UI (*Admin → Users → [admin user] → Change
-Password*) or via the Django management command:
-
-```bash
-ALLOC=$(nomad job status paperless | grep running | awk '{print $1}')
-nomad alloc exec $ALLOC python3 manage.py changepassword ADMIN_USERNAME_HERE
-```
-
-Then update the variable to stay in sync:
-```bash
-bash scripts/nomad-var-set.sh nomad/jobs/paperless admin_password NEW_PW_HERE
-```
 
 ---
 

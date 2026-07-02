@@ -90,7 +90,6 @@ scrape_configs:
           - http://miniflux.service.home.consul:8080/rss
           - z2m.service.home.consul:8081
           - nomad-botherer.service.home.consul:9112
-          - http://paperless.service.home.consul:8000/
           - logs.service.home.consul:9428
           - hass.service.home.consul:8123
     relabel_configs:
