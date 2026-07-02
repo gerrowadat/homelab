@@ -51,7 +51,7 @@ EOH
       }
 
       config {
-        image      = "prom/prometheus:v3.12.0"
+        image      = "prom/prometheus:v3.13.0"
         entrypoint = ["/bin/sh", "/config/nomad/monitoring/prometheus_start.sh"]
         labels {
           group = "prometheus"
