@@ -236,7 +236,7 @@ Update webhook.*
 
 Do this for both webhook URLs:
 - `https://home.andvari.net/webhooks/monitoring-reload`
-- `https://home.andvari.net/webhooks/nomad-botherer`
+- `https://home.andvari.net/webhooks/nomad-gitops`
 
 **Update the variable:**
 ```bash
@@ -256,10 +256,10 @@ for the correct order (change in Grafana first).
 bash scripts/nomad-var-set.sh nomad/jobs/homelab-webhook grafana_admin_password NEW_PW_HERE
 ```
 
-### nomad_token (nomad-botherer)
+### nomad_token (nomad-gitops)
 
 Same rotation procedure as the Traefik nomad_token. The policy for
-nomad-botherer needs `namespace:read` and `job:read`.
+nomad-gitops needs `namespace:read` and `job:read`.
 
 ```bash
 bash scripts/nomad-var-set.sh nomad/jobs/homelab-webhook nomad_token NEW_TOKEN_HERE

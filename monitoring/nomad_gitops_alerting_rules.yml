@@ -1,0 +1,160 @@
+# Alerting rules for nomad-gitops.
+#
+# Assumes nomad_gitops_recording_rules.yml is also loaded. All expressions that
+# reference nomad_gitops:* series can be rewritten to use the raw metrics
+# directly if you prefer not to load the recording rules.
+#
+# Severity conventions used here:
+#   warning  — something needs attention but is not immediately breaking
+#   critical — action required; a job or the service itself is in a bad state
+
+groups:
+  - name: nomad_gitops_drift
+    rules:
+
+      # Any drift detected. The 5m 'for' window absorbs the normal gap
+      # between a git push and the next diff check — a job transitioning
+      # through a deploy will look drifted briefly. Tune to your
+      # --diff-interval / --poll-interval values.
+      - alert: NomadJobDrift
+        expr: nomad_gitops:drifted_jobs:total > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $value }} Nomad job(s) have drifted from git"
+          description: >
+            nomad-gitops has detected drift between the git repo and the
+            live Nomad cluster for more than 5 minutes.
+            Check /healthz or /diffs for details.
+
+      # A specific job has been in a modified state for an extended period.
+      # This usually means a deploy is stuck or someone edited the job in
+      # Nomad directly without pushing to git.
+      - alert: NomadJobModifiedPersistent
+        expr: >
+          nomad_gitops:job_drift_age_seconds{diff_type="modified"} > 3600
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nomad job {{ $labels.job }} has been modified for {{ $value | humanizeDuration }}"
+          description: >
+            The running definition of job {{ $labels.job }} differs from the
+            HCL in git and has not been reconciled for over 1 hour.
+
+      # A job defined in git is absent from Nomad. Could be a failed deploy,
+      # an accidentally stopped job, or a job that was never submitted.
+      - alert: NomadJobMissingFromNomad
+        expr: >
+          nomad_gitops:job_drift_age_seconds{diff_type="missing_from_nomad"} > 900
+        labels:
+          severity: warning
+        annotations:
+          summary: "Nomad job {{ $labels.job }} is defined in git but missing from Nomad"
+          description: >
+            Job {{ $labels.job }} (defined in {{ $labels.hcl_file }}) has not
+            been registered in Nomad for over 15 minutes.
+
+      # A job is running in Nomad with no corresponding HCL file in the repo.
+      # Could be an untracked legacy job or one that was manually submitted.
+      - alert: NomadJobMissingFromHCL
+        expr: >
+          nomad_gitops:job_drift_age_seconds{diff_type="missing_from_hcl"} > 3600
+        labels:
+          severity: warning
+        annotations:
+          summary: "Nomad job {{ $labels.job }} has no HCL definition in git"
+          description: >
+            Job {{ $labels.job }} is running in Nomad but has no corresponding
+            HCL file in the watched git repo. It has been in this state for
+            {{ $value | humanizeDuration }}.
+
+  - name: nomad_gitops_health
+    rules:
+
+      # nomad-gitops has not completed a diff check recently.
+      # This fires if the service is running but stuck — e.g. the Nomad API
+      # is unreachable or the diff loop has stopped for another reason.
+      # Threshold should be at least 2× --diff-interval.
+      - alert: NomadGitopsCheckStale
+        expr: nomad_gitops:seconds_since_last_check > 300
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "nomad-gitops has not run a diff check in {{ $value | humanizeDuration }}"
+          description: >
+            The last diff check was more than 5 minutes ago. The service may
+            be unable to reach the Nomad API or may have crashed.
+
+      # The git fetch loop is failing. nomad-gitops will continue checking
+      # drift against the last known commit, but won't pick up new changes.
+      - alert: NomadGitopsGitFetchFailing
+        expr: nomad_gitops:git_fetch_error_rate5m > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "nomad-gitops git fetch is failing"
+          description: >
+            Git fetch/clone operations have been failing for 10 minutes.
+            Drift checks continue against the last successful fetch, but
+            new commits will not be picked up until fetching recovers.
+
+      # The git repo has not been successfully fetched in a while.
+      # Tune the threshold to be noticeably longer than --poll-interval.
+      - alert: NomadGitopsGitStale
+        expr: nomad_gitops:seconds_since_git_update > 1800
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "nomad-gitops git repo has not been updated in {{ $value | humanizeDuration }}"
+          description: >
+            The in-memory git checkout has not been refreshed from the remote
+            in over 30 minutes. Drift checks may be running against a stale
+            view of the repo.
+
+      # Nomad API calls are failing. Depending on which operation is failing
+      # (info, plan, list), some or all drift checks will produce incomplete
+      # results.
+      - alert: NomadGitopsAPIErrors
+        expr: nomad_gitops:nomad_api_error_rate5m > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "nomad-gitops is seeing Nomad API errors (op={{ $labels.op }})"
+          description: >
+            Nomad API {{ $labels.op }} operations have been failing for 10
+            minutes. Drift detection results may be incomplete.
+
+      # The service is not reachable by Prometheus at all.
+      - alert: NomadGitopsDown
+        expr: up{job="nomad-gitops"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "nomad-gitops is not reachable"
+          description: >
+            Prometheus cannot scrape the nomad-gitops /metrics endpoint.
+            The service may be down or the network path may be broken.
+
+  - name: nomad_gitops_webhooks
+    rules:
+
+      # Webhook deliveries are consistently failing. The service will fall
+      # back to polling, but real-time drift detection is degraded.
+      - alert: NomadGitopsWebhookErrors
+        expr: >
+          rate(nomad_gitops_webhook_events_total{event="error"}[10m]) > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "nomad-gitops webhook handler is returning errors"
+          description: >
+            Webhook events have been failing for 10 minutes. The service
+            will fall back to --poll-interval-based checks. Check logs for
+            signature verification or parse errors.

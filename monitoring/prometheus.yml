@@ -89,7 +89,7 @@ scrape_configs:
           - nut2mqtt.service.home.consul:3494
           - http://miniflux.service.home.consul:8080/rss
           - z2m.service.home.consul:8081
-          - nomad-botherer.service.home.consul:9112
+          - nomad-gitops.service.home.consul:9112
           - logs.service.home.consul:9428
           - hass.service.home.consul:8123
     relabel_configs:
@@ -124,10 +124,10 @@ scrape_configs:
     static_configs:
       - targets: ['logs.service.home.consul:9428']
 
-  # nomad-botherer job drift detector.
-  - job_name: nomad-botherer
+  # nomad-gitops job drift detector.
+  - job_name: nomad-gitops
     static_configs:
-      - targets: ['nomad-botherer.service.home.consul:9112']
+      - targets: ['nomad-gitops.service.home.consul:9112']
 
   # Traefik reverse proxy metrics.
   # Requires metrics.prometheus.entryPoint=traefik in traefik static config.
